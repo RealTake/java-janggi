@@ -1,0 +1,14 @@
+package domain;
+
+public enum Team {
+
+    HAN(1),
+    CHO(-1),
+    ;
+
+    private final int direction;
+
+    Team(int direction) {
+        this.direction = direction;
+    }
+}
