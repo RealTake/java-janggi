@@ -1,0 +1,38 @@
+package domain.piece;
+
+import domain.board.Board;
+import domain.board.Direction;
+import domain.board.Node;
+import java.util.Arrays;
+import java.util.List;
+
+public class Sa implements Piece {
+
+    private static final List<Direction> SA_MOVABLE_DIRECTIONS = Arrays.stream(Direction.values()).toList();
+
+    private final Team team;
+
+    public Sa(final Team team) {
+        this.team = team;
+    }
+
+    @Override
+    public List<Node> findMovableNodes(final Node currentNode, final Board board) {
+        return SA_MOVABLE_DIRECTIONS.stream()
+                .filter(currentNode::hasEdgeByDirection)
+                .map(currentNode::findNextNodeByDirection)
+                .filter(nextNode -> !(board.existsPieceByNode(nextNode)
+                        && board.hasPieceTeamByNode(nextNode, this.team)))
+                .toList();
+    }
+
+    @Override
+    public PieceType type() {
+        return PieceType.SA;
+    }
+
+    @Override
+    public boolean hasTeam(final Team team) {
+        return this.team == team;
+    }
+}
