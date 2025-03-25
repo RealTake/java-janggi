@@ -1,0 +1,9 @@
+package janggi.domain.piece.generator;
+
+public enum KnightElephantSetting {
+
+    KNIGHT_ELEPHANT_KNIGHT_ELEPHANT,
+    KNIGHT_ELEPHANT_ELEPHANT_KNIGHT,
+    ELEPHANT_KNIGHT_KNIGHT_ELEPHANT,
+    ELEPHANT_KNIGHT_ELEPHANT_KNIGHT
+}
