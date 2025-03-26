@@ -1,0 +1,32 @@
+package domain.piece;
+
+import domain.position.Direction;
+import domain.position.Movement;
+import domain.piece.path.DefaultPathValidator;
+import domain.piece.path.FixedPatternPathFinder;
+import java.util.List;
+
+public class Elephant extends Piece {
+    private static final List<Movement> MOVEMENTS;
+
+    static {
+        MOVEMENTS = List.of(
+                new Movement(List.of(Direction.UP, Direction.RIGHT_UP, Direction.RIGHT_UP)),
+                new Movement(List.of(Direction.UP, Direction.LEFT_UP, Direction.LEFT_UP)),
+                new Movement(List.of(Direction.DOWN, Direction.RIGHT_DOWN, Direction.RIGHT_DOWN)),
+                new Movement(List.of(Direction.DOWN, Direction.LEFT_DOWN, Direction.LEFT_DOWN)),
+                new Movement(List.of(Direction.RIGHT, Direction.RIGHT_UP, Direction.RIGHT_UP)),
+                new Movement(List.of(Direction.RIGHT, Direction.RIGHT_DOWN, Direction.RIGHT_DOWN)),
+                new Movement(List.of(Direction.LEFT, Direction.LEFT_UP, Direction.LEFT_UP)),
+                new Movement(List.of(Direction.LEFT, Direction.LEFT_DOWN, Direction.LEFT_DOWN)));
+    }
+
+    public Elephant(TeamType teamType) {
+        super(teamType, new FixedPatternPathFinder(MOVEMENTS), new DefaultPathValidator());
+    }
+
+    @Override
+    public PieceType getType() {
+        return PieceType.ELEPHANT;
+    }
+}
