@@ -1,0 +1,65 @@
+package janggi.board;
+
+import janggi.Team;
+import janggi.board.position.Position;
+import janggi.piece.Piece;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Board {
+    private final Map<Position, Piece> board;
+
+    public Board(Map<Position, Piece> board) {
+        this.board = new HashMap<>(board);
+    }
+
+    public void movePiece(Position start, Position goal, Team team) {
+        if (isPieceNotExists(start)) {
+            throw new IllegalArgumentException("[ERROR] 출발 지점에 기물이 존재하지 않습니다.");
+        }
+        Piece piece = board.get(start);
+        if (piece.isDifferentTeam(team)) {
+            throw new IllegalArgumentException("[ERROR] 같은 진영의 기물만 움직일 수 있습니다.");
+        }
+        piece.validateMovable(this, start, goal);
+        Piece attacked = move(start, goal);
+        if (attacked != null && attacked.isGeneral()) {
+            throw new GameOverException();
+        }
+    }
+
+    private Piece move(Position start, Position goal) {
+        Piece piece = board.remove(start);
+        return board.put(goal, piece);
+    }
+
+    public Map<Position, Piece> getBoard() {
+        return Collections.unmodifiableMap(board);
+    }
+
+    public boolean isSameTeamExists(Position position, Team team) {
+        if (isPieceNotExists(position)) {
+            return false;
+        }
+        Piece piece = board.get(position);
+        return piece.isSameTeam(team);
+    }
+
+    public boolean isCanonExists(Position position) {
+        if (isPieceNotExists(position)) {
+            return false;
+        }
+        Piece piece = board.get(position);
+        return piece.isCanon();
+    }
+
+    private boolean isPieceNotExists(Position position) {
+        return !isPieceExists(position);
+    }
+
+    public boolean isPieceExists(Position position) {
+        return board.containsKey(position);
+    }
+}
