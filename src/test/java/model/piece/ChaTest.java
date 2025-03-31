@@ -1,12 +1,14 @@
-package model;
+package model.piece;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.HashMap;
 import java.util.Map;
-import model.piece.Cha;
-import model.piece.Piece;
+import model.Path;
+import model.Point;
+import model.Team;
+import model.piece.goongsungpiece.Cha;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,16 +30,30 @@ public class ChaTest {
 
         @Test
         @DisplayName("차 이동 가능 여부 판별 테스트")
-        public void test2() {
+        public void test1() {
             Cha cha = new Cha(Team.RED);
             assertThat(cha.isValidPoint(Point.of(0, 0), Point.of(100, 0))).isTrue();
         }
 
         @Test
         @DisplayName("차 이동 불가능 여부 판별 테스트")
-        public void test3() {
+        public void test2() {
             Cha cha = new Cha(Team.RED);
             assertThat(cha.isValidPoint(Point.of(0, 0), Point.of(10, 10))).isFalse();
+        }
+
+        @Test
+        @DisplayName("궁성 대각 이동 가능")
+        public void test3() {
+            Cha cha = new Cha(Team.RED);
+            assertThat(cha.isValidPoint(Point.of(3, 0), Point.of(5, 2))).isTrue();
+        }
+
+        @Test
+        @DisplayName("궁성 대각 이동 불가능")
+        public void test4() {
+            Cha cha = new Cha(Team.RED);
+            assertThat(cha.isValidPoint(Point.of(3, 1), Point.of(4, 2))).isFalse();
         }
     }
 

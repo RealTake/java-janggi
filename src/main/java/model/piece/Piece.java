@@ -6,8 +6,8 @@ import model.Point;
 import model.Team;
 
 public abstract class Piece implements Hierarchy {
-    Team team;
-    PieceName pieceName;
+    protected Team team;
+    protected PieceInfo pieceInfo;
 
     public Piece(Team team) {
         this.team = team;
@@ -17,13 +17,37 @@ public abstract class Piece implements Hierarchy {
         return team;
     }
 
-    public abstract boolean isValidPoint(Point beforePoint, Point targetPoint);
+    public Path calculatePath(Point beforePoint, Point targetPoint) {
+        int vectorX = targetPoint.x() - beforePoint.x();
+        int vectorY = targetPoint.y() - beforePoint.y();
 
-    public abstract Path calculatePath(Point beforePoint, Point targetPoint);
+        Path path = new Path();
+
+        for (int i = 0; i < Math.max(Math.abs(vectorX), Math.abs(vectorY)); i++) {
+            path.addPoint(new Point(targetPoint.x() - i * getUnitVector(vectorX),
+                    targetPoint.y() - i * getUnitVector(vectorY)));
+        }
+
+        return path;
+    }
+
+    private int getUnitVector(int vector) {
+        if (vector == 0) {
+            return 0;
+        }
+        return vector / Math.abs(vector);
+    }
+
+    public abstract boolean isValidPoint(Point beforePoint, Point targetPoint);
 
     public abstract boolean canMove(Map<Piece, Boolean> piecesOnPathWithTargetOrNot);
 
-    public PieceName getPieceName() {
-        return pieceName;
+    public String getPieceName() {
+        return pieceInfo.getName();
     }
+
+    public double getPieceScore() {
+        return pieceInfo.getScore();
+    }
+
 }

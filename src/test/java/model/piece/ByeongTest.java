@@ -1,13 +1,14 @@
-package model;
+package model.piece;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.HashMap;
 import java.util.Map;
-import model.piece.Byeong;
-import model.piece.Cha;
-import model.piece.Piece;
+import model.Point;
+import model.Team;
+import model.piece.goongsungpiece.Byeong;
+import model.piece.goongsungpiece.Cha;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,8 +45,19 @@ public class ByeongTest {
         }
 
         @Test
-        @DisplayName("한나라 병 이동 가능 테스트")
+        @DisplayName("초나라 병 궁성 이동 테스트")
         public void test2() {
+            Byeong byeong = new Byeong(Team.BLUE);
+            assertAll(
+                    () -> assertThat(byeong.isValidPoint(Point.of(3, 7), Point.of(4, 8))).isTrue(),
+                    () -> assertThat(byeong.isValidPoint(Point.of(4, 8), Point.of(3, 7))).isFalse(),
+                    () -> assertThat(byeong.isValidPoint(Point.of(3, 8), Point.of(4, 9))).isFalse()
+            );
+        }
+
+        @Test
+        @DisplayName("한나라 병 이동 가능 테스트")
+        public void test3() {
             Byeong byeong = new Byeong(Team.RED);
             assertAll(
                     () -> assertThat(byeong.isValidPoint(Point.of(0, 0), Point.of(0, 1))).isFalse(),
@@ -54,8 +66,19 @@ public class ByeongTest {
         }
 
         @Test
+        @DisplayName("한나라 병 궁성 이동 테스트")
+        public void test4() {
+            Byeong byeong = new Byeong(Team.RED);
+            assertAll(
+                    () -> assertThat(byeong.isValidPoint(Point.of(3, 2), Point.of(4, 1))).isTrue(),
+                    () -> assertThat(byeong.isValidPoint(Point.of(4, 1), Point.of(3, 2))).isFalse(),
+                    () -> assertThat(byeong.isValidPoint(Point.of(4, 2), Point.of(5, 1))).isFalse()
+            );
+        }
+
+        @Test
         @DisplayName("병 이동 불가능 테스트")
-        public void test3() {
+        public void test5() {
             Byeong byeong = new Byeong(Team.RED);
             assertThat(byeong.isValidPoint(Point.of(0, 0), Point.of(2, 0))).isFalse();
         }

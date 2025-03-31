@@ -1,15 +1,16 @@
-package model;
+package model.piece;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.HashMap;
 import java.util.Map;
-import model.piece.Cha;
-import model.piece.Jang;
-import model.piece.Ma;
-import model.piece.Pho;
-import model.piece.Piece;
+import model.Path;
+import model.Point;
+import model.Team;
+import model.piece.goongsungpiece.Cha;
+import model.piece.goongsungpiece.Jang;
+import model.piece.goongsungpiece.Pho;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,16 +31,30 @@ public class PhoTest {
     class PhoMovableTest {
         @Test
         @DisplayName("포 이동 가능 여부 판별 테스트")
-        public void test2() {
-            Pho Pho = new Pho(Team.RED);
-            assertThat(Pho.isValidPoint(Point.of(0,0), Point.of(100,0))).isTrue();
+        public void test1() {
+            Pho pho = new Pho(Team.RED);
+            assertThat(pho.isValidPoint(Point.of(0, 0), Point.of(100, 0))).isTrue();
         }
 
         @Test
         @DisplayName("포 이동 불가능 여부 판별 테스트")
+        public void test2() {
+            Pho pho = new Pho(Team.RED);
+            assertThat(pho.isValidPoint(Point.of(0, 0), Point.of(10, 10))).isFalse();
+        }
+
+        @Test
+        @DisplayName("궁성 대각 이동 가능")
         public void test3() {
-            Pho Pho = new Pho(Team.RED);
-            assertThat(Pho.isValidPoint(Point.of(0,0), Point.of(10,10))).isFalse();
+            Pho pho = new Pho(Team.RED);
+            assertThat(pho.isValidPoint(Point.of(3, 0), Point.of(5, 2))).isTrue();
+        }
+
+        @Test
+        @DisplayName("궁성 대각 이동 불가능")
+        public void test4() {
+            Pho pho = new Pho(Team.RED);
+            assertThat(pho.isValidPoint(Point.of(3, 1), Point.of(4, 2))).isFalse();
         }
     }
 
@@ -56,7 +71,7 @@ public class PhoTest {
             Point point4 = new Point(0, 4);
             Point point5 = new Point(0, 7);
 
-            Path path = Pho.calculatePath(Point.of(0,0), Point.of(0,7));
+            Path path = Pho.calculatePath(Point.of(0, 0), Point.of(0, 7));
 
             assertAll(
                     () -> assertThat(path.contains(point1)).isTrue(),
@@ -77,7 +92,7 @@ public class PhoTest {
             Point point4 = new Point(6, 0);
             Point point5 = new Point(7, 0);
 
-            Path path = Pho.calculatePath(Point.of(0,0), Point.of(7,0));
+            Path path = Pho.calculatePath(Point.of(0, 0), Point.of(7, 0));
 
             assertAll(
                     () -> assertThat(path.contains(point1)).isTrue(),
@@ -96,18 +111,19 @@ public class PhoTest {
         @DisplayName("장애물이 없는 경우")
         class NoProhibitedPathTest {
             @Test
-            void test1(){
+            void test1() {
                 Pho pho = new Pho(Team.RED);
                 Map<Piece, Boolean> pieces = new HashMap<>();
                 assertThat(pho.canMove(pieces)).isTrue();
             }
         }
+
         @Nested
         @DisplayName("장애물이 1개 경우")
         class OneProhibitedPathTest {
             @Test
             @DisplayName("중간에 1개 - 포가 아닌 경우")
-            void test2(){
+            void test2() {
                 Pho pho = new Pho(Team.RED);
                 Map<Piece, Boolean> pieces = new HashMap<>();
                 pieces.put(new Cha(Team.BLUE), false);
@@ -116,7 +132,7 @@ public class PhoTest {
 
             @Test
             @DisplayName("중간에 1개 - 포인 경우")
-            void test3(){
+            void test3() {
                 Pho pho = new Pho(Team.RED);
                 Map<Piece, Boolean> pieces = new HashMap<>();
                 pieces.put(new Pho(Team.BLUE), false);
@@ -125,7 +141,7 @@ public class PhoTest {
 
             @Test
             @DisplayName("종점에 1개인 경우")
-            void test4(){
+            void test4() {
                 Pho pho = new Pho(Team.RED);
                 Map<Piece, Boolean> pieces = new HashMap<>();
                 pieces.put(new Cha(Team.BLUE), true);
@@ -138,7 +154,7 @@ public class PhoTest {
         class TwoProhibitedPathTest {
             @Test
             @DisplayName("중간 2개")
-            void test1(){
+            void test1() {
                 Pho pho = new Pho(Team.RED);
                 Map<Piece, Boolean> pieces = new HashMap<>();
                 pieces.put(new Cha(Team.BLUE), false);
@@ -148,7 +164,7 @@ public class PhoTest {
 
             @Test
             @DisplayName("포가 하나라도 존재")
-            void test2(){
+            void test2() {
                 Pho pho = new Pho(Team.RED);
                 Map<Piece, Boolean> pieces = new HashMap<>();
                 pieces.put(new Cha(Team.BLUE), true);
@@ -158,7 +174,7 @@ public class PhoTest {
 
             @Test
             @DisplayName("포가 없고 종점에 아군")
-            void test3(){
+            void test3() {
                 Pho pho = new Pho(Team.RED);
                 Map<Piece, Boolean> pieces = new HashMap<>();
                 pieces.put(new Cha(Team.RED), true);
@@ -168,7 +184,7 @@ public class PhoTest {
 
             @Test
             @DisplayName("포가 없고 종점에 적군")
-            void test4(){
+            void test4() {
                 Pho pho = new Pho(Team.RED);
                 Map<Piece, Boolean> pieces = new HashMap<>();
                 pieces.put(new Cha(Team.RED), false);
