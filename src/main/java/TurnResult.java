@@ -1,5 +1,4 @@
-import java.util.Optional;
-import piece.Team;
+import piece.player.Team;
 
-public record TurnResult(int nextTurn, Optional<Team> loseTeam) {
+public record TurnResult(int nextTurn, Team loseTeam) {
 }

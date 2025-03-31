@@ -1,6 +1,7 @@
 package piece.initiate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,58 +12,71 @@ import move.JolMoveBehavior;
 import move.SaMoveBehavior;
 import piece.Piece;
 import piece.Pieces;
-import piece.Team;
-import piece.position.Position;
+import piece.player.Team;
+import piece.position.JanggiPosition;
 
 public class InitiateJanggiTeamPieces {
 
     private static final Map<Team, List<Piece>> initiatePiecesWithoutMaSang = Map.of(
             Team.RED,
             List.of(
-                    new Piece(new Position(0, 0), new ChaMoveBehavior(), Team.RED),
-                    new Piece(new Position(0, 3), new SaMoveBehavior(), Team.RED),
-                    new Piece(new Position(0, 5), new SaMoveBehavior(), Team.RED),
-                    new Piece(new Position(0, 8), new ChaMoveBehavior(), Team.RED),
-                    new Piece(new Position(1, 4), new GungMoveBehavior(), Team.RED),
-                    new Piece(new Position(2, 1), new FoMoveBehavior(), Team.RED),
-                    new Piece(new Position(2, 7), new FoMoveBehavior(), Team.RED),
-                    new Piece(new Position(3, 0), new JolMoveBehavior(), Team.RED),
-                    new Piece(new Position(3, 2), new JolMoveBehavior(), Team.RED),
-                    new Piece(new Position(3, 4), new JolMoveBehavior(), Team.RED),
-                    new Piece(new Position(3, 6), new JolMoveBehavior(), Team.RED),
-                    new Piece(new Position(3, 8), new JolMoveBehavior(), Team.RED)
+                    new Piece(new JanggiPosition(0, 0), new ChaMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(0, 3), new SaMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(0, 5), new SaMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(0, 8), new ChaMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(1, 4), new GungMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(2, 1), new FoMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(2, 7), new FoMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(3, 0), new JolMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(3, 2), new JolMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(3, 4), new JolMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(3, 6), new JolMoveBehavior(), Team.RED),
+                    new Piece(new JanggiPosition(3, 8), new JolMoveBehavior(), Team.RED)
             ),
             Team.BLUE,
             List.of(
-                    new Piece(new Position(6, 0), new JolMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(6, 2), new JolMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(6, 4), new JolMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(6, 6), new JolMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(6, 8), new JolMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(7, 1), new FoMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(7, 7), new FoMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(8, 4), new GungMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(9, 0), new ChaMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(9, 3), new SaMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(9, 5), new SaMoveBehavior(), Team.BLUE),
-                    new Piece(new Position(9, 8), new ChaMoveBehavior(), Team.BLUE)
+                    new Piece(new JanggiPosition(6, 0), new JolMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(6, 2), new JolMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(6, 4), new JolMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(6, 6), new JolMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(6, 8), new JolMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(7, 1), new FoMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(7, 7), new FoMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(8, 4), new GungMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(9, 0), new ChaMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(9, 3), new SaMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(9, 5), new SaMoveBehavior(), Team.BLUE),
+                    new Piece(new JanggiPosition(9, 8), new ChaMoveBehavior(), Team.BLUE)
             )
     );
 
-    private final Map<Team, Pieces> initiatePieces = new HashMap<>();
+    private final Map<Team, Pieces> initiatePieces;
 
     public InitiateJanggiTeamPieces() {
         this(TableSetting.defaultOption());
     }
-
 
     public InitiateJanggiTeamPieces(Map<Team, TableSetting> teamTableSetting) {
         Team blueTeam = Team.BLUE;
         Team redTeam = Team.RED;
         List<Piece> bluePieces = addAllTeamPieces(teamTableSetting, blueTeam);
         List<Piece> redPieces = addAllTeamPieces(teamTableSetting, redTeam);
+        this.initiatePieces = new HashMap<>();
         initiatePieces.put(blueTeam, new Pieces(bluePieces));
         initiatePieces.put(redTeam, new Pieces(redPieces));
+    }
+
+    public InitiateJanggiTeamPieces(Pieces pieces) {
+        Map<Team, List<Piece>> teamPieces = new HashMap<>(
+                Map.of(Team.BLUE, new ArrayList<>(), Team.RED, new ArrayList<>()));
+        for (Piece piece : pieces.getPieces()) {
+            Team team = piece.team();
+            List<Piece> teamPiecesList = teamPieces.get(piece.team());
+            teamPiecesList.add(piece);
+            teamPieces.put(team, teamPiecesList);
+        }
+        this.initiatePieces = Map.of(Team.BLUE, new Pieces(teamPieces.get(Team.BLUE)), Team.RED,
+                new Pieces(teamPieces.get(Team.RED)));
     }
 
     private List<Piece> addAllTeamPieces(Map<Team, TableSetting> teamTableSetting, Team team) {
@@ -74,7 +88,7 @@ public class InitiateJanggiTeamPieces {
     }
 
     public Map<Team, Pieces> janggiInitiatePieces() {
-        return initiatePieces;
+        return Collections.unmodifiableMap(initiatePieces);
     }
 }
 

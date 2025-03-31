@@ -1,23 +1,47 @@
 package move;
 
 import java.util.List;
+import move.direction.Direction;
+import move.direction.Directions;
+import piece.PieceScore;
 import piece.PieceType;
-import piece.Pieces;
-import piece.Team;
-import piece.position.Position;
+import piece.player.Team;
+import piece.position.JanggiPosition;
 
-public class GungMoveBehavior extends MoveBehavior {
+public class GungMoveBehavior extends JanggiMoveBehavior {
 
-    private static final String NOT_IMPLEMENTED_FEATURE = "아직 구현되지 않은 기능입니다.";
+    private final List<Directions> canMoveDirections = List.of(
+            new Directions(List.of(Direction.RIGHT)),
+            new Directions(List.of(Direction.LEFT)),
+            new Directions(List.of(Direction.DOWN)),
+            new Directions(List.of(Direction.UP))
+    );
+
+    private final List<Directions> diagonalCanMoveDirections = List.of(
+            new Directions(List.of(Direction.UP_RIGHT)),
+            new Directions(List.of(Direction.UP_LEFT)),
+            new Directions(List.of(Direction.DOWN_LEFT)),
+            new Directions(List.of(Direction.DOWN_RIGHT))
+    );
 
     @Override
-    public List<Position> calculateLegalRoute(Position startPosition, Position endPosition, Team team) {
-        throw new IllegalStateException(NOT_IMPLEMENTED_FEATURE);
+    public List<JanggiPosition> calculateLegalRoute(JanggiPosition startPosition, JanggiPosition endPosition,
+                                                    Team team) {
+        if (startPosition.equals(endPosition)) {
+            return List.of(startPosition);
+        }
+        if (!isInsideGungsungCase(startPosition, endPosition)) {
+            throw new InvalidMovePosition();
+        }
+        if (isDiagonalGungsungCase(startPosition, endPosition)) {
+            return calculateLegalRoute(startPosition, endPosition, diagonalCanMoveDirections);
+        }
+        return calculateLegalRoute(startPosition, endPosition, canMoveDirections);
     }
 
     @Override
-    public Position move(Position destination, Pieces onRoutePieces, Team moveTeam) {
-        throw new IllegalStateException(NOT_IMPLEMENTED_FEATURE);
+    public PieceScore getPieceScore() {
+        return PieceScore.from(PieceType.GUNG);
     }
 
     @Override

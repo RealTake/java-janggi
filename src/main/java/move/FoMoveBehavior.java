@@ -7,13 +7,61 @@ import move.direction.Direction;
 import piece.Piece;
 import piece.PieceType;
 import piece.Pieces;
-import piece.Team;
-import piece.position.Position;
+import piece.player.Team;
+import piece.position.JanggiPosition;
 
-public class FoMoveBehavior extends MoveBehavior {
+public class FoMoveBehavior extends JanggiMoveBehavior {
+
+    private final List<Direction> diagonalCanMoveDirections = List.of(
+            Direction.UP_RIGHT,
+            Direction.UP_LEFT,
+            Direction.DOWN_LEFT,
+            Direction.DOWN_RIGHT
+    );
 
     @Override
-    public Position move(Position destination, Pieces onRoutePieces, Team moveTeam) {
+    public List<JanggiPosition> calculateLegalRoute(JanggiPosition startPosition, JanggiPosition endPosition,
+                                                    Team team) {
+        validateSamePosition(startPosition, endPosition);
+        JanggiPosition smallerPosition = startPosition.getSmallerPosition(endPosition);
+        JanggiPosition biggerPosition = startPosition.getBiggerPosition(endPosition);
+
+        List<JanggiPosition> positions = new ArrayList<>();
+        return calculateCanMoveRoute(smallerPosition, biggerPosition, positions);
+    }
+
+    private void validateSamePosition(JanggiPosition startPosition, JanggiPosition endPosition) {
+        if (startPosition.equals(endPosition)) {
+            throw new InvalidMovePosition();
+        }
+    }
+
+    private List<JanggiPosition> calculateLegalRoute(JanggiPosition minPosition, JanggiPosition maxPosition,
+                                                     List<JanggiPosition> positions,
+                                                     List<Direction> directions) {
+        return directions.stream()
+                .map((direction) -> calculateLegalRoute(minPosition, maxPosition, positions, direction))
+                .findFirst()
+                .filter(currentDirections -> currentDirections.getLast().equals(maxPosition))
+                .orElseThrow(InvalidMovePosition::new);
+    }
+
+    private List<JanggiPosition> calculateCanMoveRoute(JanggiPosition minPosition,
+                                                       JanggiPosition maxPosition, List<JanggiPosition> positions) {
+        if (minPosition.isSameColumn(maxPosition)) {
+            return calculateLegalRoute(minPosition, maxPosition, positions, Direction.UP);
+        }
+        if (minPosition.isSameRow(maxPosition)) {
+            return calculateLegalRoute(minPosition, maxPosition, positions, Direction.RIGHT);
+        }
+        if (isDiagonalGungsungCase(minPosition, maxPosition)) {
+            return calculateLegalRoute(minPosition, maxPosition, positions, diagonalCanMoveDirections);
+        }
+        throw new InvalidMovePosition();
+    }
+
+    @Override
+    public JanggiPosition moveOnRoute(JanggiPosition destination, Pieces onRoutePieces, Team moveTeam) {
         validatePiecesEmpty(onRoutePieces);
         Piece onRouteFirstPiece = onRoutePieces.getFirstPiece();
         Piece onRoutelastPiece = onRoutePieces.getLastPiece();
@@ -23,19 +71,9 @@ public class FoMoveBehavior extends MoveBehavior {
         return destination;
     }
 
-    private List<Position> calculateLegalRoute(Position startPosition, Position endPosition, Position minPosition,
-                                               Position maxPosition, List<Position> positions) {
-        if (startPosition.isSameColumn(endPosition)) {
-            return calculateLegalRoute(minPosition, maxPosition, positions, Direction.UP);
-        }
-        if (startPosition.isSameRow(endPosition)) {
-            return calculateLegalRoute(minPosition, maxPosition, positions, Direction.RIGHT);
-        }
-        throw new InvalidMovePosition();
-    }
-
-    private List<Position> calculateLegalRoute(Position minPosition, Position maxPosition, List<Position> positions,
-                                               Direction direction) {
+    private List<JanggiPosition> calculateLegalRoute(JanggiPosition minPosition, JanggiPosition maxPosition,
+                                                     List<JanggiPosition> positions,
+                                                     Direction direction) {
         while (!minPosition.equals(maxPosition)) {
             minPosition = minPosition.add(direction);
             positions.add(minPosition);
@@ -43,7 +81,7 @@ public class FoMoveBehavior extends MoveBehavior {
         return Collections.unmodifiableList(positions);
     }
 
-    private void validateFoMove(Position destination, Team moveTeam, int onRoutePiecesSize, Piece firstPiece,
+    private void validateFoMove(JanggiPosition destination, Team moveTeam, int onRoutePiecesSize, Piece firstPiece,
                                 Piece lastPiece) {
         throwInvalidMoveBehaviorByCondition(() -> isFo(firstPiece) || isFo(lastPiece));
         throwInvalidMoveBehaviorByCondition(() -> !(onRoutePiecesSize == 1 || onRoutePiecesSize == 2));
@@ -71,14 +109,5 @@ public class FoMoveBehavior extends MoveBehavior {
     @Override
     public PieceType getPieceType() {
         return PieceType.FO;
-    }
-
-    @Override
-    public List<Position> calculateLegalRoute(Position startPosition, Position endPosition, Team team) {
-        Position smallerPosition = startPosition.getSmallerPosition(endPosition);
-        Position biggerPosition = startPosition.getBiggerPosition(endPosition);
-
-        List<Position> positions = new ArrayList<>();
-        return calculateLegalRoute(startPosition, endPosition, smallerPosition, biggerPosition, positions);
     }
 }
