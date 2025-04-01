@@ -16,6 +16,10 @@ public class PiecePath {
         return rowDifference() == 0 || columnDifference() == 0;
     }
 
+    public boolean isDiagonal() {
+        return Math.abs(rowDifference()) == Math.abs(columnDifference());
+    }
+
     public int rowDifference() {
         return destination.rowValue() - source.rowValue();
     }
@@ -24,38 +28,78 @@ public class PiecePath {
         return destination.columnValue() - source.columnValue();
     }
 
-    public Position getFractionalPosition(int divisor) {
-        int newRow = source.rowValue() + rowDifference() / divisor;
-        int newColumn = source.columnValue() + columnDifference() / divisor;
-
-        return new Position(Row.from(newRow), Column.from(newColumn));
+    public boolean canReachToDestination(Movement movement) {
+        if (!source.canMove(movement)) {
+            return false;
+        }
+        Position moved = source.move(movement);
+        return moved.equals(destination);
     }
 
-    public Position getFactionalPositionToTarget(Position other, int divisor) {
-        int newRow = other.rowValue() + rowDifference() / divisor;
-        int newColumn = other.columnValue() + columnDifference() / divisor;
-
-        return new Position(Row.from(newRow), Column.from(newColumn));
-    }
-
-    public List<Position> getBetweenPositions() {
-        int rowDir = getDirection(rowDifference());
-        int columnDir = getDirection(columnDifference());
-        Direction direction = Direction.from(rowDir, columnDir);
-
-        Position current = source.move(direction);
+    public List<Position> tracePositionsByDirection(Movement movement) {
         List<Position> positions = new ArrayList<>();
-        while(!current.equals(destination)) {
+
+        Position current = source;
+
+        for (Direction direction : movement.directions()) {
+            current = current.move(Movement.from(direction));
             positions.add(current);
-            current = current.move(direction);
         }
         return positions;
     }
 
-    public int getDirection(int difference) {
-        if(difference != 0) {
+    public List<Position> getBetweenPositions() {
+        Movement movement = Movement.from(calculateDirection());
+
+        Position current = source.move(movement);
+        List<Position> positions = new ArrayList<>();
+        while (!current.equals(destination)) {
+            positions.add(current);
+            current = current.move(movement);
+        }
+        return positions;
+    }
+
+    public Direction calculateDirection() {
+        int rowDir = getDirectionValue(rowDifference());
+        int colDir = getDirectionValue(columnDifference());
+
+        return Direction.from(rowDir, colDir);
+    }
+
+    private int getDirectionValue(int difference) {
+        if (difference != 0) {
             return difference / Math.abs(difference);
         }
         return 0;
+    }
+
+    public boolean matchesMovementStep( int targetDistance1, int targetDistance2) {
+        if(rowDifference() == targetDistance1 && columnDifference() == targetDistance2) {
+            return true;
+        }
+        if(rowDifference() == targetDistance2 && columnDifference() == targetDistance1) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isInPalacePath() {
+        return source.inPalace() && destination.inPalace();
+    }
+
+    public boolean isPalaceDiagonalLine() {
+        return isInPalacePath() && isDiagonal() && hasPalaceCenter();
+    }
+
+    private boolean hasPalaceCenter() {
+        List<Position> allPathPosition = new ArrayList<>(getBetweenPositions());
+        allPathPosition.add(source);
+        allPathPosition.add(destination);
+
+        List<Position> centerPositions = List.of(Palace.CENTER_RED.getPosition(), Palace.CENTER_BLUE.getPosition());
+
+        return allPathPosition.stream()
+                .anyMatch(centerPositions::contains);
     }
 }

@@ -2,33 +2,40 @@ package janggi.domain.piece;
 
 import janggi.domain.board.PiecePath;
 import janggi.domain.board.Position;
-
 import janggi.domain.moveRule.MoveRule;
 import java.util.List;
 
-public abstract class Piece {
-    final PieceColor color;
-    final PieceType type;
-    final MoveRule moveRule;
+public class Piece {
+    private final TeamColor color;
+    private final PieceType type;
+    private final MoveRule moveRule;
 
-    Piece(PieceColor color, PieceType type, MoveRule moveRule) {
+    public Piece(TeamColor color, PieceType type) {
         this.color = color;
         this.type = type;
-        this.moveRule = moveRule;
+        this.moveRule = type.getMoveRule();
     }
 
-    public abstract boolean isValidMovement(PiecePath path);
-
-    public abstract List<Position> findAllRoute(PiecePath path);
+    public boolean isValidMovement(PiecePath path) {
+        return moveRule.verifyMovement(path, this.color);
+    };
 
     public boolean canMove(Piece sourcePiece, Piece destinationPiece, List<Piece> piecesInRoute) {
-        return moveRule.canMove(sourcePiece, destinationPiece, piecesInRoute);
+        return moveRule.verifyRoute(sourcePiece, destinationPiece, piecesInRoute);
     }
 
-    public int countPieceInRoute(List<Piece> piecesInRoute) {
-        return (int) piecesInRoute.stream()
+    public List<Position> findAllRoute(PiecePath path) {
+        return moveRule.findAllRoute(path);
+    }
+
+    public long countPieceInRoute(List<Piece> piecesInRoute) {
+        return piecesInRoute.stream()
                 .filter(Piece::isNotEmptyPiece)
                 .count();
+    }
+
+    public boolean isNotEmptyPiece() {
+        return this.type != PieceType.NONE;
     }
 
     public boolean isSamePieceType(Piece other) {
@@ -43,7 +50,7 @@ public abstract class Piece {
         return this.color != other.color;
     }
 
-    public PieceColor getColor() {
+    public TeamColor getColor() {
         return color;
     }
 
@@ -51,5 +58,7 @@ public abstract class Piece {
         return type;
     }
 
-    public abstract boolean isNotEmptyPiece();
+    public int getScore() {
+        return type.getScore();
+    }
 }

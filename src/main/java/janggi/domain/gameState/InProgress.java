@@ -3,14 +3,14 @@ package janggi.domain.gameState;
 import janggi.domain.board.PlayingBoard;
 import janggi.domain.board.Position;
 import janggi.domain.piece.Piece;
-import janggi.domain.piece.PieceColor;
+import janggi.domain.piece.TeamColor;
 import janggi.domain.piece.PieceType;
 
 public abstract class InProgress implements State {
     final PlayingBoard playingBoard;
-    final PieceColor turnColor;
+    final TeamColor turnColor;
 
-    public InProgress(PlayingBoard playingBoard, PieceColor turnColor) {
+    public InProgress(PlayingBoard playingBoard, TeamColor turnColor) {
         this.playingBoard = playingBoard;
         this.turnColor = turnColor;
     }
@@ -29,6 +29,12 @@ public abstract class InProgress implements State {
         return getNextTurn();
     }
 
+    @Override
+    public final int getDestinationPieceScore(Position destination) {
+        Piece piece = playingBoard.getPieceBy(destination);
+        return piece.getScore();
+    }
+
     protected void validateIsMyPiece(Piece piece) {
         if (piece.getColor() != turnColor) {
             throw new IllegalArgumentException("움직이려는 기물이 " + turnColor + "색이 아닙니다.");
@@ -38,12 +44,17 @@ public abstract class InProgress implements State {
     protected abstract State getNextTurn();
 
     @Override
-    public PieceColor getColor() {
+    public TeamColor getColor() {
         return turnColor;
     }
 
     @Override
     public boolean isFinished() {
         return false;
+    }
+
+    @Override
+    public PlayingBoard getPlayingBoard() {
+        return playingBoard;
     }
 }
