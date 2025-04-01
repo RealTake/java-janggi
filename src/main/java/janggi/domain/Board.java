@@ -3,17 +3,19 @@ package janggi.domain;
 import janggi.common.ErrorMessage;
 import janggi.domain.move.Position;
 import janggi.domain.piece.Piece;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class Board {
 
-    private final Map<Position, Piece> pieceMap;
+    private static final double HAN_BONUS_SCORE = 1.5;
+    private final Map<Position, Piece> board;
 
-    public Board(Map<Position, Piece> pieceMap) {
-        validate(pieceMap);
-        this.pieceMap = new HashMap<>(pieceMap);
+    public Board(Map<Position, Piece> board) {
+        validate(board);
+        this.board = new HashMap<>(board);
     }
 
     public void validate(Map<Position, Piece> pieceMap) {
@@ -23,17 +25,17 @@ public class Board {
     }
 
     public boolean hasPiece(Position position) {
-        return pieceMap.containsKey(position);
+        return board.containsKey(position);
     }
 
-    public boolean isSameSide(Side side, Position position) {
-        return getPiece(position).isSameSide(side);
+    public boolean isSameSide(Team team, Position position) {
+        return getPiece(position).isSameSide(team);
     }
 
-    public void checkMoveablePiece(Side side, Position position) {
+    public void checkMoveablePiece(Team team, Position position) {
         validatePositionExists(position);
-        Piece piece = pieceMap.get(position);
-        if (!piece.isSameSide(side)) {
+        Piece piece = board.get(position);
+        if (!piece.isSameSide(team)) {
             throw new IllegalArgumentException(ErrorMessage.IS_NOT_SAME_SIDE.getMessage());
         }
 
@@ -43,43 +45,56 @@ public class Board {
     }
 
     private void validatePositionExists(Position position) {
-        if (!pieceMap.containsKey(position)) {
+        if (!board.containsKey(position)) {
             throw new IllegalArgumentException(ErrorMessage.POSITION_DOES_NOT_EXIST.getMessage());
         }
     }
 
-    public void movePiece(Position currentPosition, Position newPosition) {
+    public void movePiece(Position currentPosition, Position targetPosition) {
         Piece piece = getPiece(currentPosition);
         Set<Position> availablePositions = piece.getAvailableMovePositions(this, currentPosition);
 
-        if (!availablePositions.contains(newPosition)) {
+        if (!availablePositions.contains(targetPosition)) {
             throw new IllegalArgumentException(ErrorMessage.CANNOT_MOVE_TO_POSITION.getMessage());
         }
 
-        pieceMap.remove(currentPosition);
-        // TODO PUT을 할 때 기존의 POSITION의 키가 덮어씌워진다는 것을 표현할 수 없다. 이러한 방식을 리팩토링할 필요가 있다.
-        pieceMap.put(newPosition, piece);
+        board.remove(currentPosition);
+        board.put(targetPosition, piece);
     }
 
     public Piece getPiece(Position position) {
-        if (!pieceMap.containsKey(position)) {
+        if (!board.containsKey(position)) {
             throw new IllegalArgumentException(ErrorMessage.INVALID_BOARD_POSITION.getMessage());
         }
 
-        return pieceMap.get(position);
+        return board.get(position);
     }
 
-    public boolean canMoveToPosition(Side side, Position position) {
-        return !hasPiece(position) || !isSameSide(side, position);
+    public boolean canMoveToPosition(Team team, Position position) {
+        return !hasPiece(position) || !isSameSide(team, position);
     }
 
-    public boolean hasGeneral(Side side) {
-        return pieceMap.values().stream()
-                .anyMatch(piece -> piece.isGeneral(side));
+    public boolean hasGeneral(Team team) {
+        return board.values().stream()
+                .anyMatch(piece -> piece.isGeneralOnSameTeam(team));
     }
 
     public boolean isCannon(Position position) {
         return hasPiece(position) && getPiece(position).isCannon();
+    }
+
+    public double getScore(Team team) {
+        int sum = board.values().stream()
+                .filter(piece -> piece.isSameSide(team))
+                .filter(piece -> !piece.isGeneralOnSameTeam(team))
+                .mapToInt(Piece::toScore)
+                .sum();
+
+        if (team.isSameSide(Team.HAN)) {
+            return sum + HAN_BONUS_SCORE;
+        }
+
+        return sum;
     }
 
     public String getPieceName(int row, int column) {
@@ -89,6 +104,17 @@ public class Board {
             return "＿";
         }
 
-        return pieceMap.get(position).toName();
+        return getPiece(position).toName();
+    }
+
+    public Map<Position, Piece> getBoard() {
+        return Collections.unmodifiableMap(board);
+    }
+
+    @Override
+    public String toString() {
+        return "Board{" +
+                "pieceMap=" + board +
+                '}';
     }
 }

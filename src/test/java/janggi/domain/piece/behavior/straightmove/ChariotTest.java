@@ -3,8 +3,9 @@ package janggi.domain.piece.behavior.straightmove;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import janggi.domain.Board;
+import janggi.domain.Team;
 import janggi.domain.move.Position;
-import janggi.domain.Side;
+import janggi.domain.piece.BoardPositionInfo;
 import janggi.domain.piece.Piece;
 import janggi.domain.piece.behavior.Soldier;
 import java.util.HashMap;
@@ -21,17 +22,18 @@ class ChariotTest {
         // given
         Position position = Position.of(10, 1);
         Chariot chariot = new Chariot();
-        Piece chariotPiece = new Piece(Side.HAN, chariot);
+        Piece chariotPiece = new Piece(Team.HAN, chariot);
 
         Map<Position, Piece> map = Map.of(position, chariotPiece);
 
         // when
         Board board = new Board(new HashMap<>(map));
-        Set<Position> actual = chariot.generateAvailableMovePositions(board, Side.HAN, position);
+        BoardPositionInfo boardPositionInfo = new BoardPositionInfo(board, position, Team.HAN);
+        Set<Position> actual = chariot.generateAvailableMovePositions(boardPositionInfo);
 
         // then
         assertThat(actual).hasSize(17)
-                .contains(Position.of(1,1), Position.of(10,9));
+                .contains(Position.of(1, 1), Position.of(10, 9));
     }
 
     @DisplayName("차 앞에 팀의 기물이 있다면 갈 수 없다.")
@@ -42,14 +44,15 @@ class ChariotTest {
         Chariot chariot = new Chariot();
         Position soldierPosition = Position.of(9, 1);
         Soldier soldier = new Soldier();
-        Piece chariotPiece = new Piece(Side.HAN, chariot);
-        Piece soldierPiece = new Piece(Side.HAN, soldier);
+        Piece chariotPiece = new Piece(Team.HAN, chariot);
+        Piece soldierPiece = new Piece(Team.HAN, soldier);
 
         Map<Position, Piece> map = Map.of(position, chariotPiece, soldierPosition, soldierPiece);
 
         // when
         Board board = new Board(new HashMap<>(map));
-        Set<Position> actual = chariot.generateAvailableMovePositions(board, Side.HAN, position);
+        BoardPositionInfo boardPositionInfo = new BoardPositionInfo(board, position, Team.HAN);
+        Set<Position> actual = chariot.generateAvailableMovePositions(boardPositionInfo);
 
         // then
         assertThat(actual).hasSize(8);
@@ -63,16 +66,33 @@ class ChariotTest {
         Chariot chariot = new Chariot();
         Position soldierPosition = Position.of(9, 1);
         Soldier soldier = new Soldier();
-        Piece chariotPiece = new Piece(Side.HAN, chariot);
-        Piece soldierPiece = new Piece(Side.CHO, soldier);
+        Piece chariotPiece = new Piece(Team.HAN, chariot);
+        Piece soldierPiece = new Piece(Team.CHO, soldier);
 
         Map<Position, Piece> map = Map.of(position, chariotPiece, soldierPosition, soldierPiece);
 
         // when
         Board board = new Board(new HashMap<>(map));
-        Set<Position> actual = chariot.generateAvailableMovePositions(board, Side.HAN, position);
+        BoardPositionInfo boardPositionInfo = new BoardPositionInfo(board, position, Team.HAN);
+        Set<Position> actual = chariot.generateAvailableMovePositions(boardPositionInfo);
 
         // then
         assertThat(actual).hasSize(9);
+    }
+
+    @DisplayName("궁성 내에서의 대각선 움직임을 허용한다.")
+    @Test
+    void test6() {
+        Position position = Position.of(10, 6);
+        Chariot chariot = new Chariot();
+        Piece piece = new Piece(Team.CHO, chariot);
+
+        Board board = new Board(Map.of(position, piece));
+
+        BoardPositionInfo boardPositionInfo = new BoardPositionInfo(board, position, Team.CHO);
+        Set<Position> actual = chariot.generateAvailableMovePositions(boardPositionInfo);
+
+        assertThat(actual).contains(Position.of(9, 5), Position.of(8, 4))
+                .hasSize(19);
     }
 }

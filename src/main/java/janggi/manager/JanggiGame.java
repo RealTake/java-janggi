@@ -1,64 +1,117 @@
 package janggi.manager;
 
 import janggi.domain.Board;
-import janggi.domain.Side;
+import janggi.domain.GameRoom;
+import janggi.domain.Team;
 import janggi.domain.move.Position;
-import janggi.domain.piece.Piece;
 import janggi.dto.PositionDto;
-import janggi.factory.PieceInitFactory;
-import janggi.factory.masang.MaSangFactory;
+import janggi.dto.TeamHorseElephantPositionDto;
+import janggi.service.JanggiService;
 import janggi.util.RecoveryUtil;
-import janggi.view.MaSangPosition;
+import janggi.view.GameModeOption;
+import janggi.view.PlayerOption;
 import janggi.view.Viewer;
-import java.util.Map;
 
 public class JanggiGame {
 
     private final Viewer viewer;
+    private final JanggiService janggiService;
 
-    public JanggiGame(Viewer viewer) {
+    public JanggiGame(Viewer viewer, JanggiService janggiService) {
         this.viewer = viewer;
+        this.janggiService = janggiService;
     }
 
     public void start() {
-        Board board = initializeBoard();
+        GameRoom gameRoom = RecoveryUtil.executeWithRetry(this::chooseGameMode);
 
-        Side turn = Side.CHO;
+        boolean isNotClosed = repeatGameTurns(gameRoom);
+        deleteIfEnd(gameRoom, isNotClosed);
 
-        turn = repeatGameTurns(board, turn);
-
-        viewer.winner(turn);
+        result(gameRoom.board());
     }
 
-    private Board initializeBoard() {
-        Map<Position, Piece> initializeBoard = PieceInitFactory.initialize();
-        initializeBoard.putAll(placeMaSangPiecesBySide(Side.CHO));
-        initializeBoard.putAll(placeMaSangPiecesBySide(Side.HAN));
+    private GameRoom chooseGameMode() {
+        GameModeOption gameModeOption = RecoveryUtil.executeWithRetry(viewer::readGameModeOption);
 
-        return new Board(initializeBoard);
+        if (gameModeOption == GameModeOption.LOAD) {
+            janggiService.checkExistRoom();
+            return RecoveryUtil.executeWithRetry(this::loadGameRoom);
+        }
+
+        if (gameModeOption == GameModeOption.NEW) {
+            return RecoveryUtil.executeWithRetry(this::newGameRoom);
+        }
+
+        throw new IllegalArgumentException("잘못된 옵션입니다.");
     }
 
-    private Map<Position, Piece> placeMaSangPiecesBySide(Side side) {
-        MaSangPosition maSangPosition = RecoveryUtil.executeWithRetry(() ->viewer.settingMaSangPlacement(side));
+    private GameRoom loadGameRoom() {
+        viewer.printGameRooms(janggiService.getAllGameRoomName());
+        String gameRoomName = viewer.readGameRoomName();
 
-        return MaSangFactory.create(maSangPosition, side);
+        return janggiService.loadGameRoom(gameRoomName);
     }
 
-    private Side repeatGameTurns(Board board, Side turn) {
-        while (board.hasGeneral(turn.reverse())) {
+    private GameRoom newGameRoom() {
+        String gameRoomName = viewer.readGameRoomName();
+        janggiService.validateNewGameRoomName(gameRoomName);
+
+        TeamHorseElephantPositionDto horseElephantPositionByCho = RecoveryUtil.executeWithRetry(
+                () -> viewer.settingMaSangPlacement(Team.CHO));
+        TeamHorseElephantPositionDto horseElephantPositionByHan = RecoveryUtil.executeWithRetry(
+                () -> viewer.settingMaSangPlacement(Team.HAN));
+
+        return janggiService.newGameRoom(gameRoomName, horseElephantPositionByCho, horseElephantPositionByHan);
+    }
+
+    private boolean repeatGameTurns(GameRoom gameRoom) {
+        Board board = gameRoom.board();
+        String gameRoomName = gameRoom.name();
+        Team turn = gameRoom.turn();
+
+        boolean isNotClosed = true;
+        while (isNotClosed && board.hasGeneral(turn.reverse())) {
             viewer.printBoard(board);
             viewer.printTurnInfo(turn);
+            isNotClosed = chooseOption(gameRoom, turn);
 
-            Side finalTurn = turn;
-            Position position = RecoveryUtil.executeWithRetry(() -> choosePiece(board, finalTurn));
-            RecoveryUtil.executeWithRetry(() -> movePiece(board, position));
-
+            janggiService.saveGameRoom(gameRoomName, turn);
             turn = turn.reverse();
         }
-        return turn;
+
+        return isNotClosed;
     }
 
-    private Position choosePiece(Board board, Side turn) {
+    private void deleteIfEnd(GameRoom gameRoom, boolean isNotClosed) {
+        janggiService.deleteGameRoomIfEnd(gameRoom, isNotClosed);
+    }
+
+    private boolean chooseOption(GameRoom gameRoom, Team turn) {
+        Board board = gameRoom.board();
+        PlayerOption playerOption;
+
+        do {
+            playerOption = RecoveryUtil.executeWithRetry(viewer::readChooseOption);
+
+            if (playerOption == PlayerOption.SELECT_PIECE) {
+                Position position = RecoveryUtil.executeWithRetry(() -> choosePiece(board, turn));
+                RecoveryUtil.executeWithRetry(() -> movePiece(gameRoom, position));
+            }
+
+            if (playerOption == PlayerOption.CHECK_SCORE) {
+                viewer.printScore(board);
+            }
+
+            if (playerOption == PlayerOption.CLOSE) {
+                return false;
+            }
+        } while (playerOption != PlayerOption.SELECT_PIECE);
+
+        return true;
+    }
+
+    private Position choosePiece(Board board, Team turn) {
         PositionDto positionDto = viewer.readPieceSelection();
         Position position = Position.of(positionDto.row(), positionDto.column());
         board.checkMoveablePiece(turn, position);
@@ -66,11 +119,26 @@ public class JanggiGame {
         return position;
     }
 
-    private void movePiece(Board board, Position currentPosition) {
+    private void movePiece(GameRoom gameRoom, Position currentPosition) {
+        Board board = gameRoom.board();
         PositionDto positionDto = viewer.readMove(board.getPiece(currentPosition));
 
         Position targetPosition = Position.of(positionDto.row(), positionDto.column());
 
-        board.movePiece(currentPosition, targetPosition);
+        janggiService.movePiece(gameRoom, currentPosition, targetPosition);
+    }
+
+    private void result(Board board) {
+        if (board.hasGeneral(Team.CHO) && board.hasGeneral(Team.HAN)) {
+            viewer.result(board);
+            return;
+        }
+
+        if (board.hasGeneral(Team.CHO)) {
+            viewer.result(Team.CHO);
+            return;
+        }
+
+        viewer.result(Team.HAN);
     }
 }

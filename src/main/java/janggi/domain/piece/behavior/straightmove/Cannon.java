@@ -1,19 +1,21 @@
 package janggi.domain.piece.behavior.straightmove;
 
-import janggi.domain.Board;
-import janggi.domain.Side;
-import janggi.domain.move.Movement;
 import janggi.domain.move.Position;
 import janggi.domain.move.Vector;
-import java.util.List;
+import janggi.domain.piece.BoardPositionInfo;
+import janggi.domain.piece.PieceType;
 import java.util.Set;
-import java.util.stream.Stream;
 
 public final class Cannon extends StraightMoveBehavior {
 
     @Override
     public String toName() {
-        return "포";
+        return PieceType.CANNON.getName();
+    }
+
+    @Override
+    public int toScore() {
+        return PieceType.CANNON.getScore();
     }
 
     @Override
@@ -22,41 +24,39 @@ public final class Cannon extends StraightMoveBehavior {
     }
 
     @Override
-    protected List<Vector> getVectors() {
-        return Stream.of(Movement.DOWN, Movement.LEFT, Movement.RIGHT, Movement.UP).map(Movement::getVector).toList();
+    public void searchAvailableMoves(Set<Position> result, BoardPositionInfo boardPositionInfo, Vector vector) {
+
+        searchAvailableMoves(result, boardPositionInfo, vector, boardPositionInfo.hasPiece());
     }
 
-    @Override
-    public void searchAvailableMoves(Set<Position> result, Board board, Position currentPosition, Vector vector,
-                                     Side side) {
-        searchAvailableMoves(result, board, currentPosition, vector, side, board.hasPiece(currentPosition));
-    }
+    public void searchAvailableMoves(Set<Position> result, BoardPositionInfo boardPositionInfo, Vector vector,
+                                     boolean hasPassed) {
+        Position currentPosition = boardPositionInfo.position();
 
-    public void searchAvailableMoves(Set<Position> result, Board board, Position currentPosition, Vector vector,
-                                     Side side, boolean hasPassed) {
-        if (currentPosition.canNotMove(vector) || board.isCannon(currentPosition)){
+        if (currentPosition.canNotMove(vector) || boardPositionInfo.isCannon()) {
             return;
         }
 
         Position nextPosition = currentPosition.moveToNextPosition(vector);
-        if (board.isCannon(nextPosition)) {
+        BoardPositionInfo boardNextPositionInfo = boardPositionInfo.movePosition(nextPosition);
+        if (boardNextPositionInfo.isCannon()) {
             return;
         }
 
-        if (hasPassed && board.hasPiece(nextPosition) && !board.isSameSide(side, nextPosition)) {
+        if (hasPassed && boardNextPositionInfo.hasPiece() && boardNextPositionInfo.isNotSameSide()) {
             result.add(nextPosition);
             return;
         }
 
-        if (hasPassed && board.hasPiece(nextPosition)) {
+        if (hasPassed && boardNextPositionInfo.hasPiece()) {
             return;
         }
 
         if (hasPassed) {
             result.add(nextPosition);
-            searchAvailableMoves(result, board, nextPosition, vector, side, true);
+            searchAvailableMoves(result, boardNextPositionInfo, vector, true);
         }
 
-        searchAvailableMoves(result, board, nextPosition, vector, side, board.hasPiece(nextPosition));
+        searchAvailableMoves(result, boardNextPositionInfo, vector, boardNextPositionInfo.hasPiece());
     }
 }

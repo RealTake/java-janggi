@@ -1,14 +1,16 @@
 package janggi.domain.piece.behavior.rotatemove;
 
 import janggi.domain.Board;
-import janggi.domain.Side;
+import janggi.domain.Team;
 import janggi.domain.move.Movement;
 import janggi.domain.move.Position;
 import janggi.domain.move.Vectors;
+import janggi.domain.piece.BoardPositionInfo;
+import janggi.domain.piece.PieceType;
 import java.util.List;
 import java.util.Set;
 
-public final class Horse extends RotateMoveBehavior {
+public final class Horse extends OrthogonalRotateMoveBehavior {
 
     @Override
     protected List<Vectors> getVectorsList() {
@@ -16,16 +18,20 @@ public final class Horse extends RotateMoveBehavior {
     }
 
     @Override
-    protected void searchAvailableMoves(Set<Position> result, Board board, Position currentPosition, List<Vectors> vectorsList,
-                                        Side side) {
+    protected void searchAvailableMoves(Set<Position> result, BoardPositionInfo boardPositionInfo,
+                                        List<Vectors> vectorsList) {
         for (Vectors vectors : vectorsList) {
-            searchAvailableMove(result, board, currentPosition, side, vectors);
+            searchAvailableMove(result, boardPositionInfo, vectors);
         }
     }
 
     @Override
-    protected void searchAvailableMove(Set<Position> result, Board board, Position currentPosition, Side side,
+    protected void searchAvailableMove(Set<Position> result, BoardPositionInfo boardPositionInfo,
                                        Vectors vectors) {
+        Board board = boardPositionInfo.board();
+        Position currentPosition = boardPositionInfo.position();
+        Team team = boardPositionInfo.team();
+
         if (canNotMove(vectors, currentPosition)) {
             return;
         }
@@ -37,13 +43,18 @@ public final class Horse extends RotateMoveBehavior {
             return;
         }
 
-        if (board.canMoveToPosition(side, finalPosition)) {
+        if (board.canMoveToPosition(team, finalPosition)) {
             result.add(finalPosition);
         }
     }
 
     @Override
     public String toName() {
-        return "마";
+        return PieceType.HORSE.getName();
+    }
+
+    @Override
+    public int toScore() {
+        return PieceType.HORSE.getScore();
     }
 }

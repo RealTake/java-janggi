@@ -1,44 +1,58 @@
 package janggi.domain.piece;
 
 import janggi.domain.Board;
-import janggi.domain.Side;
+import janggi.domain.Team;
 import janggi.domain.move.Position;
 import java.util.Objects;
 import java.util.Set;
 
 public class Piece {
 
-    private final Side side;
+    private final Team team;
     private final PieceBehavior pieceBehavior;
 
-    public Piece(Side side, PieceBehavior pieceBehavior) {
-        this.side = side;
+    public Piece(Team team, PieceBehavior pieceBehavior) {
+        this.team = team;
         this.pieceBehavior = pieceBehavior;
     }
 
-    public boolean isSameSide(Side side) {
-        return this.side == side;
+    public boolean isSameSide(Team compareTeam) {
+        return team.isSameSide(compareTeam);
     }
 
-    public boolean isGeneral(Side side) {
-        return this.side == side && pieceBehavior.isGeneral();
+    public boolean isGeneralOnSameTeam(Team compareTeam) {
+        return team.isSameSide(compareTeam) && pieceBehavior.isGeneral();
     }
 
     public boolean isCannon() {
         return pieceBehavior.isCannon();
     }
 
+    public int toScore() {
+        return pieceBehavior.toScore();
+    }
+
     public Set<Position> getAvailableMovePositions(Board board, Position currentPosition) {
-        return pieceBehavior.generateAvailableMovePositions(board, this.side, currentPosition);
+        BoardPositionInfo boardPositionInfo = new BoardPositionInfo(board, currentPosition, team);
+
+        return pieceBehavior.generateAvailableMovePositions(boardPositionInfo);
     }
 
     public String toName() {
-        return side.toName(pieceBehavior);
+        return team.toName(pieceBehavior);
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public String getName() {
+        return pieceBehavior.toName();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(side, pieceBehavior);
+        return Objects.hash(team, pieceBehavior);
     }
 
     @Override
@@ -47,6 +61,6 @@ public class Piece {
             return false;
         }
         Piece piece = (Piece) o;
-        return side == piece.side && Objects.equals(pieceBehavior, piece.pieceBehavior);
+        return team == piece.team && Objects.equals(pieceBehavior, piece.pieceBehavior);
     }
 }
