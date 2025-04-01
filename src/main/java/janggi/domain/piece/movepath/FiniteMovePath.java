@@ -1,7 +1,7 @@
 package janggi.domain.piece.movepath;
 
-import janggi.domain.board.Direction;
-import janggi.domain.board.Point;
+import janggi.domain.piece.Direction;
+import janggi.domain.piece.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +20,9 @@ public class FiniteMovePath implements MovePath {
     public boolean canMove(Point from, Point to) {
         Point curr = from;
         for (Direction direction : directions) {
+            if (!curr.canMove(direction)) {
+                return false;
+            }
             curr = curr.move(direction);
         }
         return curr.equals(to);

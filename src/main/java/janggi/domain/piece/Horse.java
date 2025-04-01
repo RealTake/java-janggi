@@ -1,7 +1,5 @@
 package janggi.domain.piece;
 
-import janggi.domain.Dynasty;
-import janggi.domain.board.Direction;
 import janggi.domain.piece.movepath.FiniteMovePath;
 import janggi.domain.piece.movepath.MovePath;
 import java.util.Set;
@@ -26,8 +24,18 @@ public class Horse extends Piece {
     }
 
     @Override
-    public boolean isSameType(Piece piece) {
-        return piece instanceof Horse;
+    public PieceType pieceType() {
+        return PieceType.HORSE;
+    }
+
+    @Override
+    public int score() {
+        return 5;
+    }
+
+    @Override
+    protected boolean isKing() {
+        return false;
     }
 
     @Override

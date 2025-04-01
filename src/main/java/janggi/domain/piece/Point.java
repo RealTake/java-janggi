@@ -1,4 +1,4 @@
-package janggi.domain.board;
+package janggi.domain.piece;
 
 public record Point(int x, int y) {
     private static final int MINIMUM_ROW = 1;
@@ -19,11 +19,7 @@ public record Point(int x, int y) {
     public boolean canMove(Direction direction) {
         int nextX = x + direction.getX();
         int nextY = y + direction.getY();
-        return nextX >= MINIMUM_ROW && nextX <= MAXIMUM_ROW && nextY >= MINIMUM_COLUMN && nextY <= MAXIMUM_COLUMN;
-    }
-
-    public boolean isOutOfBoundary() {
-        return isOutOfBoundary(x, y);
+        return !isOutOfBoundary(nextX, nextY);
     }
 
     private boolean isOutOfBoundary(int x, int y) {

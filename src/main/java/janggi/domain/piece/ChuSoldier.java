@@ -1,33 +1,15 @@
 package janggi.domain.piece;
 
-import janggi.domain.Dynasty;
-import janggi.domain.board.Direction;
 import janggi.domain.piece.movepath.FiniteMovePath;
 import janggi.domain.piece.movepath.MovePath;
+import janggi.domain.piece.movepath.PalaceMovePath;
+import janggi.domain.piece.palace.Palace;
 import java.util.Set;
 
-public class ChuSoldier extends Piece {
+public class ChuSoldier extends Soldier {
 
     public ChuSoldier() {
         super(Dynasty.CHU);
-    }
-
-    @Override
-    public boolean isEmptyPiece() {
-        return false;
-    }
-
-    @Override
-    public boolean canMove(PiecesOnPath piecesOnPath) {
-        if (piecesOnPath.isDestinationOfDynasty(dynasty)) {
-            return false;
-        }
-        return piecesOnPath.isAllEmptyWithoutDestination();
-    }
-
-    @Override
-    public boolean isSameType(Piece piece) {
-        return piece instanceof ChuSoldier;
     }
 
     @Override
@@ -35,7 +17,8 @@ public class ChuSoldier extends Piece {
         return Set.of(
                 new FiniteMovePath(Direction.UP),
                 new FiniteMovePath(Direction.LEFT),
-                new FiniteMovePath(Direction.RIGHT)
-        );
+                new FiniteMovePath(Direction.RIGHT),
+                new PalaceMovePath(Palace.from(dynasty.opposite()), Direction.UP_RIGHT_DIAGONAL),
+                new PalaceMovePath(Palace.from(dynasty.opposite()), Direction.UP_LEFT_DIAGONAL));
     }
 }

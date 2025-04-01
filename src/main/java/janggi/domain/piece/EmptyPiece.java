@@ -1,6 +1,5 @@
 package janggi.domain.piece;
 
-import janggi.domain.Dynasty;
 import janggi.domain.piece.movepath.MovePath;
 import java.util.Set;
 
@@ -21,8 +20,18 @@ public class EmptyPiece extends Piece {
     }
 
     @Override
-    public boolean isSameType(Piece piece) {
-        return piece instanceof EmptyPiece;
+    public PieceType pieceType() {
+        return PieceType.EMPTY;
+    }
+
+    @Override
+    public int score() {
+        return 0;
+    }
+
+    @Override
+    protected boolean isKing() {
+        return false;
     }
 
     @Override

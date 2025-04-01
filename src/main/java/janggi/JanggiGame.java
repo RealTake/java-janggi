@@ -1,85 +1,65 @@
 package janggi;
 
-import janggi.domain.Dynasty;
-import janggi.domain.Player;
-import janggi.domain.Players;
-import janggi.domain.board.BoardSetUp;
-import janggi.domain.board.JanggiBoard;
-import janggi.domain.board.Point;
+import janggi.dao.entity.GameEntity;
+import janggi.domain.gamestatus.GameEnded;
+import janggi.domain.gamestatus.GameStatus;
+import janggi.domain.piece.Dynasty;
+import janggi.domain.piece.Point;
+import janggi.service.JanggiService;
 import janggi.view.InitializeView;
 import janggi.view.JanggiBoardView;
 import janggi.view.JanggiBoardView.Movement;
-import java.util.List;
 
 public class JanggiGame {
 
     private final InitializeView initializeView;
     private final JanggiBoardView janggiBoardView;
+    private final JanggiService janggiService;
 
-    public JanggiGame(InitializeView initializeView, JanggiBoardView janggiBoardView) {
+    public JanggiGame(InitializeView initializeView, JanggiBoardView janggiBoardView, JanggiService janggiService) {
         this.initializeView = initializeView;
         this.janggiBoardView = janggiBoardView;
+        this.janggiService = janggiService;
     }
 
     public void start() {
         try {
-            play();
+            String gameName = initializeView.readGameName();
+            if (gameName.equals("new")) {
+                gameName = initializeView.readNewGameName();
+                janggiService.createGame(
+                        gameName,
+                        initializeView.readBoardSetUp(Dynasty.CHU),
+                        initializeView.readBoardSetUp(Dynasty.HAN));
+            }
+            GameEntity gameEntity = janggiService.getRunningGameByName(gameName);
+            play(gameEntity);
         } catch (IllegalArgumentException e) {
             System.out.println("[ERROR] " + e.getMessage());
         }
     }
 
-    private void play() {
-        Players players = createPlayers();
-        JanggiBoard janggiBoard = createJanggiBoard(players);
-        playJanggi(players, janggiBoard);
-    }
+    private void play(GameEntity gameEntity) {
+        GameStatus gameStatus = janggiService.findJanggiStatusByGameId(gameEntity.getId());
 
-    private void playJanggi(Players players, JanggiBoard janggiBoard) {
-        Dynasty currentTurnDynasty = Dynasty.CHU;
-        boolean gameEnded = false;
+        janggiBoardView.printGameStartMessage();
+        janggiBoardView.printBoard(gameStatus.janggiBoard());
 
-        while (!gameEnded) {
-            Player currentTurnPlayer = players.findDynastyPlayer(currentTurnDynasty);
+        while (!gameStatus.isEndGame()) {
             try {
-                Movement movement = janggiBoardView.readPlayerMove(currentTurnPlayer);
-                if (movement.isEnd()) {
-                    gameEnded = true;
-                }
-                if (movement.isMove()) {
-                    janggiBoard.move(currentTurnDynasty, new Point(movement.startX(), movement.startY()),
-                            new Point(movement.endX(), movement.endY()));
-                    janggiBoardView.printBoard(janggiBoard.getPieces());
-                    currentTurnDynasty = changePlayerTurn(currentTurnDynasty);
-                }
+                Movement movement = janggiBoardView.readPlayerMove(gameStatus.currentTurn());
+                Point from = new Point(movement.startX(), movement.startY());
+                Point to = new Point(movement.endX(), movement.endY());
+
+                gameStatus = janggiService.move(gameEntity.getId(), from, to);
+
+                janggiBoardView.printBoard(gameStatus.janggiBoard());
+                janggiBoardView.printScore(gameStatus.janggiBoard());
             } catch (IllegalArgumentException e) {
                 System.out.println("[ERROR] " + e.getMessage());
             }
         }
-    }
 
-
-    private Dynasty changePlayerTurn(Dynasty currentTurnDynasty) {
-        if (currentTurnDynasty == Dynasty.HAN) {
-            return Dynasty.CHU;
-        }
-        return Dynasty.HAN;
-    }
-
-    private Players createPlayers() {
-        Player chuPlayer = new Player(initializeView.readPlayerNickname(Dynasty.CHU), Dynasty.CHU);
-        Player hanPlayer = new Player(initializeView.readPlayerNickname(Dynasty.HAN), Dynasty.HAN);
-        return new Players(List.of(hanPlayer, chuPlayer));
-    }
-
-    private JanggiBoard createJanggiBoard(Players players) {
-        BoardSetUp chuPlayerBoardSetUp = initializeView.readBoardSetUp(players.findDynastyPlayer(Dynasty.CHU));
-        BoardSetUp hanPlayerBoardSetUp = initializeView.readBoardSetUp(players.findDynastyPlayer(Dynasty.HAN));
-
-        janggiBoardView.printGameStartMessage();
-        JanggiBoard janggiBoard = JanggiBoard.of(hanPlayerBoardSetUp, chuPlayerBoardSetUp);
-        janggiBoardView.printBoard(janggiBoard.getPieces());
-
-        return janggiBoard;
+        janggiBoardView.printResult((GameEnded) gameStatus);
     }
 }

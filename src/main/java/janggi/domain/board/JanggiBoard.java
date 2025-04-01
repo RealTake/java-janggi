@@ -1,9 +1,10 @@
 package janggi.domain.board;
 
-import janggi.domain.Dynasty;
+import janggi.domain.piece.Dynasty;
 import janggi.domain.piece.EmptyPiece;
 import janggi.domain.piece.Piece;
 import janggi.domain.piece.PiecesOnPath;
+import janggi.domain.piece.Point;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +27,9 @@ public class JanggiBoard {
     }
 
     public void move(Dynasty dynasty, Point from, Point to) {
+        validateExistPiece(from);
+
         Piece piece = pieces.get(from);
-        validateExistPiece(piece);
         validateMovablePiece(dynasty, piece);
 
         List<Point> movePath = piece.movePath(from, to);
@@ -36,12 +38,25 @@ public class JanggiBoard {
         pieces.put(to, piece);
     }
 
+    public double dynastyScore(Dynasty dynasty) {
+        int totalScore = pieces.values().stream()
+                .filter(piece -> piece.isDynasty(dynasty))
+                .mapToInt(Piece::score)
+                .sum();
+        return dynasty.score(totalScore);
+    }
+
+    public boolean isDeadKing(Dynasty dynasty) {
+        return pieces.values().stream()
+                .noneMatch(piece -> piece.isDynastyKing(dynasty));
+    }
+
     private Piece findPiece(Point point) {
         return pieces.getOrDefault(point, new EmptyPiece());
     }
 
-    private void validateExistPiece(Piece piece) {
-        if (piece == null) {
+    private void validateExistPiece(Point point) {
+        if (!pieces.containsKey(point)) {
             throw new IllegalArgumentException("시작 위치에 기물이 존재하지 않습니다.");
         }
     }

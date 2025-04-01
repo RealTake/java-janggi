@@ -2,9 +2,7 @@ package janggi.domain.piece;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import janggi.domain.Dynasty;
 import janggi.domain.Fixtures;
-import janggi.domain.board.Point;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -19,10 +17,10 @@ class CannonTest {
     @MethodSource("provideMovablePosition")
     void movePath(Point from, Point to, List<Point> expected) {
         //given
-        Chariot ch = new Chariot(Dynasty.HAN);
+        Cannon cannon = new Cannon(Dynasty.HAN);
 
         //when
-        List<Point> points = ch.movePath(from, to);
+        List<Point> points = cannon.movePath(from, to);
 
         //then
         assertThat(points).isEqualTo(expected);
@@ -98,6 +96,20 @@ class CannonTest {
         assertThat(actual).isEqualTo(false);
     }
 
+    @DisplayName("포는 궁성에서 대각선으로 이동 가능하다.")
+    @ParameterizedTest
+    @MethodSource("provideMovablePositionInPalace")
+    void canMoveDiagonalInPalace(Point from, Point to, List<Point> expectedMovePaths) {
+        //given
+        Cannon cannon = new Cannon(Dynasty.HAN);
+
+        //when
+        List<Point> movePaths = cannon.movePath(from, to);
+
+        //then
+        assertThat(movePaths).isEqualTo(expectedMovePaths);
+    }
+
     private static Stream<Arguments> provideMovablePosition() {
         return Stream.of(
                 Arguments.of(Fixtures.SIX_FIVE, Fixtures.FOUR_FIVE, List.of(Fixtures.FIVE_FIVE, Fixtures.FOUR_FIVE)),
@@ -106,6 +118,15 @@ class CannonTest {
                 Arguments.of(Fixtures.SIX_FIVE, Fixtures.SIX_NINE,
                         List.of(Fixtures.SIX_SIX, Fixtures.SIX_SEVEN, Fixtures.SIX_EIGHT, Fixtures.SIX_NINE)),
                 Arguments.of(Fixtures.SIX_FIVE, Fixtures.EIGHT_FIVE, List.of(Fixtures.SEVEN_FIVE, Fixtures.EIGHT_FIVE))
+        );
+    }
+
+    private static Stream<Arguments> provideMovablePositionInPalace() {
+        return Stream.of(
+                Arguments.of(Fixtures.ONE_FOUR, Fixtures.THREE_SIX, List.of(Fixtures.TWO_FIVE, Fixtures.THREE_SIX)),
+                Arguments.of(Fixtures.THREE_SIX, Fixtures.ONE_FOUR, List.of(Fixtures.TWO_FIVE, Fixtures.ONE_FOUR)),
+                Arguments.of(Fixtures.THREE_FOUR, Fixtures.ONE_SIX, List.of(Fixtures.TWO_FIVE, Fixtures.ONE_SIX)),
+                Arguments.of(Fixtures.ONE_SIX, Fixtures.THREE_FOUR, List.of(Fixtures.TWO_FIVE, Fixtures.THREE_FOUR))
         );
     }
 }

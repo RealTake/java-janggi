@@ -1,7 +1,5 @@
 package janggi.domain.piece;
 
-import janggi.domain.Dynasty;
-import janggi.domain.board.Point;
 import janggi.domain.piece.movepath.MovePath;
 import java.util.List;
 import java.util.Objects;
@@ -24,8 +22,20 @@ public abstract class Piece {
         return movePath.movePoints(from, to);
     }
 
+    public boolean isDynastyKing(Dynasty dynasty) {
+        return isDynasty(dynasty) && isKing();
+    }
+
     public final boolean isDynasty(Dynasty dynasty) {
         return this.dynasty == dynasty;
+    }
+
+    public boolean isSameType(Piece piece) {
+        return piece.pieceType() == pieceType();
+    }
+
+    public Dynasty getDynasty() {
+        return dynasty;
     }
 
     @Override
@@ -45,9 +55,13 @@ public abstract class Piece {
 
     abstract public boolean canMove(PiecesOnPath piecesOnPath);
 
-    abstract public boolean isSameType(Piece piece);
-
     abstract public boolean isEmptyPiece();
+
+    abstract public PieceType pieceType();
+
+    abstract public int score();
+
+    abstract protected boolean isKing();
 
     abstract protected Set<MovePath> paths();
 }

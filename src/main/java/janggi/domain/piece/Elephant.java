@@ -1,7 +1,5 @@
 package janggi.domain.piece;
 
-import janggi.domain.Dynasty;
-import janggi.domain.board.Direction;
 import janggi.domain.piece.movepath.FiniteMovePath;
 import janggi.domain.piece.movepath.MovePath;
 import java.util.Set;
@@ -26,8 +24,18 @@ public class Elephant extends Piece {
     }
 
     @Override
-    public boolean isSameType(Piece piece) {
-        return piece instanceof Elephant;
+    public PieceType pieceType() {
+        return PieceType.ELEPHANT;
+    }
+
+    @Override
+    public int score() {
+        return 3;
+    }
+
+    @Override
+    protected boolean isKing() {
+        return false;
     }
 
     @Override

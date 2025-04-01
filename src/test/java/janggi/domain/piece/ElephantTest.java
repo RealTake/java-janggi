@@ -2,9 +2,7 @@ package janggi.domain.piece;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import janggi.domain.Dynasty;
 import janggi.domain.Fixtures;
-import janggi.domain.board.Point;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
