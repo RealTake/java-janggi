@@ -4,19 +4,26 @@ import janggi.piece.Piece;
 import janggi.piece.Team;
 import janggi.piece.Type;
 import janggi.position.Position;
+import janggi.score.Score;
+import janggi.score.ScoreBoard;
 import janggi.turn.ChoTurn;
 import janggi.turn.Turn;
-import java.util.HashMap;
 import java.util.Map;
 
 public final class Board {
 
     private final Map<Position, Piece> board;
     private Turn turn;
+    private final int setupOption;
 
-    public Board(final Map<Position, Piece> board) {
-        this.board = new HashMap<>(board);
-        this.turn = new ChoTurn();
+    public Board(final Map<Position, Piece> board, final Turn turn, final int setupOption) {
+        this.board = board;
+        this.turn = turn;
+        this.setupOption = setupOption;
+    }
+
+    public Board(final Map<Position, Piece> board, final int setupOption) {
+        this(board, new ChoTurn(), setupOption);
     }
 
     public void move(final Position start, final Position end) {
@@ -24,7 +31,6 @@ public final class Board {
         final Piece piece = board.get(start);
         validateTurn(piece);
         validateRoute(start, end, piece);
-        board.remove(end);
         board.remove(start);
         board.put(end, piece);
         turn = turn.nextTurn();
@@ -54,6 +60,42 @@ public final class Board {
         return board.get(position);
     }
 
+    public Team getTurn() {
+        return turn.getTeam();
+    }
+
+    public ScoreBoard calculateScoreBoard() {
+        final ScoreBoard scoreBoard = new ScoreBoard();
+        for (Piece piece : board.values()) {
+            final Team team = piece.getTeam();
+            final Score score = Type.getScore(piece.getType());
+            scoreBoard.add(team, score);
+        }
+        return scoreBoard;
+    }
+
+    public boolean isGeneralDead() {
+        int generalCount = (int) board.values().stream()
+                .filter(piece -> piece.getType() == Type.GENERAL)
+                .count();
+        return generalCount == 1;
+    }
+
+    public Team findWinner() {
+        if (isGeneralDead()) {
+            return board.values().stream()
+                    .filter(piece -> piece.getType() == Type.GENERAL)
+                    .map(Piece::getTeam)
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("[ERROR] 로직이 잘못됐습니다."));
+        }
+        return calculateScoreBoard().getWinner();
+    }
+
+    public int getSetupOption() {
+        return setupOption;
+    }
+
     private void validateStartPosition(final Position start) {
         if (!board.containsKey(start)) {
             throw new IllegalArgumentException(
@@ -73,9 +115,5 @@ public final class Board {
             throw new IllegalArgumentException(
                     String.format("[ERROR] %d%d 위치로 이동할 수 없습니다.", end.getRowValue(), end.getColumnValue()));
         }
-    }
-
-    public String getTurn() {
-        return turn.getTurnName();
     }
 }

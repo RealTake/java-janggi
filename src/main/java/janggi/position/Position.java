@@ -1,6 +1,6 @@
 package janggi.position;
 
-import janggi.rule.MoveVector;
+import janggi.moveStrategy.rule.MoveVector;
 import java.util.Objects;
 
 public final class Position {
@@ -13,9 +13,13 @@ public final class Position {
         this.column = column;
     }
 
+    public static Position of(final String row, final String column) {
+        return new Position(Row.of(Integer.parseInt(row)), Column.of(Integer.parseInt(column)));
+    }
+
     public MoveVector calculateVectorDiff(final Position another) {
-        final int rowDiff = row.ordinal() - another.getRowValue();
-        final int columnDiff = column.ordinal() - another.getColumnValue();
+        final int rowDiff = row.getValue() - another.getRowValue();
+        final int columnDiff = column.getValue() - another.getColumnValue();
         return new MoveVector(rowDiff, columnDiff);
     }
 
@@ -24,11 +28,19 @@ public final class Position {
     }
 
     public int getRowValue() {
-        return row.ordinal();
+        return row.getValue();
     }
 
     public int getColumnValue() {
-        return column.ordinal();
+        return column.getValue();
+    }
+
+    public boolean isPalace() {
+        return row.isPalace() && column.isPalace();
+    }
+
+    public boolean isCenterOfPalace() {
+        return column.getValue() == 4 && (row.getValue() == 1 || row.getValue() == 8);
     }
 
     @Override

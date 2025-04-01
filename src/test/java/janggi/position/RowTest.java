@@ -2,12 +2,14 @@ package janggi.position;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class RowTest {
@@ -37,12 +39,13 @@ class RowTest {
     }
 
     @DisplayName("범위가 넘어가는 숫자에 대해서는 예외를 발생한다.")
-    @Test
-    void testWrongRow() {
+    @ParameterizedTest
+    @CsvSource({"-1", "-10", "10", "100"})
+    void testWrongRow(int row) {
         // given
         // when
         // then
-        assertThatThrownBy(() -> Row.of(10))
+        assertThatThrownBy(() -> Row.of(row))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("[ERROR] 보드를 벗어난 값입니다.");
     }
@@ -65,5 +68,21 @@ class RowTest {
         assertThatThrownBy(() -> Row.FIVE.add(7))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("[ERROR] 보드를 벗어난 값입니다.");
+    }
+
+    @DisplayName("궁성범위인지 판단한다.")
+    @Test
+    void testIsPalace() {
+        // given
+        // when
+        // then
+        assertAll(
+                () -> assertThat(Row.ZERO.isPalace()).isTrue(),
+                () -> assertThat(Row.TWO.isPalace()).isTrue(),
+                () -> assertThat(Row.THREE.isPalace()).isFalse(),
+                () -> assertThat(Row.SIX.isPalace()).isFalse(),
+                () -> assertThat(Row.SEVEN.isPalace()).isTrue(),
+                () -> assertThat(Row.NINE.isPalace()).isTrue()
+        );
     }
 }

@@ -1,4 +1,4 @@
-package janggi.rule;
+package janggi.moveStrategy.rule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,5 +23,10 @@ public final class MovingRule {
         final ArrayList<MoveVector> vectors = new ArrayList<>(movingRule);
         vectors.removeLast();
         return vectors;
+    }
+
+    public boolean isDiagonal() {
+        final MoveVector moveVector = sumUnit();
+        return moveVector.dx() != 0 && moveVector.dy() != 0;
     }
 }

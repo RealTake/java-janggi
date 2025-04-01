@@ -18,7 +18,7 @@ class CannonTest {
     @Test
     void testCannotMove() {
         // given
-        final Board board = BoardGenerator.generate(SetupOption.INNER_SETUP);
+        final Board board = BoardGenerator.generateOriginalSetup(SetupOption.INNER_SETUP);
         final Position start = new Position(Row.EIGHT, Column.ZERO);
         final Position end = new Position(Row.SIX, Column.ONE);
         final Cannon cannon = Cannon.of(Team.CHO);
@@ -71,5 +71,35 @@ class CannonTest {
         final boolean actual = cannon.canMove(start, end, board);
         // then
         assertThat(actual).isTrue();
+    }
+
+    @DisplayName("궁성 내부에서 포는 대각선으로 움직일 수 있다.")
+    @Test
+    void testMoveInPalace() {
+        // given
+        final Board board = TestBoardGenerator.generateBoardWithOnePiece(
+                new Position(Row.ONE, Column.FOUR), General.of(Team.CHO)
+        );
+        // when
+        final Position start = new Position(Row.ZERO, Column.THREE);
+        final Position end = new Position(Row.TWO, Column.FIVE);
+        final Cannon cannon = Cannon.of(Team.CHO);
+        // then
+        assertThat(cannon.canMove(start, end, board)).isTrue();
+    }
+
+    @DisplayName("궁성 내부에서 외부로 나갈 때 포는 대각선으로 움직일 수 없다.")
+    @Test
+    void testMoveThroughPalace() {
+        // given
+        final Board board = TestBoardGenerator.generateBoardWithOnePiece(
+                new Position(Row.ONE, Column.FOUR), General.of(Team.CHO)
+        );
+        // when
+        final Position start = new Position(Row.ZERO, Column.THREE);
+        final Position end = new Position(Row.THREE, Column.SIX);
+        final Cannon cannon = Cannon.of(Team.CHO);
+        // then
+        assertThat(cannon.canMove(start, end, board)).isFalse();
     }
 }

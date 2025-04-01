@@ -1,5 +1,7 @@
-package janggi.rule;
+package janggi.moveStrategy.rule;
 
+import janggi.position.Column;
+import janggi.position.Row;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,16 +15,21 @@ public final class MovingRulesGenerator {
     private static final MoveVector RIGHT_DOWN = new MoveVector(1, 1);
     private static final MoveVector LEFT_DOWN = new MoveVector(1, -1);
     private static final MoveVector LEFT_UP = new MoveVector(-1, -1);
-    private static final int HORIZONTAL_RANGE = 9;
-    private static final int VERTICAL_RANGE = 10;
+    private static final int HORIZONTAL_RANGE = Column.values().length;
+    private static final int VERTICAL_RANGE = Row.values().length;
 
     public static MovingRules generalOrGuard() {
         return new MovingRules(
+                List.of(),
                 List.of(
                         new MovingRule(List.of(RIGHT)),
                         new MovingRule(List.of(LEFT)),
                         new MovingRule(List.of(UP)),
-                        new MovingRule(List.of(DOWN))
+                        new MovingRule(List.of(DOWN)),
+                        new MovingRule(List.of(RIGHT_UP)),
+                        new MovingRule(List.of(LEFT_UP)),
+                        new MovingRule(List.of(RIGHT_DOWN)),
+                        new MovingRule(List.of(LEFT_DOWN))
                 )
         );
     }
@@ -33,6 +40,10 @@ public final class MovingRulesGenerator {
                         new MovingRule(List.of(RIGHT)),
                         new MovingRule(List.of(LEFT)),
                         new MovingRule(List.of(DOWN))
+                ),
+                List.of(
+                        new MovingRule(List.of(RIGHT_DOWN)),
+                        new MovingRule(List.of(LEFT_DOWN))
                 )
         );
     }
@@ -43,6 +54,10 @@ public final class MovingRulesGenerator {
                         new MovingRule(List.of(RIGHT)),
                         new MovingRule(List.of(LEFT)),
                         new MovingRule(List.of(UP))
+                ),
+                List.of(
+                        new MovingRule(List.of(RIGHT_UP)),
+                        new MovingRule(List.of(LEFT_UP))
                 )
         );
     }
@@ -58,7 +73,8 @@ public final class MovingRulesGenerator {
                         new MovingRule(List.of(LEFT, LEFT_UP)),
                         new MovingRule(List.of(UP, LEFT_UP)),
                         new MovingRule(List.of(UP, RIGHT_UP))
-                )
+                ),
+                List.of()
         );
     }
 
@@ -73,7 +89,8 @@ public final class MovingRulesGenerator {
                         new MovingRule(List.of(LEFT, LEFT_UP, LEFT_UP)),
                         new MovingRule(List.of(UP, LEFT_UP, LEFT_UP)),
                         new MovingRule(List.of(UP, RIGHT_UP, RIGHT_UP))
-                )
+                ),
+                List.of()
         );
     }
 
@@ -83,7 +100,17 @@ public final class MovingRulesGenerator {
         addStraightRules(movingRules, RIGHT, HORIZONTAL_RANGE);
         addStraightRules(movingRules, UP, VERTICAL_RANGE);
         addStraightRules(movingRules, DOWN, VERTICAL_RANGE);
-        return new MovingRules(movingRules);
+        List<MovingRule> extraPalaceMovingRule = List.of(
+                new MovingRule(List.of(RIGHT_UP)),
+                new MovingRule(List.of(RIGHT_UP, RIGHT_UP)),
+                new MovingRule(List.of(LEFT_UP)),
+                new MovingRule(List.of(LEFT_UP, LEFT_UP)),
+                new MovingRule(List.of(RIGHT_DOWN)),
+                new MovingRule(List.of(RIGHT_DOWN, RIGHT_DOWN)),
+                new MovingRule(List.of(LEFT_DOWN)),
+                new MovingRule(List.of(LEFT_DOWN, LEFT_DOWN))
+        );
+        return new MovingRules(movingRules, extraPalaceMovingRule);
     }
 
     private static void addStraightRules(final List<MovingRule> movingRules, final MoveVector direction,

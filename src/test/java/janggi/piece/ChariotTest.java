@@ -18,7 +18,7 @@ class ChariotTest {
     @Test
     void testCannotMove() {
         // given
-        final Board board = BoardGenerator.generate(SetupOption.INNER_SETUP);
+        final Board board = BoardGenerator.generateOriginalSetup(SetupOption.INNER_SETUP);
         final Position start = new Position(Row.EIGHT, Column.ZERO);
         final Position end = new Position(Row.SIX, Column.ONE);
         final Chariot chariot = Chariot.of(Team.HAN);
@@ -47,7 +47,7 @@ class ChariotTest {
     @Test
     void testCanMove() {
         // given
-        final Board board = BoardGenerator.generate(SetupOption.INNER_SETUP);
+        final Board board = BoardGenerator.generateOriginalSetup(SetupOption.INNER_SETUP);
         final Position start = new Position(Row.NINE, Column.ZERO);
         final Position end = new Position(Row.EIGHT, Column.ZERO);
         final Chariot chariot = Chariot.of(Team.CHO);
@@ -70,4 +70,44 @@ class ChariotTest {
         // then
         assertThat(chariot.canMove(start, end, board)).isFalse();
     }
+
+    @DisplayName("궁성 내부에서 차는 대각선으로 움직일 수 있다.")
+    @Test
+    void testMoveInPalace() {
+        // given
+        final Board board = TestBoardGenerator.generateEmpty();
+        // when
+        final Position start = new Position(Row.ZERO, Column.THREE);
+        final Position end = new Position(Row.TWO, Column.FIVE);
+        final Chariot chariot = Chariot.of(Team.CHO);
+        // then
+        assertThat(chariot.canMove(start, end, board)).isTrue();
+    }
+
+    @DisplayName("궁성 내부에서 외부로 나갈 때 차는 대각선으로 움직일 수 없다.")
+    @Test
+    void testMoveThroughPalace() {
+        // given
+        final Board board = TestBoardGenerator.generateEmpty();
+        // when
+        final Position start = new Position(Row.ZERO, Column.THREE);
+        final Position end = new Position(Row.THREE, Column.SIX);
+        final Chariot chariot = Chariot.of(Team.CHO);
+        // then
+        assertThat(chariot.canMove(start, end, board)).isFalse();
+    }
+
+    @DisplayName("차가 궁안에서 대각선으로 움직일 때 가운데를 안지나치면 못움직인다.")
+    @Test
+    void testDiagonalMoveNotThroughCenter() {
+        // given
+        final Board board = TestBoardGenerator.generateEmpty();
+        final Position start = new Position(Row.EIGHT, Column.FIVE);
+        final Position end = new Position(Row.NINE, Column.FOUR);
+        final Chariot chariot = Chariot.of(Team.HAN);
+        // when
+        // then
+        assertThat(chariot.canMove(start, end, board)).isFalse();
+    }
 }
+
