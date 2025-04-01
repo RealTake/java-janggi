@@ -1,7 +1,7 @@
 package janggi.domain.piece;
 
-import janggi.domain.Position;
-import janggi.domain.Side;
+import janggi.domain.direction.Vector;
+import janggi.domain.position.Position;
 
 import java.util.List;
 
@@ -11,6 +11,8 @@ public class Elephant extends Piece {
         new Vector(0, 1), new Vector(1, 2), new Vector(2, 3));
     private static final List<Vector> HORIZONTAL_MOVEMENT_VECTORS = List.of(
         new Vector(1, 0), new Vector(2, 1), new Vector(3, 2));
+
+    private static final double SCORE = 3.0;
 
     public Elephant(Side side, int x, int y) {
         super(side, x, y);
@@ -24,6 +26,11 @@ public class Elephant extends Piece {
     @Override
     public boolean isCannon() {
         return false;
+    }
+
+    @Override
+    public double getScore() {
+        return SCORE;
     }
 
     @Override

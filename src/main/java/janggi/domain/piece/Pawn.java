@@ -1,12 +1,14 @@
 package janggi.domain.piece;
 
-import janggi.domain.Position;
-import janggi.domain.Side;
+import janggi.domain.position.Position;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Pawn extends Piece {
+
+    private static final double SCORE = 2.0;
 
     public Pawn(Side side, int x, int y) {
         super(side, x, y);
@@ -20,6 +22,11 @@ public class Pawn extends Piece {
     @Override
     public boolean isCannon() {
         return false;
+    }
+
+    @Override
+    public double getScore() {
+        return SCORE;
     }
 
     @Override
@@ -44,18 +51,32 @@ public class Pawn extends Piece {
 
     private Set<Position> getMovablePositions() {
         Set<Position> moveablePositions = new HashSet<>();
-        if (getXPosition() > 0) {
-            moveablePositions.add(new Position(getXPosition() - 1, getYPosition()));
-        }
-        if (getXPosition() < 8) {
-            moveablePositions.add(new Position(getXPosition() + 1, getYPosition()));
-        }
+        int x = getXPosition();
+        int y = getYPosition();
+        int moveY = getMoveDirection();
 
-        if (side == Side.HAN) {
-            moveablePositions.add(new Position(getXPosition(), getYPosition() + 1));
-            return moveablePositions;
-        }
-        moveablePositions.add(new Position(getXPosition(), getYPosition() - 1));
+        addPosition(moveablePositions, x - 1, y);
+        addPosition(moveablePositions, x + 1, y);
+        addPosition(moveablePositions, x, y + moveY);
+        computePalacePawnPosition(moveablePositions, x, y, moveY);
         return moveablePositions;
+    }
+
+    private void computePalacePawnPosition(Set<Position> moveablePositions, int x, int y, int moveY) {
+        if (position.isPalace()) {
+            addPosition(moveablePositions, x - 1, y + moveY);
+            addPosition(moveablePositions, x + 1, y + moveY);
+        }
+    }
+
+    private int getMoveDirection() {
+        if (side == Side.HAN) return 1;
+        return -1;
+    }
+
+    private void addPosition(Set<Position> positions, int x, int y) {
+        if (x >= 0 && x <= 8 && y >= 0 && y <= 9) {
+            positions.add(new Position(x, y));
+        }
     }
 }

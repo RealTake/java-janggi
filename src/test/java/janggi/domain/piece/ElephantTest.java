@@ -3,10 +3,10 @@ package janggi.domain.piece;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import janggi.domain.Position;
-import janggi.domain.Side;
 import java.util.List;
 import java.util.stream.Stream;
+
+import janggi.domain.position.Position;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

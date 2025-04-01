@@ -1,7 +1,7 @@
 package janggi.domain.piece;
 
-import janggi.domain.Position;
-import janggi.domain.Side;
+import janggi.domain.position.Position;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -50,6 +50,7 @@ public abstract class Piece {
     }
 
     private void validateSamePosition(Position destination) {
+        if (isKing()) return;
         if (position.equals(destination)) {
             throw new IllegalArgumentException("현재 위치로 이동할 수 없습니다.");
         }
@@ -70,6 +71,8 @@ public abstract class Piece {
     public abstract boolean isKing();
 
     public abstract boolean isCannon();
+
+    public abstract double getScore();
 
     public boolean isEnemy(Side turn) {
         return turn != this.side;

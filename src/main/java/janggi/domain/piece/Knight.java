@@ -1,7 +1,7 @@
 package janggi.domain.piece;
 
-import janggi.domain.Position;
-import janggi.domain.Side;
+import janggi.domain.direction.Vector;
+import janggi.domain.position.Position;
 
 import java.util.List;
 
@@ -11,6 +11,8 @@ public class Knight extends Piece {
         new Vector(0, 1), new Vector(1, 2));
     private static final List<Vector> HORIZONTAL_MOVEMENT_VECTORS = List.of(
         new Vector(1, 0), new Vector(2, 1));
+
+    private static final double SCORE = 5.0;
 
     public Knight(Side side, int x, int y) {
         super(side, x, y);
@@ -24,6 +26,11 @@ public class Knight extends Piece {
     @Override
     public boolean isCannon() {
         return false;
+    }
+
+    @Override
+    public double getScore() {
+        return SCORE;
     }
 
     @Override

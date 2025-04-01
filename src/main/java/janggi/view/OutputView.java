@@ -1,7 +1,7 @@
 package janggi.view;
 
-import janggi.domain.Position;
-import janggi.domain.Side;
+import janggi.domain.position.Position;
+import janggi.domain.piece.Side;
 import janggi.domain.board.JanggiBoard;
 import janggi.domain.piece.Cannon;
 import janggi.domain.piece.Elephant;
@@ -12,6 +12,8 @@ import janggi.domain.piece.Pawn;
 import janggi.domain.piece.Piece;
 import janggi.domain.piece.Rook;
 
+import java.util.Map;
+
 public class OutputView {
 
     public static final String BLACK = "\u001B[30m";
@@ -20,7 +22,6 @@ public class OutputView {
     public static final String EXIT = "\u001B[0m";
 
     public void printJanggiBoard(JanggiBoard janggiBoard) {
-        System.out.print("   0  1 2 3  4 5 6  7 8");
         System.out.println();
         for (int y = 9; y >= 0; y--) {
             System.out.print(y + "  ");
@@ -31,6 +32,7 @@ public class OutputView {
             }
             System.out.println();
         }
+        System.out.println("   0ㅤ1ㅤ2ㅤ3  4ㅤ5ㅤ6ㅤ7ㅤ8");
     }
 
     private Piece findPiece(Position position, JanggiBoard janggiBoard) {
@@ -46,7 +48,7 @@ public class OutputView {
             return String.format(BLACK + "ㅁ" + EXIT);
         }
 
-        String color = piece.getSide() == Side.CHO ? RED : BLUE;
+        String color = piece.getSide() == Side.CHO ? BLUE : RED;
 
         if (piece.getClass() == Cannon.class) {
             return String.format(color + "포" + EXIT);
@@ -78,5 +80,9 @@ public class OutputView {
             return;
         }
         System.out.println("초나라 승리!");
+    }
+
+    public void printGameScore(Map<Side, Double> sideDoubleMap) {
+        System.out.printf("한나라: %.1f점, 초나라: %.1f점%n", sideDoubleMap.get(Side.HAN), sideDoubleMap.get(Side.CHO));
     }
 }

@@ -1,8 +1,7 @@
 package janggi.domain.piece;
 
-import janggi.domain.Position;
 import janggi.domain.ReplaceUnderBar;
-import janggi.domain.Side;
+import janggi.domain.position.Position;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -123,6 +122,11 @@ class PieceTest {
         @Override
         public boolean isKing() {
             return false;
+        }
+
+        @Override
+        public double getScore() {
+            return 0;
         }
 
         @Override
