@@ -1,98 +1,64 @@
 package domain.piece;
 
-import domain.MovingPattern;
-import domain.piece.movingstrategy.MovingNormalStrategy;
-import domain.piece.movingstrategy.JanggiPieceMovingStrategy;
-import domain.piece.movingstrategy.MovingCannonStrategy;
-import domain.piece.movingstrategy.NoneMovingStrategy;
-import domain.piece.routestrategy.JanggiPieceRouteStrategy;
-import domain.piece.routestrategy.LimitedRouteStrategy;
-import domain.piece.routestrategy.LinearRouteStrategy;
-import domain.piece.routestrategy.NoneRouteStrategy;
+import domain.piece.movementrule.CannonMovementRule;
+import domain.piece.movementrule.GeneralMovementRule;
+import domain.piece.movementrule.JanggiPieceMovementRule;
+import domain.piece.movementrule.NoneMovementRule;
+import domain.piece.route.Route;
+import domain.piece.route.routeselector.*;
 import domain.position.JanggiPosition;
+import janggiexception.InvalidPathException;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public enum JanggiPieceType {
 
-    KING(0, List.of(
-            List.of(MovingPattern.MOVE_RIGHT),
-            List.of(MovingPattern.MOVE_DOWN),
-            List.of(MovingPattern.MOVE_LEFT),
-            List.of(MovingPattern.MOVE_UP)
-    ), new LimitedRouteStrategy(), new MovingNormalStrategy()),
-    HORSE(5, List.of(
-            List.of(MovingPattern.MOVE_UP, MovingPattern.MOVE_DIAGONAL_UP_RIGHT),
-            List.of(MovingPattern.MOVE_RIGHT, MovingPattern.MOVE_DIAGONAL_UP_RIGHT),
-            List.of(MovingPattern.MOVE_RIGHT, MovingPattern.MOVE_DIAGONAL_DOWN_RIGHT),
-            List.of(MovingPattern.MOVE_DOWN, MovingPattern.MOVE_DIAGONAL_DOWN_RIGHT),
-            List.of(MovingPattern.MOVE_DOWN, MovingPattern.MOVE_DIAGONAL_DOWN_LEFT),
-            List.of(MovingPattern.MOVE_LEFT, MovingPattern.MOVE_DIAGONAL_DOWN_LEFT),
-            List.of(MovingPattern.MOVE_LEFT, MovingPattern.MOVE_DIAGONAL_UP_LEFT),
-            List.of(MovingPattern.MOVE_UP, MovingPattern.MOVE_DIAGONAL_UP_LEFT)
-    ), new LimitedRouteStrategy(), new MovingNormalStrategy()),
-    ADVISOR(3, List.of(
-            List.of(MovingPattern.MOVE_RIGHT),
-            List.of(MovingPattern.MOVE_DOWN),
-            List.of(MovingPattern.MOVE_LEFT),
-            List.of(MovingPattern.MOVE_UP)
-    ), new LimitedRouteStrategy(), new MovingNormalStrategy()),
-    ELEPHANT(3, List.of(
-            List.of(MovingPattern.MOVE_UP, MovingPattern.MOVE_DIAGONAL_UP_RIGHT, MovingPattern.MOVE_DIAGONAL_UP_RIGHT),
-            List.of(MovingPattern.MOVE_RIGHT, MovingPattern.MOVE_DIAGONAL_UP_RIGHT, MovingPattern.MOVE_DIAGONAL_UP_RIGHT),
-            List.of(MovingPattern.MOVE_RIGHT, MovingPattern.MOVE_DIAGONAL_DOWN_RIGHT, MovingPattern.MOVE_DIAGONAL_DOWN_RIGHT),
-            List.of(MovingPattern.MOVE_DOWN, MovingPattern.MOVE_DIAGONAL_DOWN_RIGHT, MovingPattern.MOVE_DIAGONAL_DOWN_RIGHT),
-            List.of(MovingPattern.MOVE_DOWN, MovingPattern.MOVE_DIAGONAL_DOWN_LEFT, MovingPattern.MOVE_DIAGONAL_DOWN_LEFT),
-            List.of(MovingPattern.MOVE_LEFT, MovingPattern.MOVE_DIAGONAL_DOWN_LEFT, MovingPattern.MOVE_DIAGONAL_DOWN_LEFT),
-            List.of(MovingPattern.MOVE_LEFT, MovingPattern.MOVE_DIAGONAL_UP_LEFT, MovingPattern.MOVE_DIAGONAL_UP_LEFT),
-            List.of(MovingPattern.MOVE_UP, MovingPattern.MOVE_DIAGONAL_UP_LEFT, MovingPattern.MOVE_DIAGONAL_UP_LEFT)
-    ), new LimitedRouteStrategy(), new MovingNormalStrategy()),
-    SOLDIER_OF_CHO(2, List.of(
-            List.of(MovingPattern.MOVE_RIGHT),
-            List.of(MovingPattern.MOVE_LEFT),
-            List.of(MovingPattern.MOVE_UP)
-    ), new LimitedRouteStrategy(), new MovingNormalStrategy()),
-    SOLDIER_OF_HAN(2, List.of(
-            List.of(MovingPattern.MOVE_RIGHT),
-            List.of(MovingPattern.MOVE_DOWN),
-            List.of(MovingPattern.MOVE_LEFT)
-    ), new LimitedRouteStrategy(), new MovingNormalStrategy()),
-    CHARIOT(13, List.of(
-            List.of(MovingPattern.MOVE_RIGHT),
-            List.of(MovingPattern.MOVE_DOWN),
-            List.of(MovingPattern.MOVE_LEFT),
-            List.of(MovingPattern.MOVE_UP)
-    ), new LinearRouteStrategy(), new MovingNormalStrategy()),
-    CANNON(7, List.of(
-            List.of(MovingPattern.MOVE_RIGHT),
-            List.of(MovingPattern.MOVE_DOWN),
-            List.of(MovingPattern.MOVE_LEFT),
-            List.of(MovingPattern.MOVE_UP)
-    ), new LinearRouteStrategy(), new MovingCannonStrategy()),
-    EMPTY(0, List.of(), new NoneRouteStrategy(), new NoneMovingStrategy());
+    KING(0, List.of(InsideOnlyPalaceRouteSelector.getInstance()), GeneralMovementRule.getInstance()),
+    HORSE(5, List.of(HorseRouteSelector.getInstance()), GeneralMovementRule.getInstance()),
+    ADVISOR(3, List.of(InsideOnlyPalaceRouteSelector.getInstance()), GeneralMovementRule.getInstance()),
+    ELEPHANT(3, List.of(ElephantRouteSelector.getInstance()), GeneralMovementRule.getInstance()),
+    SOLDIER(2, List.of(SoldierRouteSelector.getInstance(), PalaceForwardRouteSelector.getInstance()), GeneralMovementRule.getInstance()),
+    CHARIOT(13, List.of(LinearRouteSelector.getInstance(), PalaceLinearRouteSelector.getInstance()), GeneralMovementRule.getInstance()),
+    CANNON(7, List.of(LinearRouteSelector.getInstance(), PalaceLinearRouteSelector.getInstance()), CannonMovementRule.getInstance()),
+    EMPTY(0, List.of(), NoneMovementRule.getInstance());
 
     private final int score;
-    private final List<List<MovingPattern>> routes;
-    private final JanggiPieceRouteStrategy routeStrategy;
-    private final JanggiPieceMovingStrategy movingStrategy;
+    private final List<RouteSelector> routeSelectors;
+    private final JanggiPieceMovementRule movementRule;
 
     JanggiPieceType(
             int score,
-            List<List<MovingPattern>> routes,
-            JanggiPieceRouteStrategy routeStrategy,
-            JanggiPieceMovingStrategy movingStrategy
+            List<RouteSelector> routeSelectors,
+            JanggiPieceMovementRule movementRule
     ) {
         this.score = score;
-        this.routes = routes;
-        this.routeStrategy = routeStrategy;
-        this.movingStrategy = movingStrategy;
+        this.routeSelectors = routeSelectors;
+        this.movementRule = movementRule;
     }
 
-    public List<MovingPattern> getRoute(JanggiPosition origin,
-                                        JanggiPosition destination) {
-        return routeStrategy.getRoute(routes, origin, destination);
+    public Route getRoute(
+            JanggiSide side,
+            JanggiPosition origin,
+            JanggiPosition destination
+    ) {
+        List<Route> route = new ArrayList<>();
+        routeSelectors.stream()
+                .map(selector -> selector.getRoute(side, origin, destination))
+                .filter(selectedRoute -> !selectedRoute.isEmpty())
+                .forEach(route::add);
+
+        if (route.isEmpty()) {
+            throw new InvalidPathException();
+        }
+        return route.getFirst();
     }
 
     public void validateCanMove(JanggiSide side, JanggiPiece hurdlePiece, int hurdleCount, JanggiPiece targetPiece) {
-        movingStrategy.checkPieceCanMove(side, hurdlePiece, hurdleCount, targetPiece);
+        movementRule.checkPieceCanMove(side, hurdlePiece, hurdleCount, targetPiece);
+    }
+
+    public int getScore() {
+        return score;
     }
 }

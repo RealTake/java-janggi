@@ -1,16 +1,24 @@
 package domain;
 
+import java.util.List;
+
 public enum MovingPattern {
-    MOVE_RIGHT(0, 1),
-    MOVE_DOWN(1, 0),
-    MOVE_LEFT(0, -1),
-    MOVE_UP(-1, 0),
+    RIGHT(0, 1),
+    DOWN(1, 0),
+    LEFT(0, -1),
+    UP(-1, 0),
 
-    MOVE_DIAGONAL_UP_RIGHT(-1, 1),
-    MOVE_DIAGONAL_DOWN_RIGHT(1, 1),
-    MOVE_DIAGONAL_DOWN_LEFT(1, -1),
-    MOVE_DIAGONAL_UP_LEFT(-1, -1);
+    DIAGONAL_UP_RIGHT(-1, 1),
+    DIAGONAL_DOWN_RIGHT(1, 1),
+    DIAGONAL_DOWN_LEFT(1, -1),
+    DIAGONAL_UP_LEFT(-1, -1);
 
+    private static final List<MovingPattern> DIAGONAL_MOVES = List.of(
+            DIAGONAL_UP_LEFT,
+            DIAGONAL_DOWN_LEFT,
+            DIAGONAL_DOWN_RIGHT,
+            DIAGONAL_UP_RIGHT
+    );
     private int x;
     private int y;
 
@@ -25,5 +33,9 @@ public enum MovingPattern {
 
     public int getY() {
         return y;
+    }
+
+    public boolean isDiagonalPattern() {
+        return DIAGONAL_MOVES.contains(this);
     }
 }
