@@ -7,6 +7,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import janggi.board.BoardSetup;
 import janggi.board.Position;
 import janggi.palace.PalaceArea;
+import janggi.piece.Guard;
+import janggi.piece.Soldier;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,8 +77,9 @@ public class TeamTest {
     @Test
     void validateDestinationIsNotOccupiedBySameTeam() {
         Team teamCho = TeamFactory.createTeam(BoardSetup.of(List.of("초", "HEEH")));
+        Guard guard = new Guard(TeamName.CHO, new Position(3, 0));
 
-        teamCho.move("G", new Position(3, 0), new Position(3, 1));
+        teamCho.move(guard, new Position(3, 1));
 
         assertThatThrownBy(() -> teamCho.validateDestinationIsNotOccupiedBySameTeam(new Position(3, 1)))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -120,8 +123,9 @@ public class TeamTest {
     @Test
     void move() {
         Team teamCho = TeamFactory.createTeam(BoardSetup.of(List.of("초", "HEEH")));
+        Soldier soldier = new Soldier(TeamName.CHO, new Position(2, 3));
 
-        teamCho.move("S", new Position(2, 3), new Position(3, 3));
+        teamCho.move(soldier, new Position(3, 3));
 
         assertThatCode(() -> teamCho.validatePiece("S", new Position(3, 3))).doesNotThrowAnyException();
     }
@@ -147,13 +151,19 @@ public class TeamTest {
         assertThat(teamHan.isKingCaught()).isTrue();
     }
 
+    @DisplayName("정상: 팀 점수를 계산하는지 확인 (초)")
+    @Test
+    void trackTeamScoreCho() {
+        Team teamCho = TeamFactory.createTeam(BoardSetup.of(List.of("초", "EHHE")));
+
+        assertThat(teamCho.checkTeamScore()).isEqualTo(72);
+    }
+
     @DisplayName("정상: 팀 점수를 계산하는지 확인")
     @Test
-    void trackTeamScore() {
+    void trackTeamScoreHan() {
         Team teamHan = TeamFactory.createTeam(BoardSetup.of(List.of("한", "EHHE")));
 
-        teamHan.trackTeamScore(TeamName.HAN);
-
-        assertThat(teamHan.getTeamScore()).isEqualTo(73.5);
+        assertThat(teamHan.checkTeamScore()).isEqualTo(73.5);
     }
 }

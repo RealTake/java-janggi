@@ -1,10 +1,11 @@
 package janggi;
 
-import janggi.game.Manager;
+import janggi.db.BoardStatus;
+import janggi.game.GameController;
 
 public class Application {
     public static void main(String[] args) {
-        Manager manager = new Manager();
-        manager.run();
+        GameController gameController = new GameController(new BoardStatus());
+        gameController.run();
     }
 }

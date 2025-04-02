@@ -26,11 +26,11 @@ public class Team {
     private final TeamScore teamScore;
     private final TeamName teamName;
 
-    Team(List<Piece> pieces, Palace palace, TeamName teamName) {
+    public Team(List<Piece> pieces, Palace palace, TeamName teamName) {
         this.pieces = pieces;
         this.palace = palace;
         this.teamName = teamName;
-        this.teamScore = new TeamScore();
+        this.teamScore = TeamScore.from(teamName);
     }
 
     public void validatePieceMovement(String pieceName, Position currentPosition, Position destination) {
@@ -112,7 +112,9 @@ public class Team {
         }
     }
 
-    public void move(String pieceName, Position startPosition, Position endPosition) {
+    public void move(Piece currentPiece, Position endPosition) {
+        String pieceName = currentPiece.getName();
+        Position startPosition = currentPiece.getPosition();
         Piece targetPiece = findPieceByName(pieceName, startPosition);
         targetPiece.move(endPosition);
     }
@@ -131,16 +133,12 @@ public class Team {
                         && piece.matchStatus(PieceStatus.CAUGHT));
     }
 
-    public void trackTeamScore(TeamName teamName) {
-        teamScore.calculateTeamScore(teamName, pieces);
+    public double checkTeamScore() {
+        return teamScore.calculateScore(pieces);
     }
 
     public List<Piece> getBoard() {
         return pieces;
-    }
-
-    public double getTeamScore() {
-        return teamScore.getScore();
     }
 
     public TeamName getTeamName() {
