@@ -1,11 +1,15 @@
 package model.board;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.Nullable;
 
 import model.Position;
 import model.Team;
-import model.piece.BoardSearcher;
 import model.piece.Piece;
 import model.piece.PieceType;
 
@@ -14,10 +18,15 @@ public class Board implements BoardSearcher {
     public static final int WIDTH_SIZE = 9;
     public static final int HEIGHT_SIZE = 10;
 
-    private final List<Piece> pieces = new ArrayList<>();
+    private final List<Piece> pieces;
+
+    public Board(List<Piece> pieces) {
+        this.pieces = new ArrayList<>(pieces);
+    }
 
     public void addTeamPieces(Team team, TableSetting tableSetting) {
-        pieces.addAll(Initializer.settingWith(team, tableSetting));
+        Initializer initializer = new Initializer();
+        pieces.addAll(initializer.generatePiecesOf(team, tableSetting));
     }
 
     public boolean hasPieceOn(Position position) {
@@ -33,6 +42,7 @@ public class Board implements BoardSearcher {
         return piece;
     }
 
+    @Nullable
     public Piece find(Position position) {
         return pieces.stream()
             .filter(piece -> piece.onPosition(position))
@@ -44,6 +54,7 @@ public class Board implements BoardSearcher {
         pieces.remove(target);
     }
 
+    @Nullable
     public Team getWinnerIfGameOver() {
         List<Piece> palaces = getPalaces();
         if (palaces.size() == 1) {
@@ -56,13 +67,14 @@ public class Board implements BoardSearcher {
         return new ArrayList<>(pieces);
     }
 
-    public void abstain(Team team) {
+    public Piece abstain(Team team) {
         Piece palace = getPalaces().stream()
             .filter(piece -> piece.equalsTeam(team))
             .findAny()
             .orElseThrow(() -> new IllegalStateException("[ERROR] 존재하지 않는 팀이 기권했습니다."));
 
         pieces.remove(palace);
+        return palace;
     }
 
     private List<Piece> getPalaces() {
@@ -79,6 +91,12 @@ public class Board implements BoardSearcher {
         takePieceIfExists(target);
     }
 
+    public List<Piece> getPieces(Team team) {
+        return pieces.stream()
+            .filter(piece -> piece.getTeam() == team)
+            .toList();
+    }
+
     private void takePieceIfExists(Piece target) {
         if (target != null) {
             take(target);
@@ -93,5 +111,21 @@ public class Board implements BoardSearcher {
 
     public boolean isInBoard(Position position) {
         return position.x() < WIDTH_SIZE && position.x() >= 0 && position.y() < HEIGHT_SIZE && position.y() >= 0;
+    }
+
+    public Map<Team, Integer> getPieceScore() {
+        return Arrays.stream(Team.values())
+            .collect(Collectors.toMap(
+                team -> team,
+                this::getScoreForTeam,
+                Integer::sum
+            ));
+    }
+
+    private int getScoreForTeam(Team team) {
+        return pieces.stream()
+            .filter(piece -> piece.getTeam() == team)
+            .mapToInt(piece -> piece.type().getScore())
+            .sum();
     }
 }

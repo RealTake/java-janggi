@@ -3,39 +3,34 @@ package model.board;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Position;
 import model.Team;
 import model.piece.Chariot;
+import model.piece.Elephant;
+import model.piece.Horse;
+import model.piece.King;
 import model.piece.Pao;
+import model.piece.Pawn;
 import model.piece.Piece;
-import model.piece.normal.Palace;
-import model.piece.normal.Pawn;
-import model.piece.normal.Soldier;
+import model.piece.Soldier;
 
-abstract class Initializer {
+final class Initializer {
 
-    public static List<Piece> settingWith(Team team, TableSetting tableSetting) {
-        return tableSetting.getInitializer().generatePiecesOf(team);
-    }
-
-    protected abstract List<Piece> generateElephant(Team team);
-
-    protected abstract List<Piece> generateHorse(Team team);
-
-    public final List<Piece> generatePiecesOf(Team team) {
+    public List<Piece> generatePiecesOf(Team team, TableSetting tableSetting) {
         List<Piece> pieces = new ArrayList<>();
         pieces.addAll(generatePalace(team));
         pieces.addAll(generateSoldier(team));
         pieces.addAll(generatePao(team));
         pieces.addAll(generatePawn(team));
-        pieces.addAll(generateElephant(team));
-        pieces.addAll(generateHorse(team));
         pieces.addAll(generateChariot(team));
+        pieces.addAll(generateElephant(team, tableSetting));
+        pieces.addAll(generateHorse(team, tableSetting));
         return pieces;
     }
 
     private List<Piece> generatePalace(Team team) {
         List<Piece> pieces = new ArrayList<>();
-        pieces.add(new Palace(team.onBaseX(4), team.onBaseY(1), team));
+        pieces.add(new King(team.onBaseX(4), team.onBaseY(1), team));
         return pieces;
     }
 
@@ -68,5 +63,19 @@ abstract class Initializer {
         pieces.add(new Chariot(team.onBaseX(0), team.onBaseY(0), team));
         pieces.add(new Chariot(team.onBaseX(8), team.onBaseY(0), team));
         return pieces;
+    }
+
+    private List<Piece> generateElephant(Team team, TableSetting tableSetting) {
+        return generatePiecesWithTableSetting(team, tableSetting.getElephant(), Elephant::new);
+    }
+
+    private List<Piece> generateHorse(Team team, TableSetting tableSetting) {
+        return generatePiecesWithTableSetting(team, tableSetting.getHorse(), Horse::new);
+    }
+
+    private List<Piece> generatePiecesWithTableSetting(Team team, List<Position> positions, PieceConstructor constructor) {
+        return positions.stream()
+            .map(position -> constructor.construct(team.onBaseX(position.x()), team.onBaseY(position.y()), team))
+            .toList();
     }
 }

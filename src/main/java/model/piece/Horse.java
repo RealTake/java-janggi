@@ -1,12 +1,11 @@
-package model.piece.normal;
+package model.piece;
 
 import java.util.List;
 
 import model.Position;
 import model.Team;
-import model.piece.PieceType;
 
-public class Horse extends NormalPiece {
+public class Horse extends Piece {
 
     public Horse(int x, int y, Team team) {
         super(x, y, team);

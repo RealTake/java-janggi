@@ -2,14 +2,14 @@ import controller.JanggiController;
 
 public class Application {
 
+    private static final JanggiController controller = new JanggiController();
+
     public static void main(String[] args) {
-        JanggiController controller = new JanggiController();
-        controller.startGame();
-        controller.setTableSetting();
-        while (controller.isPlaying()) {
-            controller.playTurn();
-            controller.nextTurn();
+        int gameId = controller.startGame();
+        while (controller.isPlaying(gameId)) {
+            controller.playTurn(gameId);
+            controller.nextTurn(gameId);
         }
-        controller.endGame();
+        controller.endGame(gameId);
     }
 }
