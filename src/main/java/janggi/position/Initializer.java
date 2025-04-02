@@ -1,56 +1,69 @@
 package janggi.position;
 
-import static janggi.position.InitPositions.A0;
-import static janggi.position.InitPositions.A3;
-import static janggi.position.InitPositions.A6;
-import static janggi.position.InitPositions.A9;
-import static janggi.position.InitPositions.B0;
-import static janggi.position.InitPositions.B2;
-import static janggi.position.InitPositions.B7;
-import static janggi.position.InitPositions.B9;
-import static janggi.position.InitPositions.C0;
-import static janggi.position.InitPositions.C3;
-import static janggi.position.InitPositions.C6;
-import static janggi.position.InitPositions.C9;
-import static janggi.position.InitPositions.D0;
-import static janggi.position.InitPositions.D9;
-import static janggi.position.InitPositions.E1;
-import static janggi.position.InitPositions.E3;
-import static janggi.position.InitPositions.E6;
-import static janggi.position.InitPositions.E8;
-import static janggi.position.InitPositions.F0;
-import static janggi.position.InitPositions.F9;
-import static janggi.position.InitPositions.G0;
-import static janggi.position.InitPositions.G3;
-import static janggi.position.InitPositions.G6;
-import static janggi.position.InitPositions.G9;
-import static janggi.position.InitPositions.H0;
-import static janggi.position.InitPositions.H2;
-import static janggi.position.InitPositions.H7;
-import static janggi.position.InitPositions.H9;
-import static janggi.position.InitPositions.I0;
-import static janggi.position.InitPositions.I3;
-import static janggi.position.InitPositions.I6;
-import static janggi.position.InitPositions.I9;
+import static janggi.position.Positions.A0;
+import static janggi.position.Positions.A3;
+import static janggi.position.Positions.A6;
+import static janggi.position.Positions.A9;
+import static janggi.position.Positions.B0;
+import static janggi.position.Positions.B2;
+import static janggi.position.Positions.B7;
+import static janggi.position.Positions.B9;
+import static janggi.position.Positions.C0;
+import static janggi.position.Positions.C3;
+import static janggi.position.Positions.C6;
+import static janggi.position.Positions.C9;
+import static janggi.position.Positions.D0;
+import static janggi.position.Positions.D9;
+import static janggi.position.Positions.E1;
+import static janggi.position.Positions.E3;
+import static janggi.position.Positions.E6;
+import static janggi.position.Positions.E8;
+import static janggi.position.Positions.F0;
+import static janggi.position.Positions.F9;
+import static janggi.position.Positions.G0;
+import static janggi.position.Positions.G3;
+import static janggi.position.Positions.G6;
+import static janggi.position.Positions.G9;
+import static janggi.position.Positions.H0;
+import static janggi.position.Positions.H2;
+import static janggi.position.Positions.H7;
+import static janggi.position.Positions.H9;
+import static janggi.position.Positions.I0;
+import static janggi.position.Positions.I3;
+import static janggi.position.Positions.I6;
+import static janggi.position.Positions.I9;
 
 import janggi.piece.Piece;
 import janggi.piece.Team;
 import janggi.piece.jumpingPiece.Cannon;
-import janggi.piece.normalPiece.ChoPawn;
+import janggi.piece.pawnPiece.ChoPawn;
 import janggi.piece.normalPiece.Elephant;
-import janggi.piece.normalPiece.HanPawn;
+import janggi.piece.pawnPiece.HanPawn;
 import janggi.piece.normalPiece.Horse;
-import janggi.piece.normalPiece.Palace;
-import janggi.piece.normalPiece.Soldier;
+import janggi.piece.palacePiece.King;
+import janggi.piece.palacePiece.Soldier;
 import janggi.piece.straightPiece.Chariot;
 import java.util.HashSet;
 import java.util.Set;
+import repository.connection.ConnectMysql;
+import repository.dao.PieceDao;
+import repository.dao.TurnDao;
+import repository.converter.PieceConverter;
+import repository.converter.TurnConverter;
 
 class Initializer {
+    private final PieceDao pieceDao = new PieceDao(new ConnectMysql());
+    private final TurnDao turnDao = new TurnDao(new ConnectMysql());
+
     public Set<Piece> generate() {
+        Set<Piece> byPiece = pieceDao.findAll();
+        if(!byPiece.isEmpty()){
+            return byPiece;
+        }
+
         Set<Piece> pieces = new HashSet<>();
-        pieces.add(new Palace(Team.HAN, E8));
-        pieces.add(new Palace(Team.CHO, E1));
+        pieces.add(new King(Team.HAN, E8));
+        pieces.add(new King(Team.CHO, E1));
 
         pieces.add(new Soldier(Team.HAN, D9));
         pieces.add(new Soldier(Team.HAN, F9));
@@ -88,6 +101,21 @@ class Initializer {
         pieces.add(new ChoPawn(G3));
         pieces.add(new ChoPawn(I3));
 
+        Set<PieceConverter> pieceConverters = new HashSet<>();
+        for (Piece piece : pieces) {
+            pieceConverters.add(PieceConverter.toEntity(piece));
+        }
+        pieceDao.addAll(pieceConverters);
+
         return pieces;
+    }
+
+    public Team setTurn() {
+        String turn = turnDao.findTurn();
+        if(turn==null){
+            turnDao.addTurn(TurnConverter.toEntity(Team.CHO));
+            return Team.CHO;
+        }
+        return Team.convert(turn);
     }
 }

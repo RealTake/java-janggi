@@ -13,6 +13,11 @@ public final class Position {
         this.row = row;
     }
 
+    public Position(String columnIndex, String rowIndex) {
+        this.column = Column.convert(columnIndex);
+        this.row = Row.convert(rowIndex);
+    }
+
     public boolean canMove(Direction direction, Board board) {
         if (column.canMove(direction.column()) && row.canMove(direction.row())) {
             return board.isBlank(new Position(column.move(direction.column()), row.move(direction.row())));
@@ -66,7 +71,6 @@ public final class Position {
         return source;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -81,4 +85,11 @@ public final class Position {
         return Objects.hash(column, row);
     }
 
+    public Row row() {
+        return row;
+    }
+
+    public Column column(){
+        return column;
+    }
 }

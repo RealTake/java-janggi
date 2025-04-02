@@ -5,13 +5,14 @@ import janggi.piece.PieceType;
 import java.util.Arrays;
 
 public enum PieceSymbol {
-    PALACE("궁", PieceType.PALACE),
+    KING("궁", PieceType.KING),
     SOLDIER("사", PieceType.SOLDIER),
     ELEPHANT("상", PieceType.ELEPHANT),
     HORSE("마", PieceType.HORSE),
     CHARIOT("차", PieceType.CHARIOT),
     PAO("포", PieceType.CANNON),
-    PAWN("병", PieceType.PAWN),
+    HANPAWN("병", PieceType.HANPAWN),
+    CHOPAWN("졸", PieceType.CHOPAWN),
     EMPTY("＿", PieceType.BLANK);
 
     private final String name;

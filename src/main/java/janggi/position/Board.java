@@ -10,13 +10,21 @@ import janggi.piece.normalPiece.Blank;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import repository.connection.ConnectDatabase;
+import repository.connection.ConnectMysql;
+import repository.dao.PieceDao;
+import repository.dao.TurnDao;
+import repository.converter.PieceConverter;
+import repository.converter.TurnConverter;
 
 public final class Board {
+    private static final double AFTER_TURN_BONUS_SCORE = 1.5;
     private final Team currentTeam;
     private final Map<Position, Piece> pieceOfPosition;
 
     public static Board generate() {
-        return new Board(new Initializer().generate());
+        Initializer initializer = new Initializer();
+        return new Board(initializer.setTurn(), initializer.generate());
     }
 
     public Board(Team team, Set<Piece> pieces) {
@@ -71,7 +79,7 @@ public final class Board {
         return Team.next(currentTeam);
     }
 
-    public Board move(Position source, Position destination) {
+    public Board move(Position source, Position destination, ConnectDatabase connectDatabase) {
         Piece piece = get(source);
         Set<Piece> pieces = toSet();
         Set<Position> positions = piece.possibleRoutes(this);
@@ -81,7 +89,20 @@ public final class Board {
         movePiece(destination, pieces, piece);
         catchPiece(destination, piece, pieces);
 
-        return new Board(pieces, nextTurn());
+        PieceDao pieceDao = new PieceDao(connectDatabase);
+        pieceDao.deleteAll();
+
+        Set<PieceConverter> pieceConverters = new HashSet<>();
+        for (Piece pieceForDB : pieces) {
+            pieceConverters.add(PieceConverter.toEntity(pieceForDB));
+        }
+        pieceDao.addAll(pieceConverters);
+
+        TurnDao turnDao = new TurnDao(connectDatabase);
+        Team nextTurn = nextTurn();
+        turnDao.updateTurn(TurnConverter.toEntity(nextTurn));
+
+        return new Board(pieces, nextTurn);
     }
 
     private void movePiece(Position destination, Set<Piece> pieces, Piece piece) {
@@ -101,9 +122,9 @@ public final class Board {
         }
     }
 
-    public boolean catchPalace() {
+    public boolean catchKing() {
         final long count = toSet().stream()
-                .filter(piece -> piece.type() == PieceType.PALACE)
+                .filter(piece -> piece.type() == PieceType.KING)
                 .count();
 
         return count == 1;
@@ -111,7 +132,7 @@ public final class Board {
 
     public Team findWinner() {
         return toSet().stream()
-                .filter(piece -> piece.type() == PieceType.PALACE)
+                .filter(piece -> piece.type() == PieceType.KING)
                 .map(Piece::team)
                 .findAny()
                 .orElseThrow(IllegalStateException::new);
@@ -123,5 +144,19 @@ public final class Board {
 
     public Team currentTeam() {
         return currentTeam;
+    }
+
+    public double hanScore() {
+        return toSet().stream()
+                .filter(piece -> piece.team() == Team.HAN)
+                .mapToDouble(Piece::score)
+                .sum() + AFTER_TURN_BONUS_SCORE;
+    }
+
+    public double choScore() {
+        return toSet().stream()
+                .filter(piece -> piece.team() == Team.CHO)
+                .mapToDouble(Piece::score)
+                .sum();
     }
 }

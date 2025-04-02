@@ -5,6 +5,8 @@ import console.util.PositionConverter;
 import janggi.position.Board;
 import janggi.position.Position;
 import java.util.function.Supplier;
+import repository.Schema;
+import repository.connection.ConnectMysql;
 
 public class Application {
     private final Console console = new Console(new Input(), new Output());
@@ -16,6 +18,7 @@ public class Application {
     }
 
     private void start() {
+        Schema.setTable(new ConnectMysql());
         Board board = Board.generate();
 
         console.startGame();
@@ -24,12 +27,20 @@ public class Application {
             console.display(board);
             console.displayTurn(board);
 
+            displayScore(board);
+
             Board boardForTurn = board;
             board = process(() -> takeTurn(boardForTurn));
 
-        } while (!board.catchPalace());
+        } while (!board.catchKing());
 
         console.end(board.findWinner());
+    }
+
+    private void displayScore(Board board) {
+        double choScore = board.choScore();
+        double hanScore = board.hanScore();
+        console.displayScore(choScore, hanScore);
     }
 
     public Board takeTurn(Board board) {
@@ -41,7 +52,7 @@ public class Application {
     }
 
     public Board move(Position source, Position destination, Board board) {
-        return board.move(source, destination);
+        return board.move(source, destination, new ConnectMysql());
     }
 
     public Board process(Supplier<Board> action) {
