@@ -1,9 +1,9 @@
 package janggi.view;
 
-import janggi.board.JanggiBoard;
-import janggi.board.Position;
-import janggi.piece.Piece;
-import janggi.piece.Side;
+import janggi.domain.Turn;
+import janggi.domain.board.JanggiBoard;
+import janggi.domain.board.Position;
+import janggi.domain.piece.Piece;
 import janggi.view.util.PositionFormatter;
 
 import java.util.List;
@@ -38,8 +38,8 @@ public class OutputView {
         System.out.println("\n G: 궁, S: 사, C: 차, P: 포, M: 마, E: 상, J: 졸(병) \n");
     }
 
-    public void printTurn(final Side side) {
-        System.out.println(side.getName() + "의 차례입니다.");
+    public void printTurn(final Turn turn) {
+        System.out.println(turn.getName() + "의 차례입니다.");
     }
 
     public void printReachableDestinations(final List<Position> positions) {
@@ -56,15 +56,25 @@ public class OutputView {
             return;
         }
         if (piece.isHan()) {
-            System.out.println(ANSI_RED + piece.getType().getSymbol() + ANSI_RESET + "를 잡았습니다. ");
+            System.out.println(ANSI_RED + piece.getType().getSymbol() + ANSI_RESET + "를 잡았습니다.");
         }
     }
 
-    public void printEndMessage(final Side side, final Piece piece) {
-        System.out.println(side.getName() + "이 상대의" + piece.getType().getSymbol() + "을 잡아 게임을 종료합니다." + side.getName() + "의 승리입니다.");
+    public void printEndMessage(final Turn turn, final Piece piece) {
+        System.out.println(turn.getName() + "가 " + turn.getEnemySide().getName() + "의 "
+                + piece.getType().getSymbol() + "을 잡아 게임을 종료합니다.\n" + turn.getName() + "의 승리입니다.");
     }
 
     public void printExceptionMessage(final Exception e) {
         System.out.println(e.getMessage());
+    }
+
+    public void printTotalScores(final int choTotalScore, final int hanTotalScore) {
+        System.out.println("초나라의 점수는 " + choTotalScore + "입니다.");
+        System.out.println("한나라의 점수는 " + hanTotalScore + "입니다.");
+    }
+
+    public void printAlreadyEnded() {
+        System.out.println("이미 게임이 종료되었습니다.");
     }
 }

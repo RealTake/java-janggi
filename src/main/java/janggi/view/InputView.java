@@ -1,6 +1,6 @@
 package janggi.view;
 
-import janggi.board.Position;
+import janggi.domain.board.Position;
 import janggi.view.util.PositionFormatter;
 
 import java.util.Scanner;
@@ -18,7 +18,6 @@ public class InputView {
         validateInputPosition(selectedPiece);
         return PositionFormatter.formatStringToPosition(selectedPiece);
     }
-
 
     public Position askMoveDestination() {
         System.out.println("기물을 어느 위치로 이동시키겠습니까?");

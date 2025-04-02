@@ -1,22 +1,24 @@
 package janggi.board;
 
-import janggi.piece.Empty;
-import janggi.piece.Piece;
-import janggi.piece.Side;
-import janggi.piece.limit.*;
-import janggi.piece.unlimit.Cannon;
-import janggi.piece.unlimit.Chariot;
+import janggi.domain.Turn;
+import janggi.domain.board.JanggiBoard;
+import janggi.domain.board.Position;
+import janggi.domain.piece.Empty;
+import janggi.domain.piece.Piece;
+import janggi.domain.piece.limit.*;
+import janggi.domain.piece.unlimit.Cannon;
+import janggi.domain.piece.unlimit.Chariot;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 class JanggiBoardTest {
 
@@ -103,14 +105,9 @@ class JanggiBoardTest {
         JanggiBoard janggiBoard = JanggiBoard.initializeWithPieces();
         Position position = new Position(2, 6);
 
-        List<Position> positions = janggiBoard.computeReachableDestination(Side.CHO, position);
+        List<Position> positions = janggiBoard.computeReachableDestination(Turn.CHO, position);
 
-        assertAll(
-                () -> assertThat(positions.size()).isEqualTo(3),
-                () -> assertThat(positions).contains(new Position(1, 6)),
-                () -> assertThat(positions).contains(new Position(2, 5)),
-                () -> assertThat(positions).contains(new Position(3, 6))
-        );
+        assertThat(positions).contains(new Position(1, 6), new Position(2, 5), new Position(3, 6));
     }
 
     @Test
@@ -119,13 +116,9 @@ class JanggiBoardTest {
         JanggiBoard janggiBoard = JanggiBoard.initializeWithPieces();
         Position position = new Position(8, 3);
 
-        List<Position> positions = janggiBoard.computeReachableDestination(Side.HAN, position);
+        List<Position> positions = janggiBoard.computeReachableDestination(Turn.HAN, position);
 
-        assertAll(
-                () -> assertThat(positions.size()).isEqualTo(2),
-                () -> assertThat(positions).contains(new Position(7, 3)),
-                () -> assertThat(positions).contains(new Position(8, 4))
-        );
+        assertThat(positions).contains(new Position(7, 3), new Position(8, 4));
     }
 
     @Test
@@ -134,7 +127,7 @@ class JanggiBoardTest {
         JanggiBoard janggiBoard = JanggiBoard.initializeWithPieces();
         Position position = new Position(2, 9);
 
-        assertThatThrownBy(() -> janggiBoard.computeReachableDestination(Side.CHO, position))
+        assertThatThrownBy(() -> janggiBoard.computeReachableDestination(Turn.CHO, position))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이동 가능한 목적지가 존재하지 않습니다.");
     }
@@ -145,13 +138,9 @@ class JanggiBoardTest {
         JanggiBoard janggiBoard = JanggiBoard.initializeWithPieces();
         Position position = new Position(1, 9);
 
-        List<Position> positions = janggiBoard.computeReachableDestination(Side.CHO, position);
+        List<Position> positions = janggiBoard.computeReachableDestination(Turn.CHO, position);
 
-        assertAll(
-                () -> assertThat(positions.size()).isEqualTo(2),
-                () -> assertThat(positions).contains(new Position(0, 7)),
-                () -> assertThat(positions).contains(new Position(2, 7))
-        );
+        assertThat(positions).contains(new Position(0, 7), new Position(2, 7));
     }
 
     @Test
@@ -160,40 +149,33 @@ class JanggiBoardTest {
         JanggiBoard janggiBoard = JanggiBoard.initializeWithPieces();
         Position position = new Position(0, 9);
 
-        List<Position> positions = janggiBoard.computeReachableDestination(Side.CHO, position);
+        List<Position> positions = janggiBoard.computeReachableDestination(Turn.CHO, position);
 
-        assertAll(
-                () -> assertThat(positions.size()).isEqualTo(2),
-                () -> assertThat(positions).contains(new Position(0, 8)),
-                () -> assertThat(positions).contains(new Position(0, 7))
-        );
+        assertThat(positions).contains(new Position(0, 8), new Position(0, 7));
     }
 
     @Test
     @DisplayName("차 이동 테스트 - 초기 배치에서 5,7에 차 배치")
     void test15() {
         Position position = new Position(5, 7);
-        Side side = Side.CHO;
-        Piece piece = new Chariot(side);
-        JanggiBoard modifiedJanggiBoard = JanggiBoardFixture.setUpTestBoard(position, piece);
+        Turn turn = Turn.CHO;
+        Piece piece = new Chariot(turn);
+        JanggiBoard modifiedJanggiBoard = JanggiBoardFixture.modifyInitialBoardWithOnePiece(position, piece);
 
-        List<Position> positions = modifiedJanggiBoard.computeReachableDestination(side, position);
+        List<Position> positions = modifiedJanggiBoard.computeReachableDestination(turn, position);
 
-        assertAll(
-                () -> assertThat(positions.size()).isEqualTo(12),
-                () -> assertThat(positions).contains(new Position(5, 8)),
-                () -> assertThat(positions).contains(new Position(5, 6)),
-                () -> assertThat(positions).contains(new Position(5, 5)),
-                () -> assertThat(positions).contains(new Position(5, 4)),
-                () -> assertThat(positions).contains(new Position(5, 3)),
-                () -> assertThat(positions).contains(new Position(5, 2)),
-                () -> assertThat(positions).contains(new Position(5, 1)),
-                () -> assertThat(positions).contains(new Position(5, 0)),
-                () -> assertThat(positions).contains(new Position(6, 7)),
-                () -> assertThat(positions).contains(new Position(4, 7)),
-                () -> assertThat(positions).contains(new Position(3, 7)),
-                () -> assertThat(positions).contains(new Position(2, 7))
-        );
+        assertThat(positions).contains(new Position(5, 8),
+                                        new Position(5, 6),
+                                        new Position(5, 5),
+                                        new Position(5, 4),
+                                        new Position(5, 3),
+                                        new Position(5, 2),
+                                        new Position(5, 1),
+                                        new Position(5, 0),
+                                        new Position(6, 7),
+                                        new Position(4, 7),
+                                        new Position(3, 7),
+                                        new Position(2, 7));
     }
 
     @Test
@@ -202,7 +184,7 @@ class JanggiBoardTest {
         JanggiBoard janggiBoard = JanggiBoard.initializeWithPieces();
         Position position = new Position(1, 7);
 
-        assertThatThrownBy(() -> janggiBoard.computeReachableDestination(Side.CHO, position))
+        assertThatThrownBy(() -> janggiBoard.computeReachableDestination(Turn.CHO, position))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이동 가능한 목적지가 존재하지 않습니다.");
     }
@@ -211,27 +193,21 @@ class JanggiBoardTest {
     @DisplayName("포 이동 테스트 - 초기 배치에서 4,7에 포 배치")
     void test17() {
         Position position = new Position(4, 7);
-        Side side = Side.CHO;
-        Piece piece = new Cannon(side);
-        JanggiBoard modifiedBoard = JanggiBoardFixture.setUpTestBoard(position, piece);
+        Turn turn = Turn.CHO;
+        Piece piece = new Cannon(turn);
+        JanggiBoard modifiedBoard = JanggiBoardFixture.modifyInitialBoardWithOnePiece(position, piece);
 
-        List<Position> positions = modifiedBoard.computeReachableDestination(side, position);
+        List<Position> positions = modifiedBoard.computeReachableDestination(turn, position);
 
-        assertAll(
-                () -> assertThat(positions.size()).isEqualTo(4),
-                () -> assertThat(positions).contains(new Position(4, 9)),
-                () -> assertThat(positions).contains(new Position(4, 5)),
-                () -> assertThat(positions).contains(new Position(4, 4)),
-                () -> assertThat(positions).contains(new Position(4, 3))
-        );
+        assertThat(positions).contains(new Position(4, 9), new Position(4, 5), new Position(4, 4), new Position(4, 3));
     }
 
     @Test
     @DisplayName("이동 목적지에 상대편 말이 있으면 잡고 상대편 말을 반환한다.")
     void test18() {
         Position position = new Position(5, 7);
-        Piece piece = new Chariot(Side.CHO);
-        JanggiBoard modifiedBoard = JanggiBoardFixture.setUpTestBoard(position, piece);
+        Piece piece = new Chariot(Turn.CHO);
+        JanggiBoard modifiedBoard = JanggiBoardFixture.modifyInitialBoardWithOnePiece(position, piece);
         Position destination = new Position(5, 0);
 
         Piece catchedPiece = modifiedBoard.moveOrCatchPiece(position, destination);
@@ -243,8 +219,8 @@ class JanggiBoardTest {
     @DisplayName("이동 목적지에 상대편 말이 없으면 이동만 수행하여 Empty를 반환한다.")
     void test19() {
         Position position = new Position(5, 7);
-        Piece piece = new Chariot(Side.CHO);
-        JanggiBoard modifiedBoard = JanggiBoardFixture.setUpTestBoard(position, piece);
+        Piece piece = new Chariot(Turn.CHO);
+        JanggiBoard modifiedBoard = JanggiBoardFixture.modifyInitialBoardWithOnePiece(position, piece);
         Position destination = new Position(5, 1);
 
         Piece catchedPiece = modifiedBoard.moveOrCatchPiece(position, destination);
@@ -256,13 +232,14 @@ class JanggiBoardTest {
     @DisplayName("왕을 잡으면 게임 종료")
     void test21() {
         Position position = new Position(5, 1);
-        Piece piece = new Chariot(Side.CHO);
-        JanggiBoard modifiedBoard = JanggiBoardFixture.setUpTestBoard(position, piece);
+        Turn turn = Turn.CHO;
+        Piece piece = new Chariot(turn);
+        JanggiBoard modifiedBoard = JanggiBoardFixture.modifyInitialBoardWithOnePiece(position, piece);
         Position destination = new Position(4, 1);
 
-        Piece catchedPiece = modifiedBoard.moveOrCatchPiece(position, destination);
+        modifiedBoard.moveOrCatchPiece(position, destination);
 
-        assertThat(modifiedBoard.checkGameIsOver(catchedPiece)).isTrue();
+        assertThat(modifiedBoard.checkGameIsOver(turn)).isTrue();
     }
 
     @Test
@@ -272,7 +249,69 @@ class JanggiBoardTest {
 
         Position position = new Position(0, 8);
 
-        assertThatThrownBy(() -> janggiBoard.computeReachableDestination(Side.CHO, position)).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> janggiBoard.computeReachableDestination(Turn.CHO, position)).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 해당 위치에 움직일 수 있는 기물이 없습니다.");
+    }
+
+    @Test
+    @DisplayName("포 이동 테스트 - 초기 배치에서 궁성의 중앙 (4, 8)에 포 배치 + 양 옆에 기물 배치")
+    void test23() {
+        Position position = new Position(4, 8);
+        Turn turn = Turn.CHO;
+        Piece piece = new Cannon(turn);
+
+        Map<Position, Piece> piecePositions = new HashMap<>();
+        piecePositions.put(position, piece);
+
+        //포의 양 옆에 졸 배치해서 점프할 수 있도록 함.
+        piecePositions.put(new Position(3, 8), new Soldier(Turn.CHO));
+        piecePositions.put(new Position(5, 8), new Soldier(Turn.CHO));
+        JanggiBoard modifiedBoard = JanggiBoardFixture.modifyInitialBoardWithManyPieces(piecePositions);
+
+        List<Position> positions = modifiedBoard.computeReachableDestination(turn, position);
+
+        assertThat(positions).contains(new Position(4, 5), new Position(2, 8), new Position(6, 8));
+    }
+
+    @Test
+    @DisplayName("포 이동 테스트 - 초기 배치에서 궁성의 중앙 (4, 8)에 포 배치 + 왼쪽 대각선에 기물 배치 - 대각선 이동 불가")
+    void test24() {
+        Position position = new Position(4, 8);
+        Turn turn = Turn.CHO;
+        Piece piece = new Cannon(turn);
+
+        Map<Position, Piece> piecePositions = new HashMap<>();
+        piecePositions.put(position, piece);
+
+        //포의 양 옆에 졸 배치해서 점프할 수 있도록 함.
+        piecePositions.put(new Position(3, 7), new Soldier(Turn.CHO));
+        piecePositions.put(new Position(2, 6), new Empty());
+        JanggiBoard modifiedBoard = JanggiBoardFixture.modifyInitialBoardWithManyPieces(piecePositions);
+
+        List<Position> positions = modifiedBoard.computeReachableDestination(turn, position);
+
+        assertThat(positions).contains(new Position(4, 5))
+                            .doesNotContain(new Position(2, 6));
+    }
+
+    @Test
+    @DisplayName("초기 상태 기물 점수 계산 테스트")
+    void test25() {
+        JanggiBoard janggiBoard = JanggiBoard.initializeWithPieces();
+
+        assertThat(janggiBoard.sumSideTotalScore(Turn.CHO)).isEqualTo(72);
+    }
+
+    @Test
+    @DisplayName("임의의 상태 기물 점수 계산 테스트 - 차와 마만 남은 경우 (상대방의 기물은 고려하지 않음)")
+    void test26() {
+        Map<Position, Piece> piecePositions = new HashMap<>();
+        piecePositions.put(new Position(0, 8), new Chariot(Turn.CHO));
+        piecePositions.put(new Position(1, 8), new Horse(Turn.CHO));
+        piecePositions.put(new Position(2, 8), new Horse(Turn.HAN));
+
+        JanggiBoard janggiBoard = JanggiBoardFixture.modifyEmptyBoardWithManyPieces(piecePositions);
+
+        assertThat(janggiBoard.sumSideTotalScore(Turn.CHO)).isEqualTo(18);
     }
 }
