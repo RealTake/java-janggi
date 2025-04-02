@@ -3,7 +3,7 @@ package janggi.piece;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import janggi.game.Team;
+import janggi.game.team.Team;
 import janggi.point.Point;
 import janggi.point.Route;
 import java.util.List;
@@ -59,6 +59,28 @@ public class PoTest {
             Point targetPoint = new Point(8, 6);
 
             assertThat(po.isInMovingRange(startPoint, targetPoint)).isTrue();
+        }
+
+        @Test
+        @DisplayName("궁성의 대각선 경로가 있는 지점으로 이동한다면 true를 반환한다.")
+        void checkDiagonalMovalbleInPalace() {
+            Po po = new Po(Team.CHO);
+
+            Point startPoint = new Point(9, 5);
+            Point targetPoint = new Point(7, 3);
+
+            assertThat(po.isInMovingRange(startPoint, targetPoint)).isTrue();
+        }
+
+        @Test
+        @DisplayName("궁성의 대각선 경로가 없는 지점으로 이동한다면 false를 반환한다.")
+        void checkDiagonalMovalbleOutPalace() {
+            Po po = new Po(Team.CHO);
+
+            Point startPoint = new Point(8, 5);
+            Point targetPoint = new Point(6, 3);
+
+            assertThat(po.isInMovingRange(startPoint, targetPoint)).isFalse();
         }
     }
 
@@ -136,6 +158,24 @@ public class PoTest {
                 assertThat(path).hasSize(1);
                 assertThat(path).containsExactly(new Point(7, 6));
                 assertThat(route.getTargetPoint()).isEqualTo(new Point(8, 6));
+            });
+        }
+
+        @Test
+        @DisplayName("궁성의 대각선 경로가 있는 지점으로 이동 경로를 생성할 수 있다.")
+        void checkDiagonalMovalbleInPalace() {
+            Cha cha = new Cha(Team.CHO);
+
+            Point startPoint = new Point(9, 5);
+            Point targetPoint = new Point(7, 3);
+
+            Route route = cha.findRoute(startPoint, targetPoint);
+            List<Point> path = route.getPath();
+
+            assertAll(() -> {
+                assertThat(path).hasSize(1);
+                assertThat(path).containsExactly(new Point(8, 4));
+                assertThat(route.getTargetPoint()).isEqualTo(new Point(7, 3));
             });
         }
     }

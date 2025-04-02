@@ -11,8 +11,7 @@ public enum Direction {
     NORTH_WEST(-1, -1),
     NORTH_EAST(-1, 1),
     SOUTH_WEST(1, -1),
-    SOUTH_EAST(1, 1),
-    DEFAULT(0, 0);
+    SOUTH_EAST(1, 1);
 
     private final int rowDistance;
     private final int columnDistance;
@@ -22,24 +21,17 @@ public enum Direction {
         this.columnDistance = columnDistance;
     }
 
-    public static Direction cardinalFrom(Point startPoint, Point targetPoint) {
-        if (startPoint.isSameRow(targetPoint) && startPoint.isColumnBiggerThan(targetPoint)) {
-            return WEST;
+    public static Direction calculateDirections(Point startPoint, Point targetPoint) {
+        int rowGap = startPoint.row() - targetPoint.row();
+        int columnGap = startPoint.column() - targetPoint.column();
+
+        if (startPoint.isSameRow(targetPoint) || startPoint.isSameColumn(targetPoint)) {
+            return calculateCardinalDirection(rowGap, columnGap);
         }
-        if (startPoint.isSameRow(targetPoint) && startPoint.isColumnLessThan(targetPoint)) {
-            return EAST;
-        }
-        if (startPoint.isSameColumn(targetPoint) && startPoint.isRowBiggerThan(targetPoint)) {
-            return NORTH;
-        }
-        if (startPoint.isSameColumn(targetPoint) && startPoint.isRowLessThan(targetPoint)) {
-            return SOUTH;
-        }
-        throw new IllegalArgumentException("상하좌우로만으로는 경로를 찾을 수 없습니다.");
+        return calculateDiagonalDirection(rowGap, columnGap);
     }
 
-    public static List<Direction> complexFrom(Point startPoint, Point targetPoint,
-        int diagonalCount) {
+    public static List<Direction> calculateDirections(Point startPoint, Point targetPoint, int diagonalCount) {
         int rowGap = startPoint.row() - targetPoint.row();
         int columnGap = startPoint.column() - targetPoint.column();
 

@@ -1,6 +1,6 @@
 package janggi.piece;
 
-import janggi.game.Team;
+import janggi.game.team.Team;
 import janggi.point.Point;
 import janggi.point.Route;
 
@@ -10,7 +10,9 @@ public interface Movable {
 
     Route findRoute(Point startPoint, Point targetPoint);
 
+    Team getTeam();
+
     String getName();
 
-    Team getTeam();
+    double getScore(Team team);
 }

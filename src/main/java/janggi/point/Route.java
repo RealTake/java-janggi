@@ -1,13 +1,14 @@
 package janggi.point;
 
-import janggi.game.Board;
-import janggi.game.Team;
+import janggi.game.team.Team;
 import janggi.piece.Movable;
+import janggi.piece.pieces.RunningPieces;
 import java.util.List;
 import java.util.Set;
 
 public class Route {
 
+    private static final String NEEDED_HURDLE_PIECE = "포";
     private static final int NEEDED_HURDLE_NUMBER = 1;
 
     private final List<Point> path;
@@ -18,49 +19,49 @@ public class Route {
         this.targetPoint = targetPoint;
     }
 
-    public void validateRoute(Point startPoint, Board board) {
-        Movable movingPiece = board.findPieceByPoint(startPoint);
+    public void validateRoute(Point startPoint, RunningPieces pieces) {
+        Movable movingPiece = pieces.findPieceByPoint(startPoint);
 
-        if (movingPiece.getName().equals("포")) {
-            checkRouteWithHurdle(startPoint, board);
+        if (NEEDED_HURDLE_PIECE.equals(movingPiece.getName())) {
+            checkRouteWithHurdle(startPoint, pieces);
             return;
         }
-        checkRouteWithoutHurdles(startPoint, board);
+        checkRouteWithoutHurdles(startPoint, pieces);
     }
 
-    private void checkRouteWithHurdle(Point startPoint, Board board) {
-        if (hasTargetPointHurdles(startPoint, board)) {
+    private void checkRouteWithHurdle(Point startPoint, RunningPieces pieces) {
+        if (hasTargetPointHurdles(startPoint, pieces)) {
             throw new IllegalArgumentException("해당 위치로 이동할 수 없습니다.");
         }
-        if (countJumperForPo(board) != NEEDED_HURDLE_NUMBER) {
+        if (countJumperForPo(pieces) != NEEDED_HURDLE_NUMBER) {
             throw new IllegalArgumentException("포는 포를 제외한 하나의 기물만 필요합니다.");
         }
-        if (board.getRunningPieces().containsKey(targetPoint)
-            && board.findPieceByPoint(targetPoint).getName().equals("포")) {
+        if (pieces.existPieceOnPoint(targetPoint)
+            && NEEDED_HURDLE_PIECE.equals(pieces.findPieceByPoint(targetPoint).getName())) {
             throw new IllegalArgumentException("포는 포를 잡을 수 없습니다.");
         }
     }
 
-    private void checkRouteWithoutHurdles(Point startPoint, Board board) {
-        if (!findRouteHurdles(board.getRunningPieces().keySet()).isEmpty()
-            || hasTargetPointHurdles(startPoint, board)) {
+    private void checkRouteWithoutHurdles(Point startPoint, RunningPieces pieces) {
+        if (!findRouteHurdles(pieces.getPoints()).isEmpty()
+            || hasTargetPointHurdles(startPoint, pieces)) {
             throw new IllegalArgumentException("해당 위치로 이동할 수 없습니다.");
         }
     }
 
-    private boolean hasTargetPointHurdles(Point startPoint, Board board) {
-        if (board.getRunningPieces().containsKey(targetPoint)) {
-            Team startPieceTeam = board.findPieceByPoint(startPoint).getTeam();
-            Team targetPieceTeam = board.findPieceByPoint(targetPoint).getTeam();
+    private boolean hasTargetPointHurdles(Point startPoint, RunningPieces pieces) {
+        if (pieces.existPieceOnPoint(targetPoint)) {
+            Team startPieceTeam = pieces.findPieceByPoint(startPoint).getTeam();
+            Team targetPieceTeam = pieces.findPieceByPoint(targetPoint).getTeam();
 
             return startPieceTeam == targetPieceTeam;
         }
         return false;
     }
 
-    private int countJumperForPo(Board board) {
-        return (int) findRouteHurdles(board.getRunningPieces().keySet()).stream()
-            .filter(point -> !board.findPieceByPoint(point).getName().equals("포"))
+    private int countJumperForPo(RunningPieces pieces) {
+        return (int) findRouteHurdles(pieces.getPoints()).stream()
+            .filter(point -> !NEEDED_HURDLE_PIECE.equals(pieces.findPieceByPoint(point).getName()))
             .count();
     }
 

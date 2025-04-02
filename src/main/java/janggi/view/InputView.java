@@ -2,6 +2,7 @@ package janggi.view;
 
 import janggi.point.Point;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class InputView {
@@ -11,7 +12,7 @@ public class InputView {
 
     public boolean readGameStart() {
         try {
-            System.out.println("게임을 진행하시겠습니까? (y/n)");
+            System.out.println("게임을 시작하시겠습니까? (y/n)");
             return YorN.fromText(scanner.nextLine()).toBoolean();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage() + ERROR_SUFFIX);
@@ -19,23 +20,26 @@ public class InputView {
         }
     }
 
-    public Point readStartPoint() {
+    public boolean readGameRestart() {
         try {
-            System.out.println("이동하고 싶은 기물의 좌표를 입력하세요. (row,column)");
-            return parseStringToPoint(scanner.nextLine());
+            System.out.println("기존에 진행하던 게임이 존재합니다. 다시 불러오시겠습니까? (y/n)");
+            return YorN.fromText(scanner.nextLine()).toBoolean();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage() + ERROR_SUFFIX);
-            return readStartPoint();
+            return readGameRestart();
         }
     }
 
-    public Point readTargetPoint() {
+    public List<Point> readStartAndTargetPoint() {
         try {
-            System.out.println("어디로 이동하시겠습니까? (row,column)");
-            return parseStringToPoint(scanner.nextLine());
+            System.out.println("이동하고 싶은 기물의 좌표와 목적지 좌표를 입력하세요. (row,column->row,column)");
+
+            return Arrays.stream(scanner.nextLine().split("->"))
+                .map(this::parseStringToPoint)
+                .toList();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage() + ERROR_SUFFIX);
-            return readTargetPoint();
+            return readStartAndTargetPoint();
         }
     }
 

@@ -1,49 +1,25 @@
 package janggi.game;
 
-import janggi.point.Point;
+import janggi.dao.BoardDao;
+import janggi.dao.RunningPiecesDao;
+import janggi.dao.connector.MySQLConnector;
 import janggi.view.BoardView;
 import janggi.view.InputView;
 
 public class JanggiApplication {
 
-    private final InputView inputView;
-    private final BoardView boardView;
-
-    private JanggiApplication() {
-        inputView = new InputView();
-        boardView = new BoardView();
-    }
-
     public static void main(String[] args) {
-        JanggiApplication janggiApplication = new JanggiApplication();
-        janggiApplication.run();
-    }
+        BoardDao boardDao = new BoardDao(MySQLConnector.createConnection());
+        RunningPiecesDao runningPiecesDao = new RunningPiecesDao(MySQLConnector.createConnection());
 
-    private void run() {
-        Board board = Board.init(Team.CHO);
+        JanggiGame game = new JanggiGame(
+            new InputView(),
+            new BoardView(),
+            boardDao, runningPiecesDao
+        );
+        game.start();
 
-        do {
-            boardView.displayBoard(board);
-            boardView.printTeam(board.getTurn());
-
-            handleMoveException(() -> {
-                Point startPoint = inputView.readStartPoint();
-                boardView.printSelectedPiece(board.findPieceByPoint(startPoint));
-
-                Point targetPoint = inputView.readTargetPoint();
-                board.move(startPoint, targetPoint);
-
-                boardView.printMovingResult(startPoint, targetPoint);
-                board.reverseTurn();
-            });
-        } while (inputView.readGameStart());
-    }
-
-    private void handleMoveException(Runnable action) {
-        try {
-            action.run();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+        boardDao.closeConnector();
+        runningPiecesDao.closeConnector();
     }
 }
