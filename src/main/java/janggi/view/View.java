@@ -4,6 +4,8 @@ import janggi.board.point.Point;
 import janggi.piece.Camp;
 import janggi.piece.Piece;
 import janggi.piece.PieceSymbol;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -14,11 +16,13 @@ public final class View {
     private static final String EMPTY_SPACE = "ㅤ";
     private static final String BOARD_DELIMITER_LINE = " | ";
     private static final String ERROR_MESSAGE_FORMAT = "%n[ERROR] %s";
+    private static final DateTimeFormatter LAST_SAVED_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 E요일 HH:mm");
 
     private final Scanner scanner = new Scanner(System.in);
 
     public void displayStartBanner() {
-        System.out.println("""
+        System.out.print("""
                 
                 ====================================
                     Welcome to the Janggi Game!
@@ -31,8 +35,32 @@ public final class View {
                 """);
     }
 
+    public void displayOfflineModeBanner() {
+        System.out.println("""
+                           < 오프라인 모드 >
+                 게임을 종료하면 진행상황이 저장되지 않습니다.
+                  저장을 원하시면, DB 연결을 확인해주세요.
+                ====================================
+                """);
+    }
+
+    public void displayOnlineModeBanner() {
+        System.out.println("""
+                          < 온라인 모드 >
+                    게임을 종료하면 진행상황이 저장됩니다.
+                ====================================
+                """);
+    }
+
     public boolean readStartGame() {
         System.out.println("게임을 시작하시겠습니까? (y/n)");
+        String response = scanner.nextLine();
+        return parseYesOrNo(response);
+    }
+
+    public boolean readContinueGame(LocalDateTime lastSavedTime) {
+        System.out.printf("%n저장된 게임이 있습니다. (%s)%n저장된 게임을 불러오시겠습니까? (y/n)%n",
+                lastSavedTime.format(LAST_SAVED_TIME_FORMATTER));
         String response = scanner.nextLine();
         return parseYesOrNo(response);
     }
@@ -95,5 +123,24 @@ public final class View {
 
     public void displayErrorMessage(String message) {
         System.out.printf((ERROR_MESSAGE_FORMAT), message);
+    }
+
+    public void displayPoint(Map<Camp, Double> pointByCamp) {
+        System.out.println();
+        System.out.println("-------- 점수판 --------");
+        for (Camp camp : pointByCamp.keySet()) {
+            System.out.printf("[%s나라] %.1f점 ", CampFormatter.format(camp), pointByCamp.get(camp));
+        }
+        System.out.print("\n-----------------------");
+    }
+
+    public void displayEndBanner() {
+        System.out.println("""
+                
+                
+                ====================================
+                     게임이 종료되었습니다. 감사합니다.
+                ====================================
+                """);
     }
 }

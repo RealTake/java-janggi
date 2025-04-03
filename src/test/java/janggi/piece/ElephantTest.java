@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import janggi.board.Board;
 import janggi.board.point.Point;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,13 +25,12 @@ class ElephantTest {
     })
     void shouldThrowException_WhenInvalidMove(Camp camp, int toX, int toY) {
         // given
-        Board board = new Board();
-        Elephant elephant = new Elephant(camp, board);
+        Elephant elephant = new Elephant(camp);
         Point fromPoint = new Point(5, 5);
         Point toPoint = new Point(toX, toY);
 
         // when & then
-        assertThatCode(() -> elephant.validateMove(fromPoint, toPoint))
+        assertThatCode(() -> elephant.validateMove(fromPoint, toPoint, Set.of()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상은 직선으로 한 칸, 대각선으로 두 칸 움직여야 합니다.");
     }
@@ -49,13 +49,12 @@ class ElephantTest {
     })
     void validateMoveTest(Camp camp, int toX, int toY) {
         // given
-        Board board = new Board();
-        Elephant elephant = new Elephant(camp, board);
+        Elephant elephant = new Elephant(camp);
         Point fromPoint = new Point(5, 5);
         Point toPoint = new Point(toX, toY);
 
         // when & then
-        assertThatCode(() -> elephant.validateMove(fromPoint, toPoint))
+        assertThatCode(() -> elephant.validateMove(fromPoint, toPoint, Set.of()))
                 .doesNotThrowAnyException();
     }
 
@@ -70,16 +69,17 @@ class ElephantTest {
     void shouldThrowException_WhenLinearBlocked(Camp camp, int toX, int toY) {
         // given
         Board board = new Board();
-        Elephant elephant = new Elephant(camp, board);
+        Elephant elephant = new Elephant(camp);
         Point fromPoint = new Point(5, 5);
         Point toPoint = new Point(toX, toY);
-        board.placePiece(new Point(5, 6), new SoldierJol(board));
-        board.placePiece(new Point(6, 5), new SoldierJol(board));
-        board.placePiece(new Point(5, 4), new SoldierJol(board));
-        board.placePiece(new Point(4, 5), new SoldierJol(board));
+        board.placePiece(new Point(5, 6), new SoldierJol());
+        board.placePiece(new Point(6, 5), new SoldierJol());
+        board.placePiece(new Point(5, 4), new SoldierJol());
+        board.placePiece(new Point(4, 5), new SoldierJol());
+        Set<Piece> piecesOnRoute = board.getPiecesByPoint(elephant.findRoute(fromPoint, toPoint));
 
         // when & then
-        assertThatCode(() -> elephant.validateMove(fromPoint, toPoint))
+        assertThatCode(() -> elephant.validateMove(fromPoint, toPoint, piecesOnRoute))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상은 기물을 넘어서 이동할 수 없습니다.");
     }
@@ -87,28 +87,29 @@ class ElephantTest {
     @DisplayName("상은 직선으로 한 칸, 대각선으로 두 칸 움직일 때 대각선으로 이동중 기물에 막힌 경우 예외가 발생한다.")
     @ParameterizedTest
     @CsvSource({
-//            "HAN,7,8",
+            "HAN,7,8",
             "HAN,7,2",
-//            "HAN,8,3",
-//            "HAN,3,2",
+            "HAN,8,3",
+            "HAN,3,2",
     })
     void shouldThrowException_WhenDiagonalBlocked(Camp camp, int toX, int toY) {
         // given
         Board board = new Board();
-        Elephant elephant = new Elephant(camp, board);
+        Elephant elephant = new Elephant(camp);
         Point fromPoint = new Point(5, 5);
         Point toPoint = new Point(toX, toY);
-        board.placePiece(new Point(6, 7), new SoldierJol(board));
-        board.placePiece(new Point(7, 6), new SoldierJol(board));
-        board.placePiece(new Point(6, 3), new SoldierJol(board));
-        board.placePiece(new Point(3, 6), new SoldierJol(board));
-        board.placePiece(new Point(4, 3), new SoldierJol(board));
-        board.placePiece(new Point(3, 4), new SoldierJol(board));
-        board.placePiece(new Point(7, 4), new SoldierJol(board));
-        board.placePiece(new Point(4, 7), new SoldierJol(board));
+        board.placePiece(new Point(6, 7), new SoldierJol());
+        board.placePiece(new Point(7, 6), new SoldierJol());
+        board.placePiece(new Point(6, 3), new SoldierJol());
+        board.placePiece(new Point(3, 6), new SoldierJol());
+        board.placePiece(new Point(4, 3), new SoldierJol());
+        board.placePiece(new Point(3, 4), new SoldierJol());
+        board.placePiece(new Point(7, 4), new SoldierJol());
+        board.placePiece(new Point(4, 7), new SoldierJol());
+        Set<Piece> piecesOnRoute = board.getPiecesByPoint(elephant.findRoute(fromPoint, toPoint));
 
         // when & then
-        assertThatCode(() -> elephant.validateMove(fromPoint, toPoint))
+        assertThatCode(() -> elephant.validateMove(fromPoint, toPoint, piecesOnRoute))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상은 기물을 넘어서 이동할 수 없습니다.");
     }
@@ -121,11 +122,10 @@ class ElephantTest {
     })
     void canCaptureTest(Camp camp, boolean expected) {
         // given
-        Board board = new Board();
-        Elephant elephant = new Elephant(camp, board);
+        Elephant elephant = new Elephant(camp);
 
         // when
-        boolean canCapture = elephant.canCapture(new SoldierJol(board));
+        boolean canCapture = elephant.canCapture(new SoldierJol());
 
         // then
         assertThat(canCapture)
@@ -136,11 +136,10 @@ class ElephantTest {
     @Test
     void shouldThrowException_WhenCatchSameCamp() {
         // given
-        Board board = new Board();
-        Elephant elephant = new Elephant(Camp.CHU, board);
+        Elephant elephant = new Elephant(Camp.CHU);
 
         // when & then
-        assertThatCode(() -> elephant.validateCatch(new SoldierJol(board)))
+        assertThatCode(() -> elephant.validateCatch(new SoldierJol()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 기물을 잡을 수 없습니다.");
     }
@@ -149,8 +148,7 @@ class ElephantTest {
     @Test
     void getPieceSymbolTest() {
         // given
-        Board board = new Board();
-        Elephant elephant = new Elephant(Camp.HAN, board);
+        Elephant elephant = new Elephant(Camp.HAN);
 
         // when
         PieceSymbol pieceSymbol = elephant.getPieceSymbol();
@@ -158,5 +156,19 @@ class ElephantTest {
         // then
         assertThat(pieceSymbol)
                 .isSameAs(PieceSymbol.ELEPHANT);
+    }
+
+    @DisplayName("자신의 점수를 반환한다.")
+    @Test
+    void getPointTest() {
+        // given
+        Elephant elephant = new Elephant(Camp.HAN);
+
+        // when
+        int point = elephant.getPoint();
+
+        // then
+        assertThat(point)
+                .isEqualTo(3);
     }
 }

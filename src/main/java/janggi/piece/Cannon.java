@@ -1,35 +1,59 @@
 package janggi.piece;
 
-import janggi.board.Board;
 import janggi.board.point.Point;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
 
-public final class Cannon extends Piece {
+public final class Cannon extends PalaceAffectedPiece {
 
     private static final int POSSIBLE_JUMP_OVER_PIECE_COUNT = 1;
 
-    public Cannon(Camp camp, Board board) {
-        super(camp, board);
+    public Cannon(Camp camp) {
+        super(camp);
     }
 
     @Override
-    public void validateMove(Point fromPoint, Point toPoint) {
+    public Set<Point> findRoute(Point fromPoint, Point toPoint) {
+        if (fromPoint.isHorizontal(toPoint)) {
+            return findHorizontalRoute(fromPoint, toPoint);
+        }
+        if (fromPoint.isVertical(toPoint)) {
+            return findVerticalRoute(fromPoint, toPoint);
+        }
+        return findDiagonalRoute(fromPoint, toPoint);
+    }
+
+    @Override
+    protected void validateNonPalaceMove(Point fromPoint, Point toPoint) {
         validateLinearMove(fromPoint, toPoint);
-        validateJumpOverOnePiece(fromPoint, toPoint);
+    }
+
+    @Override
+    protected void validatePalaceMove(Point fromPoint, Point toPoint) {
+        if (fromPoint.isDiagonal(toPoint)) {
+            validateDiagonalPalaceMove(fromPoint, toPoint);
+            return;
+        }
+        validateLinearMove(fromPoint, toPoint);
+    }
+
+    @Override
+    protected void validateObstacleOnRoute(Set<Piece> piecesOnRoute) {
+        validatePieceCount(piecesOnRoute);
+        validateNotJumpOverCannon(piecesOnRoute);
+    }
+
+    private void validateDiagonalPalaceMove(Point fromPoint, Point toPoint) {
+        if (!isDiagonalPalaceMove(fromPoint, toPoint)) {
+            throw new IllegalArgumentException("포가 대각선으로 이동하려면, 허용된 지점에서만 가능합니다.");
+        }
     }
 
     private void validateLinearMove(Point fromPoint, Point toPoint) {
         if (!fromPoint.isHorizontal(toPoint) && !fromPoint.isVertical(toPoint)) {
             throw new IllegalArgumentException("포는 수평 혹은 수직으로만 움직여야 합니다.");
         }
-    }
-
-    private void validateJumpOverOnePiece(Point fromPoint, Point toPoint) {
-        Set<Piece> pieces = getBoard().getPiecesByPoint(findRoute(fromPoint, toPoint));
-        validatePieceCount(pieces);
-        validateNotJumpOverCannon(pieces);
     }
 
     private void validatePieceCount(Set<Piece> pieces) {
@@ -49,16 +73,16 @@ public final class Cannon extends Piece {
                 .anyMatch(piece -> piece.getPieceSymbol() == this.getPieceSymbol());
     }
 
-    private Set<Point> findRoute(Point fromPoint, Point toPoint) {
-        boolean isHorizontal = fromPoint.isHorizontal(toPoint);
-        if (isHorizontal) {
-            return findRouteByFromAndTo(fromPoint.y(), fromPoint.x(), toPoint.x(), Point::new);
-        }
-        return findRouteByFromAndTo(fromPoint.x(), fromPoint.y(), toPoint.y(), (a, b) -> new Point(b, a));
+    private Set<Point> findHorizontalRoute(Point fromPoint, Point toPoint) {
+        return findLinearRoute(fromPoint.y(), fromPoint.x(), toPoint.x(), Point::new);
     }
 
-    private Set<Point> findRouteByFromAndTo(int fixed, int from, int to,
-                                            BiFunction<Integer, Integer, Point> pointGenerator) {
+    private Set<Point> findVerticalRoute(Point fromPoint, Point toPoint) {
+        return findLinearRoute(fromPoint.x(), fromPoint.y(), toPoint.y(), (y, x) -> new Point(x, y));
+    }
+
+    private Set<Point> findLinearRoute(int fixed, int from, int to,
+                                       BiFunction<Integer, Integer, Point> pointGenerator) {
         Set<Point> route = new HashSet<>();
         int start = Math.min(from, to) + 1;
         int end = Math.max(from, to);
@@ -68,14 +92,29 @@ public final class Cannon extends Piece {
         return route;
     }
 
+    private Set<Point> findDiagonalRoute(Point fromPoint, Point toPoint) {
+        Set<Point> route = new HashSet<>();
+        Point current = fromPoint.getNextDiagonalStep(toPoint);
+        while (!current.equals(toPoint)) {
+            route.add(current);
+            current = current.getNextDiagonalStep(toPoint);
+        }
+        return route;
+    }
+
     @Override
     protected boolean canCapture(Piece otherPiece) {
-        return getCamp() != otherPiece.getCamp()
+        return isEnemy(otherPiece)
                 && getPieceSymbol() != otherPiece.getPieceSymbol();
     }
 
     @Override
     public PieceSymbol getPieceSymbol() {
         return PieceSymbol.CANNON;
+    }
+
+    @Override
+    public int getPoint() {
+        return PieceSymbol.CANNON.getPoint();
     }
 }

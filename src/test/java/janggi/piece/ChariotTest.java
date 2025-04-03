@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import janggi.board.Board;
 import janggi.board.point.Point;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -22,13 +24,12 @@ class ChariotTest {
     })
     void shouldThrowException_WhenInvalidMove(Camp camp, int toX, int toY) {
         // given
-        Board board = new Board();
-        Chariot chariot = new Chariot(camp, board);
+        Chariot chariot = new Chariot(camp);
         Point fromPoint = new Point(3, 3);
         Point toPoint = new Point(toX, toY);
 
         // when & then
-        assertThatCode(() -> chariot.validateMove(fromPoint, toPoint))
+        assertThatCode(() -> chariot.validateMove(fromPoint, toPoint, Set.of()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("차는 수평 혹은 수직으로만 움직여야 합니다.");
     }
@@ -43,29 +44,35 @@ class ChariotTest {
     })
     void validateMoveTest(Camp camp, int toX, int toY) {
         // given
-        Board board = new Board();
-        Chariot chariot = new Chariot(camp, board);
+        Chariot chariot = new Chariot(camp);
         Point fromPoint = new Point(3, 3);
         Point toPoint = new Point(toX, toY);
 
         // when & then
-        assertThatCode(() -> chariot.validateMove(fromPoint, toPoint))
+        assertThatCode(() -> chariot.validateMove(fromPoint, toPoint, Set.of()))
                 .doesNotThrowAnyException();
     }
 
     @DisplayName("차는 상하좌우로 움직일 때 기물에 막힌 경우 예외가 발생한다.")
-    @Test
-    void shouldThrowException_WhenBlocked() {
+    @ParameterizedTest
+    @CsvSource({
+            "3, 4, 3, 5",
+            "3, 2, 3, 1",
+            "2, 3, 1, 3",
+            "4, 3, 5, 3",
+    })
+    void shouldThrowException_WhenBlocked(int obstacleX, int obstacleY, int toX, int toY) {
         // given
         Board board = new Board();
-        board.placePiece(new Point(3, 5), new SoldierJol(board));
-        Chariot chariot = new Chariot(Camp.CHU, board);
+        board.placePiece(new Point(obstacleX, obstacleY), new SoldierJol());
+        Chariot chariot = new Chariot(Camp.CHU);
         Point fromPoint = new Point(3, 3);
         board.placePiece(fromPoint, chariot);
-        Point toPoint = new Point(3, 7);
+        Point toPoint = new Point(toX, toY);
+        Set<Piece> piecesOnRoute = board.getPiecesByPoint(chariot.findRoute(fromPoint, toPoint));
 
         // when & then
-        assertThatCode(() -> chariot.validateMove(fromPoint, toPoint))
+        assertThatCode(() -> chariot.validateMove(fromPoint, toPoint, piecesOnRoute))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("차는 기물을 넘어 이동할 수 없습니다.");
     }
@@ -78,11 +85,10 @@ class ChariotTest {
     })
     void canCaptureTest(Camp camp, boolean expected) {
         // given
-        Board board = new Board();
-        Chariot chariot = new Chariot(camp, board);
+        Chariot chariot = new Chariot(camp);
 
         // when
-        boolean canCapture = chariot.canCapture(new SoldierJol(board));
+        boolean canCapture = chariot.canCapture(new SoldierJol());
 
         // then
         assertThat(canCapture)
@@ -93,11 +99,10 @@ class ChariotTest {
     @Test
     void shouldThrowException_WhenCatchSameCamp() {
         // given
-        Board board = new Board();
-        Chariot chariot = new Chariot(Camp.CHU, board);
+        Chariot chariot = new Chariot(Camp.CHU);
 
         // when & then
-        assertThatCode(() -> chariot.validateCatch(new SoldierJol(board)))
+        assertThatCode(() -> chariot.validateCatch(new SoldierJol()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 기물을 잡을 수 없습니다.");
     }
@@ -110,8 +115,7 @@ class ChariotTest {
     })
     void shouldThrowException_WhenSelectOtherCampPiece(Camp camp, Camp otherCamp) {
         // given
-        Board board = new Board();
-        Chariot chariot = new Chariot(otherCamp, board);
+        Chariot chariot = new Chariot(otherCamp);
 
         // when & then
         assertThatCode(() -> chariot.validateSelect(camp))
@@ -123,8 +127,7 @@ class ChariotTest {
     @Test
     void getPieceSymbolTest() {
         // given
-        Board board = new Board();
-        Chariot chariot = new Chariot(Camp.CHU, board);
+        Chariot chariot = new Chariot(Camp.CHU);
 
         // when
         PieceSymbol pieceSymbol = chariot.getPieceSymbol();
@@ -132,5 +135,111 @@ class ChariotTest {
         // then
         assertThat(pieceSymbol)
                 .isSameAs(PieceSymbol.CHARIOT);
+    }
+
+    @DisplayName("자신의 점수를 반환한다.")
+    @Test
+    void getPointTest() {
+        // given
+        Chariot chariot = new Chariot(Camp.CHU);
+
+        // when
+        int point = chariot.getPoint();
+
+        // then
+        assertThat(point)
+                .isEqualTo(13);
+    }
+
+    @Nested
+    class WithPalaceTest {
+
+        @DisplayName("차는 궁 내부에서 허용된 대각선으로 직진 가능하다.")
+        @ParameterizedTest
+        @CsvSource({
+                "3, 0, 5, 2",
+                "5, 2, 3, 0",
+                "5, 0, 3, 2",
+                "3, 2, 5, 0",
+                "4, 1, 3, 0",
+                "4, 1, 5, 2",
+                "4, 1, 3, 2",
+                "4, 1, 5, 0",
+        })
+        void isDiagonalPalaceMoveAllowedTest(int fromX, int fromY, int toX, int toY) {
+            // given
+            Board board = new Board();
+            Chariot chariot = new Chariot(Camp.CHU);
+            Point fromPoint = new Point(fromX, fromY);
+            Point toPoint = new Point(toX, toY);
+            board.placePiece(fromPoint, chariot);
+            Set<Piece> piecesOnRoute = board.getPiecesByPoint(chariot.findRoute(fromPoint, toPoint));
+
+            // when & then
+            assertThatCode(() -> chariot.validateMove(fromPoint, toPoint, piecesOnRoute))
+                    .doesNotThrowAnyException();
+        }
+
+        @DisplayName("차가 대각선으로 직진하려고 할 때, 허용되지 않은(대각선 경로가 없는) 경로인 경우 예외가 발생한다.")
+        @ParameterizedTest
+        @CsvSource({
+                "3, 1, 4, 0",
+                "4, 0, 5, 1",
+                "5, 1, 4, 2",
+                "4, 2, 3, 1",
+        })
+        void shouldThrowException_WhenDiagonalMoveOutsidePalace(int fromX, int fromY, int toX, int toY) {
+            // given
+            Board board = new Board();
+            Chariot chariot = new Chariot(Camp.CHU);
+            Point fromPoint = new Point(fromX, fromY);
+            Point toPoint = new Point(toX, toY);
+            board.placePiece(fromPoint, chariot);
+            Set<Piece> piecesOnRoute = board.getPiecesByPoint(chariot.findRoute(fromPoint, toPoint));
+
+            // when & then
+            assertThatCode(() -> chariot.validateMove(fromPoint, toPoint, piecesOnRoute))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("차가 대각선으로 이동하려면, 허용된 지점에서만 가능합니다.");
+        }
+
+        @DisplayName("차는 궁 내부에서 대각선으로 이동할 때 기물에 막힌 경우 예외가 발생한다.")
+        @Test
+        void shouldThrowException_WhenBlockedInsidePalace() {
+            // given
+            Board board = new Board();
+            Chariot chariot = new Chariot(Camp.CHU);
+            Point fromPoint = new Point(3, 0);
+            Point toPoint = new Point(5, 2);
+            board.placePiece(fromPoint, chariot);
+            board.placePiece(new Point(4, 1), new SoldierJol());
+            Set<Piece> piecesOnRoute = board.getPiecesByPoint(chariot.findRoute(fromPoint, toPoint));
+
+            // when & then
+            assertThatCode(() -> chariot.validateMove(fromPoint, toPoint, piecesOnRoute))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("차는 기물을 넘어 이동할 수 없습니다.");
+        }
+
+        @DisplayName("차는 궁 내부에서도 상하좌우로 무제한으로 움직일 수 있다.")
+        @ParameterizedTest
+        @CsvSource({
+                "3, 0, 3, 5",
+                "5, 2, 5, 7",
+                "3, 2, 3, 7"
+        })
+        void validateMoveTest(int fromX, int fromY, int toX, int toY) {
+            // given
+            Board board = new Board();
+            Chariot chariot = new Chariot(Camp.CHU);
+            Point fromPoint = new Point(fromX, fromY);
+            Point toPoint = new Point(toX, toY);
+            board.placePiece(fromPoint, chariot);
+            Set<Piece> piecesOnRoute = board.getPiecesByPoint(chariot.findRoute(fromPoint, toPoint));
+
+            // when & then
+            assertThatCode(() -> chariot.validateMove(fromPoint, toPoint, piecesOnRoute))
+                    .doesNotThrowAnyException();
+        }
     }
 }
