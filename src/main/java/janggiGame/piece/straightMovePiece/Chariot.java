@@ -1,6 +1,6 @@
 package janggiGame.piece.straightMovePiece;
 
-import janggiGame.Dot;
+import janggiGame.position.Position;
 import janggiGame.piece.Dynasty;
 import janggiGame.piece.Piece;
 import janggiGame.piece.Type;
@@ -14,12 +14,12 @@ public class Chariot extends StraightMovePiece {
     }
 
     @Override
-    public void validateMove(Map<Dot, Piece> routesWithPiece, Piece destinationPiece) {
+    public void validateMove(Map<Position, Piece> routesWithPiece, Piece destinationPiece) {
         validateSameDynasty(destinationPiece);
 
         boolean isBlocked = routesWithPiece.values().stream().anyMatch(Objects::nonNull);
 
-        if(isBlocked) {
+        if (isBlocked) {
             throw new UnsupportedOperationException("[ERROR] 차는 경로에 말이 존재하면 이동할 수 없습니다.");
         }
     }

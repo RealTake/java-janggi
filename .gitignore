@@ -30,3 +30,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+mysql-db
+mysql-test-db

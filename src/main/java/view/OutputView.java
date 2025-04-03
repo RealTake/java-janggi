@@ -1,9 +1,10 @@
 package view;
 
-import janggiGame.Dot;
 import janggiGame.piece.Dynasty;
 import janggiGame.piece.Piece;
 import janggiGame.piece.Type;
+import janggiGame.position.Palace;
+import janggiGame.position.Position;
 import janggiGame.state.GameResult;
 import janggiGame.state.GameScore;
 import java.util.Map;
@@ -11,19 +12,23 @@ import java.util.Map;
 public class OutputView {
     private static final String BLANK = "＿";
 
-    public void printBoard(Map<Dot, Piece> pieces) {
-        for (Dot dot : Dot.getDots()) {
-            if (dot.getX() == 0) {
+    public void printBoard(Map<Position, Piece> pieces) {
+        for (Position position : Position.getDots()) {
+            if (position.getX() == 0) {
                 System.out.println();
-                System.out.printf("%d", dot.getY());
+                System.out.printf("%d", position.getY());
             }
 
-            if (!pieces.containsKey(dot)) {
+            if (!pieces.containsKey(position)) {
+                if (Palace.isInPalace(position)) {
+                    System.out.print("\u001B[38;5;226m" + " " + BLANK + "\u001B[0m");
+                    continue;
+                }
                 System.out.printf("%2s", BLANK);
                 continue;
             }
 
-            Piece piece = pieces.get(dot);
+            Piece piece = pieces.get(position);
 
             if (piece.getDynasty() == Dynasty.CHO) {
                 System.out.print("\u001B[32m" + " " + getName(piece) + "\u001B[0m");
@@ -80,5 +85,9 @@ public class OutputView {
             case DRAW -> System.out.println("무승부");
             case null, default -> throw new RuntimeException();
         }
+    }
+
+    public void printErrorMessage(Exception e) {
+        System.out.println(e.getMessage());
     }
 }

@@ -1,7 +1,8 @@
 package view;
 
-import janggiGame.Dot;
+import db.dao.JanggiGameDao.GameDto;
 import janggiGame.piece.Dynasty;
+import janggiGame.position.Position;
 import java.util.List;
 import java.util.Scanner;
 
@@ -39,13 +40,13 @@ public class InputView {
     }
 
     private String getDynastyName(Dynasty currentDynasty) {
-        if(currentDynasty == Dynasty.CHO) {
+        if (currentDynasty == Dynasty.CHO) {
             return "초나라";
         }
         return "한나라";
     }
 
-    public List<Dot> readPieceMovement() {
+    public List<Position> readPieceMovement() {
         System.out.println("""
                 말을 움직여주세요
                 ex) 기물의 x좌표, 기물의 y좌표 > 이동할 x좌표, 이동할 y좌표""");
@@ -63,10 +64,37 @@ public class InputView {
         int destinationX = Integer.parseInt(destinationXY[0].trim());
         int destinationY = Integer.parseInt(destinationXY[1].trim());
 
-        Dot origin = Dot.getInstanceBy(originX, originY);
-        Dot destination = Dot.getInstanceBy(destinationX, destinationY);
+        Position origin = Position.getInstanceBy(originX, originY);
+        Position destination = Position.getInstanceBy(destinationX, destinationY);
 
         return List.of(origin, destination);
     }
 
+    public int readStartOption() {
+        System.out.println("1. 이전 게임 불러오기");
+        System.out.println("2. 새 게임 시작하기");
+        int option = Integer.parseInt(scanner.nextLine());
+        validateOption(option);
+        return option;
+    }
+
+    public Long readSavedGameId(List<GameDto> games) {
+        if (games.isEmpty()) {
+            throw new IllegalStateException("[ERROR] 저장된 게임이 없습니다.");
+        }
+        for (GameDto game : games) {
+            System.out.printf("게임 ID: %d | 마지막 턴: %s | 저장 시간: %s\n",
+                    game.id(), game.currentDynasty(), game.updatedAt());
+        }
+        System.out.println("==========================\n");
+        System.out.println("불러올 게임 ID를 입력하세요");
+
+        return Long.parseLong(scanner.nextLine());
+    }
+
+    private void validateOption(int option) {
+        if (option != 1 && option != 2) {
+            throw new IllegalArgumentException("[ERROR] 존재하지 않는 옵션입니다.");
+        }
+    }
 }

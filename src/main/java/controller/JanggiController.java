@@ -1,48 +1,37 @@
 package controller;
 
-import janggiGame.JanggiGame;
-import janggiGame.arrangement.ArrangementOption;
-import janggiGame.arrangement.ArrangementStrategy;
-import janggiGame.Dot;
+import janggiGame.position.Position;
 import janggiGame.state.GameResult;
 import janggiGame.state.GameScore;
-import view.InputView;
-import view.OutputView;
 import java.util.List;
 import java.util.Map;
+import service.JanggiGameProgressService;
+import view.InputView;
+import view.OutputView;
 
 public class JanggiController {
 
-    private final JanggiGame janggiGame;
+    private final JanggiGameProgressService gameService;
     private final InputView inputView;
     private final OutputView outputView;
 
     private final Map<Integer, Runnable> options;
 
-    public JanggiController(JanggiGame janggiGame, InputView inputView, OutputView outputView) {
-        this.janggiGame = janggiGame;
+    public JanggiController(JanggiGameProgressService gameService, InputView inputView, OutputView outputView) {
+        this.gameService = gameService;
         this.inputView = inputView;
         this.outputView = outputView;
 
         this.options = Map.of(
                 1, this::takeTurn,
-                2, janggiGame::skipTurn,
-                3, janggiGame::undoTurn,
+                2, gameService::skipTurn,
+                3, gameService::undoTurn,
                 4, this::printGameScore
         );
     }
 
-    public void arrangePieces() {
-        int hanOption = inputView.readHanArrangement();
-        ArrangementStrategy hanStrategy = ArrangementOption.findBy(hanOption).getArrangementStrategy();
-
-        int choOption = inputView.readChoArrangement();
-        ArrangementStrategy choStrategy = ArrangementOption.findBy(choOption).getArrangementStrategy();
-
-        janggiGame.arrangePieces(hanStrategy, choStrategy);
-    }
-
-    public void selectOption(int option) {
+    public void selectOption() {
+        int option = inputView.getTurnOption(gameService.getGame().getCurrentDynasty());
         Runnable action = options.get(option);
         if (action == null) {
             throw new IllegalArgumentException("[ERROR] 알맞은 옵션이 아닙니다.");
@@ -51,17 +40,28 @@ public class JanggiController {
     }
 
     public void takeTurn() {
-        List<Dot> movement = inputView.readPieceMovement();
-        janggiGame.takeTurn(movement.getFirst(), movement.getLast());
+        List<Position> movement = inputView.readPieceMovement();
+        Position origin = movement.getFirst();
+        Position destination = movement.getLast();
+
+        gameService.takeTurn(origin, destination);
     }
 
     public void printGameScore() {
-        GameScore score = janggiGame.getGameScore();
+        GameScore score = gameService.getGame().getGameScore();
         outputView.printGameScore(score);
     }
 
     public void printGameResult() {
-        GameResult result = janggiGame.getGameResult();
+        GameResult result = gameService.getGame().getGameResult();
         outputView.printGameResult(result);
+    }
+
+    public void printBoard() {
+        outputView.printBoard(gameService.getGame().getPieces());
+    }
+
+    public boolean isGameFinished() {
+        return gameService.isFinished();
     }
 }

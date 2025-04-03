@@ -1,9 +1,9 @@
 package janggiGame.state.Started;
 
 import janggiGame.arrangement.ArrangementStrategy;
-import janggiGame.Dot;
 import janggiGame.piece.Dynasty;
 import janggiGame.piece.Piece;
+import janggiGame.position.Position;
 import janggiGame.state.GameResult;
 import janggiGame.state.GameScore;
 import janggiGame.state.Running.ChoTurn;
@@ -17,17 +17,17 @@ public class Started implements State {
 
     @Override
     public State arrangePieces(ArrangementStrategy hanStrategy, ArrangementStrategy choStrategy) {
-        Map<Dot, Piece> pieces = new HashMap<>();
+        Map<Position, Piece> pieces = new HashMap<>();
         pieces.putAll(arrangeHanPieces(hanStrategy));
         pieces.putAll(arrangeChoPieces(choStrategy));
         return new ChoTurn(pieces, false);
     }
 
-    private Map<Dot, Piece> arrangeHanPieces(ArrangementStrategy strategy) {
+    private Map<Position, Piece> arrangeHanPieces(ArrangementStrategy strategy) {
         return strategy.arrangeHan(Dynasty.HAN);
     }
 
-    private Map<Dot, Piece> arrangeChoPieces(ArrangementStrategy strategy) {
+    private Map<Position, Piece> arrangeChoPieces(ArrangementStrategy strategy) {
         return strategy.arrangeCho(Dynasty.CHO);
     }
 
@@ -37,7 +37,7 @@ public class Started implements State {
     }
 
     @Override
-    public State takeTurn(Dot origin, Dot destination) {
+    public State takeTurn(Position origin, Position destination) {
         throw new IllegalStateException(ERROR_MESSAGE);
     }
 
@@ -57,12 +57,17 @@ public class Started implements State {
     }
 
     @Override
-    public Map<Dot, Piece> getPieces() {
+    public Map<Position, Piece> getPieces() {
         throw new IllegalStateException(ERROR_MESSAGE);
     }
 
     @Override
     public Dynasty getCurrentDynasty() {
+        throw new IllegalStateException(ERROR_MESSAGE);
+    }
+
+    @Override
+    public boolean wasLastTurnPassed() {
         throw new IllegalStateException(ERROR_MESSAGE);
     }
 }

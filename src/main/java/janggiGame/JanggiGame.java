@@ -3,6 +3,7 @@ package janggiGame;
 import janggiGame.arrangement.ArrangementStrategy;
 import janggiGame.piece.Dynasty;
 import janggiGame.piece.Piece;
+import janggiGame.position.Position;
 import janggiGame.state.GameResult;
 import janggiGame.state.GameScore;
 import janggiGame.state.Started.Started;
@@ -19,7 +20,7 @@ public class JanggiGame {
         currentState = currentState.arrangePieces(hanStrategy, choStrategy);
     }
 
-    public void takeTurn(Dot origin, Dot destination) {
+    public void takeTurn(Position origin, Position destination) {
         history.push(currentState);
         currentState = currentState.takeTurn(origin, destination);
     }
@@ -47,16 +48,24 @@ public class JanggiGame {
     }
 
     private void validateHistory() {
-        if(history.isEmpty()) {
-            throw new IllegalStateException("[ERROR] 무를 수 있는 턴이 없습니다.");
+        if (history.isEmpty()) {
+            throw new IllegalStateException("[ERROR] 무를 수 있는 턴이 없습니다. (불러온 게임의 첫 턴은 무를 수 없습니다.)");
         }
     }
 
-    public Map<Dot, Piece> getPieces() {
+    public Map<Position, Piece> getPieces() {
         return currentState.getPieces();
     }
 
     public Dynasty getCurrentDynasty() {
         return currentState.getCurrentDynasty();
+    }
+
+    public boolean wasLastTurnPassed() {
+        return currentState.wasLastTurnPassed();
+    }
+
+    public void restoreGameWith(State state) {
+        currentState = state;
     }
 }
