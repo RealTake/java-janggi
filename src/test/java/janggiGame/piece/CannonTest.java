@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import janggiGame.Position;
+import janggiGame.piece.character.Dynasty;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,21 @@ class CannonTest {
                 Arguments.of(1, 1),
                 Arguments.of(1, 3),
                 Arguments.of(3, 1)
+        );
+    }
+
+    private static Stream<Arguments> providePositionInPalaceDiagonal() {
+        return Stream.of(
+                Arguments.of(Position.of(3, 7), Position.of(5, 9)),
+                Arguments.of(Position.of(3, 9), Position.of(5, 7)),
+                Arguments.of(Position.of(5, 7), Position.of(3, 9)),
+                Arguments.of(Position.of(5, 9), Position.of(3, 7)),
+
+                Arguments.of(Position.of(4, 8), Position.of(3, 7)),
+                Arguments.of(Position.of(4, 8), Position.of(3, 9)),
+                Arguments.of(Position.of(4, 8), Position.of(5, 7)),
+                Arguments.of(Position.of(4, 8), Position.of(5, 9))
+
         );
     }
 
@@ -100,5 +116,29 @@ class CannonTest {
         // when // then
         assertThatCode(() -> cannon.validateMove(intermediatePointsWithPiece, new EmptyPiece()))
                 .doesNotThrowAnyException();
+    }
+
+    @DisplayName("포의 위치가 궁성 안 대각선의 위치인 경우, 대각선 이동이 가능하다.")
+    @ParameterizedTest
+    @MethodSource("providePositionInPalaceDiagonal")
+    void cannonCanMoveDiagonalInPalaceDiagonal(Position origin, Position destination) {
+        // given
+        Cannon cannon = new Cannon(Dynasty.HAN);
+
+        // when // then
+        assertThatCode(() -> cannon.getIntermediatePoints(origin, destination))
+                .doesNotThrowAnyException();
+    }
+
+    @DisplayName("포는 같은 위치로 이동할 수 없다.")
+    @Test
+    void cannonCannotMoveToSamePosition_Test() {
+        // given
+        Cannon cannon = new Cannon(Dynasty.HAN);
+
+        // when // then
+        assertThatCode(() -> cannon.getIntermediatePoints(Position.of(4, 8), Position.of(4, 8)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageStartingWith("[ERROR] ");
     }
 }

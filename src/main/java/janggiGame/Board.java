@@ -1,20 +1,26 @@
 package janggiGame;
 
 import janggiGame.arrangement.ArrangementStrategy;
-import janggiGame.piece.Dynasty;
 import janggiGame.piece.EmptyPiece;
 import janggiGame.piece.Piece;
+import janggiGame.piece.character.Dynasty;
+import janggiGame.piece.character.PieceType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class Board {
-    private final Map<Position, Piece> survivedPieces = new HashMap<>();
+    private static final double BONUS_POINT = 1.5;
+    private Map<Position, Piece> survivedPieces = new HashMap<>();
 
     public Board(ArrangementStrategy hanStrategy, ArrangementStrategy choStrategy) {
         arrangeHanPieces(Objects.requireNonNull(hanStrategy));
         arrangeChoPieces(Objects.requireNonNull(choStrategy));
+    }
+
+    public Board(final Map<Position, Piece> survivedPieces) {
+        this.survivedPieces = Objects.requireNonNull(survivedPieces);
     }
 
     public void arrangeHanPieces(ArrangementStrategy strategy) {
@@ -24,7 +30,6 @@ public class Board {
                 .forEach(dot -> reversePieces.put(dot.getReverse(), pieces.get(dot)));
 
         this.survivedPieces.putAll(reversePieces);
-
     }
 
     public void arrangeChoPieces(ArrangementStrategy strategy) {
@@ -76,6 +81,29 @@ public class Board {
         survivedPieces.remove(origin);
         survivedPieces.put(destination, originPiece);
     }
+
+    public double calculateTotalPoints(final Dynasty dynasty) {
+        double totalPoints = 0;
+
+        totalPoints += survivedPieces.values().stream()
+                .filter(piece -> piece.hasDynasty(dynasty))
+                .mapToInt(piece -> piece.getType().getPoint())
+                .sum();
+
+        if (dynasty == Dynasty.HAN) {
+            totalPoints += BONUS_POINT;
+        }
+
+        return totalPoints;
+    }
+
+    public boolean isKingDead(final Dynasty dynasty) {
+        boolean live = survivedPieces.values().stream()
+                .anyMatch(piece -> piece.hasDynasty(dynasty)
+                        && piece.getType() == PieceType.KING);
+        return !live;
+    }
+
 
     public Map<Position, Piece> getSurvivedPieces() {
         return Map.copyOf(survivedPieces);

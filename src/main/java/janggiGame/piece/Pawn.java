@@ -1,6 +1,8 @@
 package janggiGame.piece;
 
 import janggiGame.Position;
+import janggiGame.piece.character.Dynasty;
+import janggiGame.piece.character.PieceType;
 import java.util.List;
 
 public class Pawn extends Piece {
@@ -13,9 +15,32 @@ public class Pawn extends Piece {
         int dx = origin.calculateRowChange(destination);
         int dy = origin.calculateColumnChange(destination);
 
+        if (validatePieceInPalaceDiagonal(origin, destination)) {
+            return List.of();
+        }
         validateRoute(dx, dy);
 
         return List.of();
+    }
+
+    private boolean validatePieceInPalaceDiagonal(Position origin, Position destination) {
+        if (origin.equals(destination)) {
+            throw new IllegalArgumentException("[ERROR] 같은 위치로 이동할 수 없습니다.");
+        }
+
+        if (origin.isInChoPalaceDiagonal() && destination.isInChoPalaceDiagonal()) {
+            if (origin.isCenterOfChoPalace() || destination.isCenterOfChoPalace()) {
+                return true;
+            }
+        }
+
+        if (origin.isInHanPalaceDiagonal() && destination.isInHanPalaceDiagonal()) {
+            if (origin.isCenterOfHanPalace() || destination.isCenterOfHanPalace()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void validateRoute(int dx, int dy) {

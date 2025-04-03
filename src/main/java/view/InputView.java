@@ -1,7 +1,7 @@
 package view;
 
 import janggiGame.Position;
-import janggiGame.piece.Dynasty;
+import janggiGame.piece.character.Dynasty;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -43,7 +43,8 @@ public class InputView {
     }
 
     public int readArrangementStrategyByDynasty(Dynasty dynasty) {
-        System.out.printf("%s는 배치 전략을 선택하세요.", dynastyBundle.getString(dynasty.name()));
+        System.out.println();
+        System.out.printf("%s는 배치 전략을 선택하세요.\n", dynastyBundle.getString(dynasty.name()));
         System.out.println(ARRANGE_PROMPT);
         return Integer.parseInt(scanner.nextLine());
     }
