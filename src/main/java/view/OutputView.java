@@ -1,14 +1,16 @@
 package view;
 
-import domain.Team;
 import domain.board.Point;
 import domain.pieces.Piece;
+import domain.player.Score;
+import domain.player.Team;
+import dto.Choice;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 public final class OutputView {
-
     private static final List<Integer> BOARD_LINE_FEED_COLUMNS = List.of(2, 5);
 
     private static final String NEW_LINE = System.lineSeparator();
@@ -19,22 +21,52 @@ public final class OutputView {
     private static final int MAX_ROW = 10;
 
     public void printError(final String message) {
+        System.err.println("[ERROR] " + message);
+    }
+
+    public void printWarring(final String message) {
         System.out.println(message);
+    }
+
+    public void printActivateGames(final List<Integer> gameIds) {
+        final StringBuilder builder = new StringBuilder();
+        for (Integer gameId : gameIds) {
+            builder.append(gameId)
+                    .append("번 게임방이 진행 중입니다!")
+                    .append(NEW_LINE);
+        }
+        System.out.println(builder);
     }
 
     public void printTurnGuide() {
         System.out.println("""
+                활성화된 방이 없습니다.
+                새로운 게임을 시작합니다!
+                
                 장기 게임에 오신걸 환영합니다.
                 입력 순서는 초나라 -> 한나라 순서입니다.
                 """);
+    }
+
+    public void printLoadGame(final Choice choice) {
+        System.out.println(choice.value() + "번 게임방을 불러오는 중입니다.");
     }
 
     public void printBoard(final Map<Point, Piece> locations) {
         System.out.println(boardToString(locations));
     }
 
-    public void printWinner(final Team currentTeam) {
-        System.out.println(currentTeam.toString() + "가 승리했습니다!");
+    public void printWinner(final Team team) {
+        System.out.println(team + "가 승리했습니다!");
+    }
+
+    public void printScores(final Map<Team, Score> scores) {
+        for (final Entry<Team, Score> scoresByTeam : scores.entrySet()) {
+            final Team team = scoresByTeam.getKey();
+            final Score score = scoresByTeam.getValue();
+            System.out.printf("%s : %.1f 점" + NEW_LINE, team, score.value());
+        }
+
     }
 
     private String boardToString(final Map<Point, Piece> locations) {
@@ -79,5 +111,4 @@ public final class OutputView {
             builder.append(SPACE);
         }
     }
-
 }

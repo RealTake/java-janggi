@@ -1,55 +1,73 @@
 package domain.pieces;
 
-import static domain.pieces.PieceNames.HORSE;
-
-import domain.Team;
 import domain.board.PiecesOnRoute;
 import domain.board.Point;
 import domain.movements.DefaultMovement;
 import domain.movements.Direction;
 import domain.movements.PieceMovement;
 import domain.movements.Route;
+import domain.player.Player;
+import domain.player.Score;
+import domain.player.Team;
 import java.util.List;
+import java.util.Objects;
 
 public final class Horse implements Piece {
+    private static final PieceDefinition HORSE = PieceDefinition.HORSE;
+    private static final Score score = new Score(5.0);
 
-    private final Team team;
+    private final Player player;
     private final PieceMovement movement;
 
-    public Horse(final Team team) {
-        this.team = team;
-        this.movement = getDefaultMovementForHorse();
+    public Horse(final Player player) {
+        this.player = Objects.requireNonNull(player, "Team 정보가 NULL일 수 없습니다.");
+        this.movement = generateMovementForHorse();
     }
 
     @Override
     public boolean hasEqualTeam(final Team team) {
-        return this.team.equals(team);
+        return this.player.getTeam().equals(team);
     }
 
     @Override
     public boolean isAbleToArrive(final Point start, final Point arrival) {
-        return movement.calculateTotalArrivalPoints(start).contains(arrival);
+        return movement.searchTotalArrivalPoints(start).contains(arrival);
     }
 
     @Override
     public boolean isMovableOnRoute(final PiecesOnRoute piecesOnRoute) {
-        if (piecesOnRoute.hasSameTeamOnArrivalPoint(team)) {
+        if (piecesOnRoute.hasSameTeamOnArrivalPoint(player.getTeam())) {
             return false;
         }
         return piecesOnRoute.hasNotPieceOnRoute();
     }
 
     @Override
-    public List<Point> getRoutePoints(final Point start, final Point arrival) {
+    public List<Point> searchRoutePoints(final Point start, final Point arrival) {
         return movement.calculatePointsOnRoute(start, arrival);
     }
 
     @Override
     public String getName() {
-        return HORSE.getNameForTeam(team);
+        return HORSE.getNameForTeam(player.getTeam());
     }
 
-    private DefaultMovement getDefaultMovementForHorse() {
+    @Override
+    public Score getScore() {
+        return score;
+    }
+
+    @Override
+    public PieceDefinition getType() {
+        return HORSE;
+    }
+
+    @Override
+    public int getPlayerId() {
+        return player.getId();
+    }
+
+    private DefaultMovement generateMovementForHorse() {
         return new DefaultMovement(List.of(
                 new Route(List.of(Direction.NORTH, Direction.NORTHWEST)),
                 new Route(List.of(Direction.NORTH, Direction.NORTHEAST)),

@@ -1,7 +1,7 @@
 package domain.board;
 
-import domain.Team;
 import domain.pieces.Piece;
+import domain.player.Team;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
