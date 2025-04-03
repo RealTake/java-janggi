@@ -3,19 +3,17 @@ package player;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static pieceProperty.PieceType.BYEONG;
+import static pieceProperty.PieceType.CHO_JANGGUN;
+import static pieceProperty.PieceType.JOL;
+import static pieceProperty.PieceType.MA;
+import static pieceProperty.PieceType.PO;
 import static player.Nation.CHO;
 import static player.Nation.HAN;
 
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import piece.Byeong;
-import piece.Cha;
-import piece.Janggun;
-import piece.Jol;
-import piece.Ma;
-import piece.Po;
 import pieceProperty.Position;
 
 class PlayersTest {
@@ -24,8 +22,8 @@ class PlayersTest {
     @DisplayName("게임 종료 판단 테스트")
     void isGameOverTest() {
         //given
-        Player hanPlayer = new Player(new Pieces(List.of(new Janggun(new Position(5, 5)))));
-        Player choPlayer = new Player(new Pieces(List.of()));
+        Player hanPlayer = new Player(new JanggiPan(Map.of(new Position(5, 5), MA)));
+        Player choPlayer = new Player(new JanggiPan(Map.of()));
         Players players = new Players(Map.of(HAN, hanPlayer, CHO, choPlayer));
 
         //when - then
@@ -36,8 +34,8 @@ class PlayersTest {
     @DisplayName("게임 종료 판단 테스트")
     void isNotGameOverTest() {
         //given
-        Player hanPlayer = new Player(new Pieces(List.of(new Janggun(new Position(5, 5)))));
-        Player choPlayer = new Player(new Pieces(List.of(new Janggun(new Position(6, 5)))));
+        Player hanPlayer = new Player(new JanggiPan(Map.of(new Position(8, 5), CHO_JANGGUN)));
+        Player choPlayer = new Player(new JanggiPan(Map.of(new Position(8, 5), CHO_JANGGUN)));
         Players players = new Players(Map.of(HAN, hanPlayer, CHO, choPlayer));
 
         //when - then
@@ -48,8 +46,8 @@ class PlayersTest {
     @DisplayName("게임 종료 판단 테스트")
     void isGameOverTest2() {
         //given
-        Player hanPlayer = new Player(new Pieces(List.of()));
-        Player choPlayer = new Player(new Pieces(List.of(new Janggun(new Position(6, 5)))));
+        Player hanPlayer = new Player(new JanggiPan(Map.of()));
+        Player choPlayer = new Player(new JanggiPan(Map.of(new Position(6, 5), MA)));
         Players players = new Players(Map.of(HAN, hanPlayer, CHO, choPlayer));
 
         //when - then
@@ -60,18 +58,19 @@ class PlayersTest {
     @DisplayName("움직임 검증 테스트")
     void validateStartPosition() {
         //given
-        Pieces pieces1 = new Pieces(List.of(
-                new Janggun(new Position(5, 5)), new Jol(new Position(6, 5))
-                , new Byeong(new Position(4, 3))
+        JanggiPan janggiPan = new JanggiPan(Map.of(
+                new Position(5, 5), MA, new Position(6, 5), JOL,
+                new Position(4, 3), BYEONG
         ));
 
-        Pieces pieces2 = new Pieces(List.of(
-                new Janggun(new Position(1, 7)), new Jol(new Position(2, 5))
-                , new Byeong(new Position(3, 3))
+        JanggiPan janggiPan1 = new JanggiPan(Map.of(
+                new Position(1, 7), MA, new Position(2, 5), JOL,
+                new Position(3, 3), BYEONG
         ));
 
-        Player player1 = new Player(pieces1);
-        Player player2 = new Player(pieces2);
+
+        Player player1 = new Player(janggiPan);
+        Player player2 = new Player(janggiPan1);
 
         Players players = new Players(Map.of(HAN, player1, CHO, player2));
 
@@ -86,18 +85,19 @@ class PlayersTest {
     @DisplayName("움직임 검증 테스트")
     void validateDestinationPosition() {
         //given
-        Pieces pieces1 = new Pieces(List.of(
-                new Janggun(new Position(5, 5)), new Jol(new Position(6, 5))
-                , new Byeong(new Position(4, 3))
+        JanggiPan janggiPan = new JanggiPan(Map.of(
+                new Position(5, 5), MA, new Position(6, 5), JOL,
+                new Position(4, 3), BYEONG
         ));
 
-        Pieces pieces2 = new Pieces(List.of(
-                new Janggun(new Position(1, 7)), new Jol(new Position(2, 5))
-                , new Byeong(new Position(3, 3))
-        ));
+        JanggiPan janggiPan1 = new JanggiPan(Map.of(
+                new Position(1, 7), MA, new Position(2, 5), JOL,
+                new Position(3, 3), BYEONG)
+        );
 
-        Player player1 = new Player(pieces1);
-        Player player2 = new Player(pieces2);
+
+        Player player1 = new Player(janggiPan);
+        Player player2 = new Player(janggiPan1);
 
         Players players = new Players(Map.of(HAN, player1, CHO, player2));
 
@@ -112,18 +112,19 @@ class PlayersTest {
     @DisplayName("움직임 검증 테스트")
     void validateCanPieceMoveTo() {
         //given
-        Pieces pieces1 = new Pieces(List.of(
-                new Janggun(new Position(5, 5)), new Jol(new Position(6, 5))
-                , new Byeong(new Position(4, 3))
+        JanggiPan janggiPan = new JanggiPan(Map.of(
+                new Position(5, 5), MA, new Position(6, 5), JOL,
+                new Position(4, 3), BYEONG
         ));
 
-        Pieces pieces2 = new Pieces(List.of(
-                new Janggun(new Position(1, 7)), new Jol(new Position(2, 5))
-                , new Byeong(new Position(3, 3)), new Cha(new Position(0, 0))
-        ));
+        JanggiPan janggiPan1 = new JanggiPan(Map.of(
+                new Position(1, 7), MA, new Position(2, 5), JOL,
+                new Position(3, 3), BYEONG)
+        );
 
-        Player player1 = new Player(pieces1);
-        Player player2 = new Player(pieces2);
+
+        Player player1 = new Player(janggiPan);
+        Player player2 = new Player(janggiPan1);
 
         Players players = new Players(Map.of(HAN, player1, CHO, player2));
 
@@ -136,7 +137,7 @@ class PlayersTest {
         assertThatThrownBy(() ->
                 players.validateMovement(CHO, new Position(0, 0), new Position(1, 1)))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 기물이 움직일 수 없는 위치입니다.");
+                .hasMessage("[ERROR] 시작 위치에 아군 기물이 존재하지 않습니다.");
 
     }
 
@@ -144,19 +145,19 @@ class PlayersTest {
     @DisplayName("경로 검증 테스트")
     void validateRoute() {
         //given
-        Pieces pieces1 = new Pieces(List.of(
-                new Ma(new Position(4, 5)),
-                new Janggun(new Position(5, 5)), new Jol(new Position(6, 5))
-                , new Byeong(new Position(4, 3))
+        JanggiPan janggiPan = new JanggiPan(Map.of(
+                new Position(4, 5), MA, new Position(5, 5), MA,
+                new Position(6, 5), JOL, new Position(4, 3), BYEONG
         ));
 
-        Pieces pieces2 = new Pieces(List.of(
-                new Janggun(new Position(1, 7)), new Jol(new Position(2, 5))
-                , new Byeong(new Position(3, 3))
+        JanggiPan janggiPan1 = new JanggiPan(Map.of(
+                new Position(1, 7), JOL, new Position(2, 5), JOL,
+                new Position(3, 3), BYEONG
         ));
 
-        Player player1 = new Player(pieces1);
-        Player player2 = new Player(pieces2);
+
+        Player player1 = new Player(janggiPan);
+        Player player2 = new Player(janggiPan1);
 
         Players players = new Players(Map.of(HAN, player1, CHO, player2));
 
@@ -174,20 +175,18 @@ class PlayersTest {
     @DisplayName("기물 이동 테스트")
     void movePieceTest() {
         //given
-        Janggun janggun = new Janggun(new Position(1, 7));
-        Pieces pieces1 = new Pieces(List.of(
-                new Ma(new Position(4, 5)),
-                new Janggun(new Position(5, 5)), new Jol(new Position(6, 5))
-                , new Byeong(new Position(4, 3))
+        JanggiPan janggiPan = new JanggiPan(Map.of(
+                new Position(4, 5), MA, new Position(5, 5), MA,
+                new Position(6, 5), JOL, new Position(4, 3), BYEONG
         ));
 
-        Pieces pieces2 = new Pieces(List.of(
-                janggun, new Jol(new Position(2, 5))
-                , new Byeong(new Position(3, 3))
+        JanggiPan janggiPan1 = new JanggiPan(Map.of(
+                new Position(1, 7), MA, new Position(2, 5), JOL,
+                new Position(3, 3), BYEONG
         ));
 
-        Player player1 = new Player(pieces1);
-        Player player2 = new Player(pieces2);
+        Player player1 = new Player(janggiPan);
+        Player player2 = new Player(janggiPan1);
 
         Players players = new Players(Map.of(HAN, player1, CHO, player2));
 
@@ -195,28 +194,26 @@ class PlayersTest {
         players.capturePiece(CHO, new Position(1, 7), new Position(1, 6));
 
         //then
-        assertThat(janggun.isSamePosition(new Position(1, 6))).isTrue();
+        assertThat(player2.getPieces().getPieces().containsKey(new Position(1, 6))).isTrue();
     }
 
     @Test
     @DisplayName("기물 삭제 테스트")
     void removePieceTest() {
         //given
-        Janggun janggun = new Janggun(new Position(1, 7));
-        Pieces pieces1 = new Pieces(List.of(
-                new Janggun(new Position(1, 6)),
-                new Ma(new Position(4, 5)),
-                new Janggun(new Position(5, 5)), new Jol(new Position(6, 5))
-                , new Byeong(new Position(4, 3))
+        JanggiPan janggiPan = new JanggiPan(Map.of(
+                new Position(1, 6), MA, new Position(4, 5), MA,
+                new Position(5, 5), MA, new Position(6, 5), JOL,
+                new Position(4, 3), BYEONG
         ));
 
-        Pieces pieces2 = new Pieces(List.of(
-                janggun, new Jol(new Position(2, 5))
-                , new Byeong(new Position(3, 3))
+        JanggiPan janggiPan1 = new JanggiPan(Map.of(
+                new Position(1, 7), MA, new Position(2, 5), JOL,
+                new Position(3, 3), BYEONG
         ));
 
-        Player player1 = new Player(pieces1);
-        Player player2 = new Player(pieces2);
+        Player player1 = new Player(janggiPan);
+        Player player2 = new Player(janggiPan1);
 
         Players players = new Players(Map.of(HAN, player1, CHO, player2));
 
@@ -224,19 +221,20 @@ class PlayersTest {
         players.capturePiece(HAN, new Position(1, 6), new Position(1, 7));
 
         //then
-        assertThat(pieces2.getPieces().contains(janggun)).isFalse();
+        assertThat(player2.getPieces().getPieces().containsKey(new Position(1, 7))).isFalse();
     }
 
     @Test
     @DisplayName("경로에 포 존재 확인 테스트")
     void isPoExistInRoute() {
         //given
-        Po po = new Po(new Position(5, 5));
+        JanggiPan janggiPan = new JanggiPan(Map.of(
+                new Position(5, 5), PO
+        ));
+        Player player = new Player(janggiPan);
 
-        Pieces pieces = new Pieces(List.of(po));
-
-        Player player = new Player(pieces);
-        Player player1 = new Player(new Pieces(List.of(new Po(new Position(8, 5)))));
+        Player player1 = new Player(new JanggiPan(Map.of(
+                new Position(8, 5), PO)));
 
         Players players = new Players(Map.of(HAN, player1, CHO, player));
 
@@ -250,13 +248,12 @@ class PlayersTest {
     @DisplayName("경로에 장애물 2개 이상 존재 확인 테스트")
     void isExistObstacleOverTwoInRoute() {
         //given
-        Po po = new Po(new Position(5, 5));
-        Jol jol = new Jol(new Position(6, 5));
-
-        Pieces pieces = new Pieces(List.of(po, jol));
-
-        Player player = new Player(pieces);
-        Player player1 = new Player(new Pieces(List.of(new Jol(new Position(8, 5)))));
+        JanggiPan janggiPan = new JanggiPan(Map.of(
+                new Position(5, 5), PO, new Position(6, 5), JOL
+        ));
+        Player player = new Player(janggiPan);
+        Player player1 = new Player(new JanggiPan(Map.of(
+                new Position(8, 5), JOL)));
 
         Players players = new Players(Map.of(HAN, player1, CHO, player));
 

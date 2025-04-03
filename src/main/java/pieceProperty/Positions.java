@@ -2,7 +2,6 @@ package pieceProperty;
 
 import java.util.ArrayList;
 import java.util.List;
-import piece.Piece;
 
 public class Positions {
     private final List<Position> positions;
@@ -15,8 +14,8 @@ public class Positions {
         positions.add(position);
     }
 
-    public boolean containsPosition(final Piece piece) {
-        return positions.stream().anyMatch(piece::isSamePosition);
+    public boolean contains(final Position position) {
+        return positions.contains(position);
     }
 
     public List<Position> getPositions() {

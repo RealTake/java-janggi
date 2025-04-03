@@ -1,75 +1,78 @@
 package pieceProperty;
 
-import java.util.ArrayList;
-import java.util.List;
-import piece.Byeong;
-import piece.Cha;
-import piece.Janggun;
-import piece.Jol;
-import piece.Ma;
-import piece.Piece;
-import piece.Po;
-import piece.Sa;
-import piece.Sang;
-import player.Pieces;
+import static pieceProperty.PieceType.BYEONG;
+import static pieceProperty.PieceType.CHA;
+import static pieceProperty.PieceType.CHO_JANGGUN;
+import static pieceProperty.PieceType.CHO_SA;
+import static pieceProperty.PieceType.HAN_JANGGUN;
+import static pieceProperty.PieceType.HAN_SA;
+import static pieceProperty.PieceType.JOL;
+import static pieceProperty.PieceType.MA;
+import static pieceProperty.PieceType.PO;
+import static pieceProperty.PieceType.SANG;
+
+import java.util.HashMap;
+import java.util.Map;
+import player.JanggiPan;
 
 public class JanggiPieceInitializer {
 
-    public Pieces hanInit() {
-        List<Piece> pieces = new ArrayList<>();
+    public JanggiPan hanInit() {
+        Map<Position, PieceType> janggiPan = new HashMap<>();
 
-        pieces.add(new Cha(new Position(0, 0)));
-        pieces.add(new Cha(new Position(0, 8)));
+        janggiPan.put(new Position(0, 0), CHA);
+        janggiPan.put(new Position(0, 8), CHA);
 
-        pieces.add(new Sang(new Position(0, 1)));
-        pieces.add(new Sang(new Position(0, 7)));
+        janggiPan.put(new Position(0, 1), SANG);
+        janggiPan.put(new Position(0, 7), SANG);
 
-        pieces.add(new Ma(new Position(0, 2)));
-        pieces.add(new Ma(new Position(0, 6)));
+        janggiPan.put(new Position(0, 2), MA);
+        janggiPan.put(new Position(0, 6), MA);
 
-        pieces.add(new Sa(new Position(0, 3)));
-        pieces.add(new Sa(new Position(0, 5)));
+        janggiPan.put(new Position(0, 3), HAN_SA);
+        janggiPan.put(new Position(0, 5), HAN_SA);
 
-        pieces.add(new Janggun(new Position(1, 4)));
+        janggiPan.put(new Position(1, 4), HAN_JANGGUN);
 
-        pieces.add(new Po(new Position(2, 1)));
-        pieces.add(new Po(new Position(2, 7)));
+        janggiPan.put(new Position(2, 1), PO);
+        janggiPan.put(new Position(2, 7), PO);
 
-        pieces.add(new Byeong(new Position(3, 0)));
-        pieces.add(new Byeong(new Position(3, 2)));
-        pieces.add(new Byeong(new Position(3, 4)));
-        pieces.add(new Byeong(new Position(3, 6)));
-        pieces.add(new Byeong(new Position(3, 8)));
+        janggiPan.put(new Position(3, 0), JOL);
+        janggiPan.put(new Position(3, 2), JOL);
+        janggiPan.put(new Position(3, 4), JOL);
+        janggiPan.put(new Position(3, 6), JOL);
+        janggiPan.put(new Position(3, 8), JOL);
 
-        return new Pieces(pieces);
+        return new JanggiPan(janggiPan);
     }
 
-    public Pieces choInit() {
-        List<Piece> pieces = new ArrayList<>();
+    public JanggiPan choInit() {
 
-        pieces.add(new Cha(new Position(9, 0)));
-        pieces.add(new Cha(new Position(9, 8)));
+        Map<Position, PieceType> janggiPan = new HashMap<>();
 
-        pieces.add(new Sang(new Position(9, 1)));
-        pieces.add(new Sang(new Position(9, 7)));
+        janggiPan.put(new Position(9, 8), CHA);
+        janggiPan.put(new Position(9, 0), CHA);
 
-        pieces.add(new Ma(new Position(9, 2)));
-        pieces.add(new Ma(new Position(9, 6)));
+        janggiPan.put(new Position(9, 1), SANG);
+        janggiPan.put(new Position(9, 7), SANG);
 
-        pieces.add(new Sa(new Position(9, 3)));
-        pieces.add(new Sa(new Position(9, 5)));
+        janggiPan.put(new Position(9, 2), MA);
+        janggiPan.put(new Position(9, 6), MA);
 
-        pieces.add(new Janggun(new Position(8, 4)));
+        janggiPan.put(new Position(9, 3), CHO_SA);
+        janggiPan.put(new Position(9, 5), CHO_SA);
 
-        pieces.add(new Po(new Position(7, 1)));
-        pieces.add(new Po(new Position(7, 7)));
+        janggiPan.put(new Position(8, 4), CHO_JANGGUN);
 
-        pieces.add(new Jol(new Position(6, 0)));
-        pieces.add(new Jol(new Position(6, 2)));
-        pieces.add(new Jol(new Position(6, 4)));
-        pieces.add(new Jol(new Position(6, 6)));
-        pieces.add(new Jol(new Position(6, 8)));
+        janggiPan.put(new Position(7, 1), PO);
+        janggiPan.put(new Position(7, 7), PO);
 
-        return new Pieces(pieces);
+        janggiPan.put(new Position(6, 2), BYEONG);
+        janggiPan.put(new Position(6, 4), BYEONG);
+        janggiPan.put(new Position(6, 0), BYEONG);
+        janggiPan.put(new Position(6, 6), BYEONG);
+        janggiPan.put(new Position(6, 8), BYEONG);
+
+        return new JanggiPan(janggiPan);
     }
 }
