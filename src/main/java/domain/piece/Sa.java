@@ -6,14 +6,12 @@ import domain.board.Node;
 import java.util.Arrays;
 import java.util.List;
 
-public class Sa implements Piece {
+public class Sa extends Piece {
 
     private static final List<Direction> SA_MOVABLE_DIRECTIONS = Arrays.stream(Direction.values()).toList();
 
-    private final Team team;
-
     public Sa(final Team team) {
-        this.team = team;
+        super(team);
     }
 
     @Override
@@ -22,17 +20,13 @@ public class Sa implements Piece {
                 .filter(currentNode::hasEdgeByDirection)
                 .map(currentNode::findNextNodeByDirection)
                 .filter(nextNode -> !(board.existsPieceByNode(nextNode)
-                        && board.hasPieceTeamByNode(nextNode, this.team)))
+                        && board.hasPieceTeamByNode(nextNode, this.team))
+                        && board.isPalaceArea(nextNode))
                 .toList();
     }
 
     @Override
     public PieceType type() {
         return PieceType.SA;
-    }
-
-    @Override
-    public boolean hasTeam(final Team team) {
-        return this.team == team;
     }
 }

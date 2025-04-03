@@ -1,24 +1,19 @@
 package domain.piece;
 
-import static domain.board.Direction.DOWN;
-import static domain.board.Direction.LEFT;
-import static domain.board.Direction.RIGHT;
-import static domain.board.Direction.UP;
-
 import domain.board.Board;
 import domain.board.Direction;
 import domain.board.Node;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class Cha implements Piece {
+public class Cha extends Piece {
 
-    private static final List<Direction> CHA_MOVABLE_DIRECTIONS = List.of(UP, RIGHT, DOWN, LEFT);
-
-    private final Team team;
+    private static final List<Direction> CHA_MOVABLE_DIRECTIONS = Arrays.stream(Direction.values()).toList();
 
     public Cha(final Team team) {
-        this.team = team;
+        super(team);
     }
 
     @Override
@@ -38,10 +33,7 @@ public class Cha implements Piece {
             candidates.add(currentNode);
         }
 
-        while (true) {
-            if (!currentNode.hasEdgeByDirection(direction)) {
-                break;
-            }
+        while (currentNode.hasEdgeByDirection(direction)) {
             Node nextNode = currentNode.findNextNodeByDirection(direction);
             if (board.hasPieceTeamByNode(nextNode, this.team)) {
                 break;
@@ -54,10 +46,5 @@ public class Cha implements Piece {
     @Override
     public PieceType type() {
         return PieceType.CHA;
-    }
-
-    @Override
-    public boolean hasTeam(final Team team) {
-        return this.team == team;
     }
 }

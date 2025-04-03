@@ -5,9 +5,21 @@ import domain.board.Node;
 
 import java.util.List;
 
-public interface Piece {
+public abstract class Piece {
 
-    default boolean canMove(final Node source, final Node destination, final Board board) {
+    protected final Team team;
+
+    public Piece(Team team) {
+        this.team = team;
+    }
+
+    public void validateMove(final Node source, final Node destination, final Board board) {
+        if (!canMove(source, destination, board)) {
+            throw new IllegalArgumentException(source + " -> " + destination + " [ERROR] 이동할 수 없는 경로입니다.");
+        }
+    }
+
+    private boolean canMove(final Node source, final Node destination, final Board board) {
         return isDifferentNode(source, destination) && containsInCandidates(source, destination, board);
     }
 
@@ -19,9 +31,15 @@ public interface Piece {
         return findMovableNodes(source, board).contains(destination);
     }
 
-    List<Node> findMovableNodes(final Node source, final Board board);
+    public abstract List<Node> findMovableNodes(final Node source, final Board board);
 
-    PieceType type();
+    public boolean hasTeam(final Team team) {
+        return this.team == team;
+    }
 
-    boolean hasTeam(final Team team);
+    public abstract PieceType type();
+
+    public Team team() {
+        return this.team;
+    }
 }

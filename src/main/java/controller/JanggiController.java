@@ -1,56 +1,108 @@
 package controller;
 
-import domain.Turn;
-import domain.board.Board;
-import domain.board.BoardGenerator;
-import domain.board.Node;
+import domain.JanggiGame;
 import domain.piece.Team;
+import domain.score.Score;
+import service.JanggiService;
 import util.ErrorHandler;
 import view.InputView;
-import view.MoveCommand;
+import view.command.MoveCommand;
 import view.OutputView;
-import view.SangMaOrderCommand;
+import view.command.ProgressCommand;
+import view.command.SangMaOrderCommand;
+
+import java.util.Map;
 
 public class JanggiController {
 
-    public void startGame() {
-        OutputView.printStart();
-        Board board = createJanggiBoard();
+    private static final int BOARD_ID = 1;
 
-        Turn turn = new Turn();
-        do {
-            OutputView.printBoard(board);
-            moveByTurn(turn, board);
-            if (board.isOpponentWangDead(turn.team())) {
-                OutputView.printBoard(board);
-                OutputView.printMatchResult(turn.team());
-                break;
-            }
-            turn.changeTurn();
-        } while (true);
+    private final InputView inputView;
+    private final OutputView outputView;
+    private final JanggiService janggiService;
+
+    public JanggiController(InputView inputView, OutputView outputView, JanggiService janggiService) {
+        this.inputView = inputView;
+        this.outputView = outputView;
+        this.janggiService = janggiService;
     }
 
-    private void moveByTurn(final Turn turn, final Board board) {
-        ErrorHandler.retryUntilSuccess(() -> {
-            MoveCommand moveCommand = InputView.inputMoveCommand(turn.team());
-            Node sourceNode = board.findNodeByPoint(moveCommand.source());
-            Node destinationNode = board.findNodeByPoint(moveCommand.destination());
-
-            if (!board.hasPieceTeamByNode(sourceNode, turn.team())) {
-                OutputView.printTurn(turn.team());
-            }
-            board.movePiece(sourceNode, destinationNode, board);
-        });
+    public void run() {
+        outputView.printStart();
+        final JanggiGame janggiGame = initializeJanggiGame();
+        play(janggiGame);
     }
 
-    private Board createJanggiBoard() {
-        BoardGenerator boardGenerator = new BoardGenerator();
-        SangMaOrderCommand hanSangMaOrderCommand = createSangMaOrderCommandByTeam(Team.HAN);
-        SangMaOrderCommand choSangMaOrderCommand = createSangMaOrderCommandByTeam(Team.CHO);
-        return boardGenerator.generateBoard(hanSangMaOrderCommand, choSangMaOrderCommand);
+    private JanggiGame initializeJanggiGame() {
+        if (janggiService.hasSavedGame() && inputView.selectLoadGame()) {
+            return new JanggiGame(janggiService.findBoard(BOARD_ID), janggiService.findTurn());
+        }
+        final SangMaOrderCommand hanSangMaOrderCommand = createSangMaOrderCommandByTeam(Team.HAN);
+        final SangMaOrderCommand choSangMaOrderCommand = createSangMaOrderCommandByTeam(Team.CHO);
+        return new JanggiGame(hanSangMaOrderCommand, choSangMaOrderCommand);
     }
 
     private SangMaOrderCommand createSangMaOrderCommandByTeam(final Team team) {
-        return ErrorHandler.retryUntilSuccess(() -> InputView.inputSangMaOrder(team));
+        return ErrorHandler.retryUntilSuccess(() -> inputView.inputSangMaOrder(team));
+    }
+
+    private void play(final JanggiGame janggiGame) {
+        boolean isPlayable = true;
+        while (isPlayable) {
+            printBoardAndTurn(janggiGame);
+            final ProgressCommand progressCommand = ErrorHandler.retryUntilSuccess(inputView::inputProgress);
+            if (progressCommand.isMove()) {
+                isPlayable = executeMove(janggiGame);
+            }
+            if (progressCommand.isStatus()) {
+                printScore(janggiGame);
+                continue;
+            }
+            if (progressCommand.isSave()) {
+                executeSave(janggiGame);
+                break;
+            }
+            if (progressCommand.isExit()) {
+                executeExit(janggiGame);
+                break;
+            }
+        }
+    }
+
+    private void printBoardAndTurn(final JanggiGame janggiGame) {
+        outputView.printBoard(janggiGame.board());
+        outputView.printTurn(janggiGame.turnTeam());
+    }
+
+    private boolean executeMove(final JanggiGame janggiGame) {
+        ErrorHandler.retryUntilSuccess(() -> {
+            final MoveCommand moveCommand = inputView.inputMoveCommand();
+            janggiGame.movePiece(moveCommand);
+        });
+        if (janggiGame.isStop()) {
+            outputView.printBoard(janggiGame.board());
+            outputView.printMatchResult(janggiGame.turnTeam());
+            janggiService.removeAllData(BOARD_ID);
+            return false;
+        }
+        janggiGame.changeTurn();
+        return true;
+    }
+
+    private void printScore(final JanggiGame janggiGame) {
+        final Map<Team, Score> totalScoreByTeam = janggiGame.calculateTotalScoreByTeam();
+        outputView.printScore(totalScoreByTeam);
+    }
+
+    private void executeSave(final JanggiGame janggiGame) {
+        outputView.printSaveResult();
+        janggiService.saveAllData(janggiGame.board(), janggiGame.turnTeam(), BOARD_ID);
+    }
+
+    private void executeExit(final JanggiGame janggiGame) {
+        printScore(janggiGame);
+        outputView.printMatchResult(janggiGame.findWinTeam());
+        outputView.printExit();
+        janggiService.removeAllData(BOARD_ID);
     }
 }

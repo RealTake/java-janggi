@@ -3,14 +3,19 @@ package domain.board;
 import domain.piece.Byeong;
 import domain.piece.PieceType;
 import domain.piece.Po;
+import domain.piece.Sang;
 import domain.piece.Team;
 import domain.piece.Wang;
+import domain.score.Score;
+import domain.score.ScoreCalculator;
 import fixture.BoardFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -171,6 +176,58 @@ class BoardTest {
 
             // then
             assertThat(actual).isFalse();
+        }
+
+        @Test
+        void 해당_위치가_궁성_내부라면_true를_반환한다() {
+            // given
+            Point point = Point.of(1, 4);
+            Node node = new Node(point);
+            Board board = BoardFixture.createEmptyBoard();
+
+            // when
+            final boolean actual = board.isPalaceArea(node);
+
+            // then
+            assertThat(actual).isTrue();
+        }
+
+        @Test
+        void 해당_위치가_궁성_내부가_아니라면_false를_반환한다() {
+            // given
+            Point point = Point.of(1, 3);
+            Node node = new Node(point);
+            Board board = BoardFixture.createEmptyBoard();
+
+            // when
+            final boolean actual = board.isPalaceArea(node);
+
+            // then
+            assertThat(actual).isFalse();
+        }
+
+        @Test
+        void 팀별_기물들의_총점수를_반환한다() {
+            // given
+            ScoreCalculator scoreCalculator = new ScoreCalculator();
+            Board board = BoardFixture.createEmptyBoard();
+
+            Point pointOfHan = Point.of(1, 1);
+            Node nodeOfHan = new Node(pointOfHan);
+            board.putPiece(nodeOfHan, new Po(Team.HAN));
+
+            Point pointOfCho = Point.of(10, 1);
+            Node nodeOfCho = new Node(pointOfCho);
+            board.putPiece(nodeOfCho, new Sang(Team.CHO));
+
+            // when
+            final Map<Team, Score> actual = board.calculateTotalScoreByTeam(scoreCalculator);
+
+            // then
+            assertThat(actual).isEqualTo(Map.ofEntries(
+                    Map.entry(Team.HAN, PieceType.PO.score().plus(ScoreCalculator.HAN_BONUS_SCORE)),
+                    Map.entry(Team.CHO, PieceType.SANG.score())
+            ));
         }
     }
 
