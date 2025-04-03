@@ -1,13 +1,18 @@
 package janggi.utils;
 
+import java.util.function.Supplier;
+
 public class ExceptionHandler {
 
-    public static void retry(final Runnable action) {
+    private ExceptionHandler() {
+    }
+
+    public static <T> T retry(final Supplier<T> action) {
         try {
-            action.run();
+            return action.get();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            retry(action);
+            return retry(action);
         }
     }
 }
