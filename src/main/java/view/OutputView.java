@@ -1,11 +1,11 @@
 package view;
 
-import domain.position.Column;
+import domain.ScoreCalculator;
 import domain.participants.Player;
+import domain.piece.Piece;
+import domain.position.Column;
 import domain.position.Position;
 import domain.position.Row;
-import domain.piece.TeamType;
-import domain.piece.Piece;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,6 +17,11 @@ public class OutputView {
     public void printBoard(Map<Position, Piece> alivePiecesInfo) {
         printColumnsInfo();
         printBoardInfo(alivePiecesInfo);
+    }
+
+    public void printScore(ScoreCalculator scoreCalculator) {
+        System.out.printf("현재 초 점수 : %.1f\n", scoreCalculator.calculateChoScore());
+        System.out.printf("현재 한 점수 : %.1f\n", scoreCalculator.calculateHanScore());
     }
 
     public void printWinner(Player player) {
@@ -49,7 +54,7 @@ public class OutputView {
             System.out.print("- ");
             return;
         }
-        System.out.print(getDescription(piece) + " ");
+        System.out.print(PieceSymbol.findSymbol(piece) + " ");
     }
 
     private void printColumnsInfo() {
@@ -59,12 +64,5 @@ public class OutputView {
                 .collect(Collectors.joining(" "));
 
         System.out.println("    " + columnInfo);
-    }
-
-    private String getDescription(Piece piece) {
-        if (piece.isSameTeam(TeamType.CHO)) {
-            return piece.getType().getDescription().toLowerCase();
-        }
-        return piece.getType().getDescription();
     }
 }

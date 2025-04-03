@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class CannonTest {
-    static Stream<Arguments> canMoveChariot_Success() {
+    static Stream<Arguments> canMoveCannon_Success() {
         return Stream.of(
                 Arguments.of(D5, D4),
                 Arguments.of(D6, D5),
@@ -30,7 +30,7 @@ class CannonTest {
         );
     }
 
-    static Stream<Arguments> canMoveChariot_Fail() {
+    static Stream<Arguments> canMoveCannon_Fail() {
         return Stream.of(
                 Arguments.of(D4, D5),
                 Arguments.of(D2, D4),
@@ -44,33 +44,33 @@ class CannonTest {
     @ParameterizedTest
     @MethodSource
     @DisplayName("포 이동 성공 테스트")
-    void canMoveChariot_Success(Position movePosition, Position otherPosition) {
+    void canMoveCannon_Success(Position movePosition, Position otherPosition) {
         Position startPosition = D3;
         Piece cannon = new Cannon(TeamType.CHO);
 
         Piece other = new King(TeamType.HAN);
 
         assertThatNoException()
-                .isThrownBy(()->cannon.validateCanMove(startPosition,movePosition, Map.of(otherPosition,other)));
+                .isThrownBy(()->cannon.validateCanMove(TeamType.CHO,startPosition,movePosition, Map.of(otherPosition,other)));
     }
 
     @ParameterizedTest
     @MethodSource
     @DisplayName("포 이동 실패 테스트")
-    void canMoveChariot_Fail(Position movePosition, Position otherPosition) {
+    void canMoveCannon_Fail(Position movePosition, Position otherPosition) {
         Position startPosition = D3;
         Piece cannon = new Cannon(TeamType.CHO);
 
         Piece other = new King(TeamType.HAN);
 
-        assertThatThrownBy(()->cannon.validateCanMove(startPosition,movePosition, Map.of(otherPosition,other)))
+        assertThatThrownBy(()->cannon.validateCanMove(TeamType.CHO,startPosition,movePosition, Map.of(otherPosition,other)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 좌표로 이동시킬 수 없습니다.");
     }
 
     @Test
     @DisplayName("이동 경로에 포가 있으면 예외를 반환한다")
-    void canMoveChariot2() {
+    void canMoveCannon2() {
         Position startPosition = C2;
         Position expectedPosition = C4;
         Piece cannon = new Cannon(TeamType.HAN);
@@ -78,14 +78,14 @@ class CannonTest {
         Position otherPosition = Position.of(3, 2);
         Piece otherCannon = new Cannon(TeamType.HAN);
 
-        assertThatThrownBy(()->cannon.validateCanMove(startPosition,expectedPosition, Map.of(otherPosition,otherCannon)))
+        assertThatThrownBy(()->cannon.validateCanMove(TeamType.HAN,startPosition,expectedPosition, Map.of(otherPosition,otherCannon)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 좌표로 이동시킬 수 없습니다.");
     }
 
     @Test
     @DisplayName("도착 지점에 아군이 있으면 예외를 반환한다")
-    void canMoveChariot3() {
+    void canMoveCannon3() {
         Position startPosition = C2;
         Position expectedPosition = C4;
         Piece cannon = new Cannon(TeamType.HAN);
@@ -96,14 +96,14 @@ class CannonTest {
         Position otherPosition = C4;
         Piece soldier = new Soldier(TeamType.HAN);
 
-        assertThatThrownBy(()->cannon.validateCanMove(startPosition,expectedPosition, Map.of(otherPosition,soldier,jumpPosition,jump)))
+        assertThatThrownBy(()->cannon.validateCanMove(TeamType.HAN,startPosition,expectedPosition, Map.of(otherPosition,soldier,jumpPosition,jump)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 좌표로 이동시킬 수 없습니다.");
     }
 
     @Test
     @DisplayName("도착 지점에 적이 있으면 true를 반환한다")
-    void canMoveChariot4() {
+    void canMoveCannon4() {
         Position startPosition = C2;
         Position expectedPosition = C4;
         Piece cannon = new Cannon(TeamType.HAN);
@@ -115,7 +115,7 @@ class CannonTest {
         Piece soldier = new Soldier(TeamType.CHO);
 
         assertThatNoException()
-                .isThrownBy(()->cannon.validateCanMove(startPosition,expectedPosition, Map.of(otherPosition,soldier,jumpPosition,jump)));
+                .isThrownBy(()->cannon.validateCanMove(TeamType.HAN,startPosition,expectedPosition, Map.of(otherPosition,soldier,jumpPosition,jump)));
     }
 
     @Test
@@ -131,7 +131,7 @@ class CannonTest {
         Position otherPosition = C4;
         Piece otherCannon = new Cannon(TeamType.CHO);
 
-        assertThatThrownBy(()->cannon.validateCanMove(startPosition,expectedPosition, Map.of(otherPosition,otherCannon,jumpPosition,jump)))
+        assertThatThrownBy(()->cannon.validateCanMove(TeamType.HAN,startPosition,expectedPosition, Map.of(otherPosition,otherCannon,jumpPosition,jump)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 좌표로 이동시킬 수 없습니다.");
 
@@ -150,8 +150,35 @@ class CannonTest {
         Position otherPosition2 = C5;
         Piece other2 = new Horse(TeamType.CHO);
 
-        assertThatThrownBy(()->cannon.validateCanMove(startPosition,expectedPosition, Map.of(otherPosition1,other1,otherPosition2,other2)))
+        assertThatThrownBy(()->cannon.validateCanMove(TeamType.HAN,startPosition,expectedPosition, Map.of(otherPosition1,other1,otherPosition2,other2)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 좌표로 이동시킬 수 없습니다.");
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    @DisplayName("궁안에서는 특수하게 움직일 수 있다.")
+    void canMoveCannonWhenPalace(Position from,Position to,Position jump){
+        Piece cannon = new Cannon(TeamType.HAN);
+
+        Piece jumpPiece = new Soldier(TeamType.CHO);
+
+        Piece soldier = new Soldier(TeamType.CHO);
+
+        assertThatNoException()
+                .isThrownBy(()->cannon.validateCanMove(TeamType.HAN,from,to, Map.of(to,soldier,jump,jumpPiece)));
+    }
+
+    private static Stream<Arguments> canMoveCannonWhenPalace(){
+        return Stream.of(
+                Arguments.of(D9,F7,E8),
+                Arguments.of(F7,D9,E8),
+                Arguments.of(F9,D7,E8),
+                Arguments.of(D7,F9,E8),
+                Arguments.of(D0,F2,E1),
+                Arguments.of(F2,D0,E1),
+                Arguments.of(D2,F0,E1),
+                Arguments.of(F0,D2,E1)
+        );
     }
 }

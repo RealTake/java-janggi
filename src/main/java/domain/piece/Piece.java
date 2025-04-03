@@ -1,8 +1,8 @@
 package domain.piece;
 
-import domain.position.Position;
 import domain.piece.path.PathFinder;
 import domain.piece.path.PathValidator;
+import domain.position.Position;
 import java.util.List;
 import java.util.Map;
 
@@ -17,10 +17,6 @@ public abstract class Piece {
         this.pathValidator = pathValidator;
     }
 
-    public boolean isSameTeam(Piece piece) {
-        return this.teamType.equals(piece.teamType);
-    }
-
     public boolean isSameTeam(TeamType teamType) {
         return this.teamType.equals(teamType);
     }
@@ -33,12 +29,17 @@ public abstract class Piece {
         return teamType;
     }
 
-    public void validateCanMove(Position from, Position to, Map<Position, Piece> alivePieces) {
+    public void validateCanMove(TeamType turn, Position from, Position to, Map<Position, Piece> alivePieces) {
+        validateOwnPiece(turn);
         List<Position> intermediatePositions = pathFinder.findIntermediatePositions(from, to);
-        pathValidator.validatePath(this, to, intermediatePositions, alivePieces);
+        pathValidator.validatePath(teamType, to, intermediatePositions, alivePieces);
     }
 
-    ;
-
     public abstract PieceType getType();
+
+    private void validateOwnPiece(TeamType turn) {
+        if (!isSameTeam(turn)) {
+            throw new IllegalArgumentException("본인 말만 움직일 수 있습니다.");
+        }
+    }
 }

@@ -1,9 +1,9 @@
 package domain.piece;
 
-import domain.position.Direction;
-import domain.position.Movement;
 import domain.piece.path.DefaultPathValidator;
-import domain.piece.path.FixedPatternPathFinder;
+import domain.piece.path.FixedMultiStepPathFinder;
+import domain.piece.path.Movement;
+import domain.position.Direction;
 import java.util.List;
 
 public class Elephant extends Piece {
@@ -22,7 +22,7 @@ public class Elephant extends Piece {
     }
 
     public Elephant(TeamType teamType) {
-        super(teamType, new FixedPatternPathFinder(MOVEMENTS), new DefaultPathValidator());
+        super(teamType, new FixedMultiStepPathFinder(MOVEMENTS), new DefaultPathValidator());
     }
 
     @Override
