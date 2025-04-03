@@ -1,7 +1,8 @@
 package janggi.view;
 
 import janggi.board.Board;
-import janggi.coordinate.Position;
+import janggi.board.JanggiScore;
+import janggi.coordinate.JanggiPosition;
 import janggi.piece.Cannon;
 import janggi.piece.Chariot;
 import janggi.piece.Country;
@@ -41,26 +42,27 @@ public class OutputView {
 
         final StringBuilder sb = new StringBuilder();
         appendBoardHeader(sb);
-        final Map<Position, Piece> map = board.getJanggiBoard();
-        for (int i = Position.POSITION_RANGE_X_MIN; i <= Position.POSITION_RANGE_X_MAX; i++) {
+        final Map<JanggiPosition, Piece> map = board.getJanggiBoard();
+        for (int i = JanggiPosition.POSITION_RANGE_X_MIN; i <= JanggiPosition.POSITION_RANGE_X_MAX; i++) {
             appendRow(sb, map, i);
         }
         System.out.println(sb);
     }
 
-    private static void appendRow(final StringBuilder sb, final Map<Position, Piece> map, final int i) {
+    private static void appendRow(final StringBuilder sb, final Map<JanggiPosition, Piece> map, final int i) {
         sb.append(NumberFormat.findNumberName(i) + " ");
-        for (int j = Position.POSITION_RANGE_Y_MIN; j <= Position.POSITION_RANGE_Y_MAX; j++) {
-            final Position now = new Position(i, j);
+        for (int j = JanggiPosition.POSITION_RANGE_Y_MIN; j <= JanggiPosition.POSITION_RANGE_Y_MAX; j++) {
+            final JanggiPosition now = new JanggiPosition(i, j);
             appendPiece(sb, map, now);
         }
         sb.append(System.lineSeparator());
     }
 
-    private static void appendPiece(final StringBuilder sb, final Map<Position, Piece> map, final Position now) {
+    private static void appendPiece(final StringBuilder sb, final Map<JanggiPosition, Piece> map,
+                                    final JanggiPosition now) {
         if (map.containsKey(now)) {
             final Piece piece = map.get(now);
-            sb.append(TEAM_FORMAT.get(piece.getTeamType()));
+            sb.append(TEAM_FORMAT.get(piece.getCountry()));
             sb.append(PIECE_FORMAT.get(piece.getClass()));
             sb.append(COLOR_RESET + " ");
             return;
@@ -72,9 +74,26 @@ public class OutputView {
         final NumberFormat[] values = NumberFormat.values();
 
         sb.append("ㅁ ");
-        for (int i = Position.POSITION_RANGE_Y_MIN - 1; i < Position.POSITION_RANGE_Y_MAX; i++) {
+        for (int i = JanggiPosition.POSITION_RANGE_Y_MIN - 1; i < JanggiPosition.POSITION_RANGE_Y_MAX; i++) {
             sb.append(values[i].name()).append(" ");
         }
         sb.append(System.lineSeparator());
+    }
+
+    public static void printJanggiWinner(final Board board) {
+        final Country winnerCountry = board.findWinnerCountry();
+
+        System.out.println("축하합니다.");
+        System.out.print("우승한 국가는 ");
+
+        final JanggiScore janggiScore = board.calculateScore(winnerCountry);
+        if (winnerCountry == Country.HAN) {
+            System.out.println("한나라 입니다!");
+            System.out.println("점수 : " + janggiScore.value());
+            return;
+        }
+
+        System.out.println("초나라 입니다!");
+        System.out.println("점수 : " + janggiScore.value());
     }
 }

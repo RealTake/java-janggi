@@ -3,71 +3,76 @@ package janggi.piece;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import janggi.board.Board;
-import janggi.coordinate.Position;
+import janggi.coordinate.JanggiPosition;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class HorseTest {
 
-    @DisplayName("General은 주변 한칸으로 이동할 수 있다.")
-    @Test
-    void general() {
-        // given
-        final Piece generalPiece = new General(Country.CHO);
-        final Position now = new Position(1, 1);
-        final Position ableDest = new Position(1, 2);
-        final Position notAbleDest = new Position(1, 3);
-        final Board board = new Board(new HashMap<>());
+    private final Piece horse = new Horse(Country.CHO);
+    private final Map<JanggiPosition, Piece> janggiBoard = new HashMap<>();
 
-        // when
-        final boolean actual1 = generalPiece.isAbleToMove(now, ableDest, board);
-        final boolean actual2 = generalPiece.isAbleToMove(now, notAbleDest, board);
-
-        // then
-        org.junit.jupiter.api.Assertions.assertAll(
-                () -> assertThat(actual1).isTrue(),
-                () -> assertThat(actual2).isFalse()
-        );
+    @BeforeEach
+    void initJanggiBoard() {
+        janggiBoard.clear();
     }
 
-    @DisplayName("horse는 직-대 방향으로 이동할 수 있다.")
-    @Test
-    void horse() {
-        // given
-        final Piece horsePiece = new Horse(Country.CHO);
-        final Position now = new Position(1, 1);
-        final Position ableDest = new Position(3, 2);
-        final Position notAbleDest = new Position(1, 2);
-        final Board board = new Board(new HashMap<>());
-
-        // when
-        final boolean actual1 = horsePiece.isAbleToMove(now, ableDest, board);
-        final boolean actual2 = horsePiece.isAbleToMove(now, notAbleDest, board);
-
-        // then
-        org.junit.jupiter.api.Assertions.assertAll(
-                () -> assertThat(actual1).isTrue(),
-                () -> assertThat(actual2).isFalse()
-        );
+    public void placePieceOnJanggiBoard(final JanggiPosition janggiPosition, final Piece piece){
+        janggiBoard.put(janggiPosition, piece);
     }
 
-    @DisplayName("horse는 직 방향에 기물이 존재하면 이동할 수 없다.")
-    @Test
-    void horse1() {
-        // given
-        final Piece horsePiece = new Horse(Country.CHO);
-        final Position now = new Position(2, 3);
-        final Position notAbleDest = new Position(1, 1);
-        final Board board = new Board(Map.of(
-                new Position(2, 2), new Cannon(Country.HAN)
-        ));
+    @Nested
+    @DisplayName("마 이동 로직")
+    class CanMove {
 
-        // when
-        final boolean actual = horsePiece.isAbleToMove(now, notAbleDest, board);
+        @DisplayName("horse는 직-대 방향으로 이동할 수 있다.")
+        @ParameterizedTest
+        @MethodSource
+        void horse(final JanggiPosition dest, final boolean expected) {
+            // given
+            final JanggiPosition now = new JanggiPosition(1, 1);
 
-        // then
-        assertThat(actual).isFalse();
+            final Board board = new Board(janggiBoard);
+
+            // when
+            final boolean actual = horse.canMove(now, dest, board);
+
+            // then
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        static Stream<Arguments> horse() {
+            return Stream.of(
+                    Arguments.of(new JanggiPosition(3, 2), true),
+                    Arguments.of(new JanggiPosition(1, 2), false)
+            );
+        }
+
+        @DisplayName("horse는 직 방향에 기물이 존재하면 이동할 수 없다.")
+        @Test
+        void horse1() {
+            // given
+            final JanggiPosition now = new JanggiPosition(2, 3);
+            final JanggiPosition dest = new JanggiPosition(1, 1);
+
+            final Cannon hurdle = new Cannon(Country.HAN);
+            placePieceOnJanggiBoard(new JanggiPosition(2, 2), hurdle);
+            final Board board = new Board(janggiBoard);
+
+            // when
+            final boolean actual = hurdle.canMove(now, dest, board);
+
+            // then
+            assertThat(actual).isFalse();
+        }
     }
+
 }
