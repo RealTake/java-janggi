@@ -1,5 +1,6 @@
 package janggi.domain.piece;
 
+import static janggi.domain.piece.PieceType.HORSE;
 import static janggi.domain.piece.direction.Direction.DOWN;
 import static janggi.domain.piece.direction.Direction.LEFT;
 import static janggi.domain.piece.direction.Direction.LEFT_DOWN;
@@ -15,11 +16,13 @@ import janggi.domain.piece.direction.Position;
 import janggi.domain.piece.direction.Route;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Horse extends Piece {
+
+    private static final int HORSE_SCORE = 5;
 
     private static final List<List<Direction>> HORSE_MOVES = List.of(
             List.of(RIGHT, RIGHT_UP),
@@ -39,27 +42,54 @@ public class Horse extends Piece {
         super(position, team);
     }
 
+    @Override
     public Set<Route> calculateIndependentRoutes() {
         return HORSE_MOVES.stream()
                 .map(this::calculateRoute)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
-    private Optional<Route> calculateRoute(final List<Direction> move) {
+    private Route calculateRoute(final List<Direction> move) {
         final List<Position> positions = new ArrayList<>();
-
         Position currentPosition = position;
         for (final Direction direction : move) {
-            if (currentPosition.canMove(direction)) {
-                final Position nextPosition = currentPosition.move(direction);
-                positions.add(nextPosition);
-                currentPosition = nextPosition;
-                continue;
+            if (!currentPosition.canMove(direction)) {
+                return null;
             }
-            return Optional.empty();
+            currentPosition = currentPosition.move(direction);
+            positions.add(currentPosition);
         }
-        return Optional.of(new Route(positions));
+        return new Route(positions);
+    }
+
+    @Override
+    public boolean isValidRoute(final Route route, final List<Piece> otherPieces) {
+        final List<Piece> piecesInRoute = otherPieces.stream()
+                .filter(route::hasPosition)
+                .toList();
+        return checkPiecesInRoute(route, piecesInRoute);
+    }
+
+    private boolean checkPiecesInRoute(final Route route, final List<Piece> piecesInRoute) {
+        if (piecesInRoute.isEmpty()) {
+            return true;
+        }
+        if (piecesInRoute.size() == 1) {
+            final Piece pieceInWay = piecesInRoute.getFirst();
+            return route.isDestination(pieceInWay) && isEnemy(pieceInWay);
+        }
+        return piecesInRoute.stream()
+                .allMatch(piece -> route.isDestination(piece) && isEnemy(piece));
+    }
+
+    @Override
+    public double getScore() {
+        return HORSE_SCORE;
+    }
+
+    @Override
+    public PieceType getPieceType() {
+        return HORSE;
     }
 }

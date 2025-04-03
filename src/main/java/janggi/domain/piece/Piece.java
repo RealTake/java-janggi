@@ -3,9 +3,10 @@ package janggi.domain.piece;
 import janggi.domain.Team;
 import janggi.domain.piece.direction.Position;
 import janggi.domain.piece.direction.Route;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public abstract class Piece {
 
@@ -19,35 +20,25 @@ public abstract class Piece {
 
     public abstract Set<Route> calculateIndependentRoutes();
 
+    public abstract boolean isValidRoute(final Route route, final List<Piece> otherPieces);
+
+    public abstract double getScore();
+
+    public abstract PieceType getPieceType();
+
     public Set<Route> getPossibleRoutes(final List<Piece> otherPieces) {
-        return calculateIndependentRoutes().stream()
-                .filter(route -> isValidRoute(route, otherPieces))
-                .collect(Collectors.toSet());
-    }
-
-    protected boolean isValidRoute(final Route route, final List<Piece> otherPieces) {
-        final List<Piece> piecesInRoute = otherPieces.stream()
-                .filter(route::hasPosition)
-                .toList();
-        return checkPiecesInRoute(route, piecesInRoute);
-    }
-
-    private boolean checkPiecesInRoute(final Route route, final List<Piece> piecesInRoute) {
-        if (piecesInRoute.isEmpty()) {
-            return true;
+        final Set<Route> routes = new HashSet<>();
+        for (final Route route : calculateIndependentRoutes()) {
+            if (isValidRoute(route, otherPieces)) {
+                routes.add(route);
+            }
         }
-        if (piecesInRoute.size() == 1) {
-            final Piece pieceInWay = piecesInRoute.getFirst();
-            return route.isDestination(pieceInWay) && isEnemy(pieceInWay);
-        }
-        return piecesInRoute.stream()
-                .allMatch(piece -> route.isDestination(piece) && isEnemy(piece));
+        return routes;
     }
 
     public void move(final Position position) {
         this.position = new Position(position.x(), position.y());
     }
-
 
     public boolean isSamePosition(final Position otherPosition) {
         return position.equals(otherPosition);
@@ -63,5 +54,31 @@ public abstract class Piece {
 
     protected boolean isCannon() {
         return false;
+    }
+
+    public boolean isGeneral() {
+        return false;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Piece piece = (Piece) o;
+        return Objects.equals(position, piece.position) && team == piece.team;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, team);
     }
 }
