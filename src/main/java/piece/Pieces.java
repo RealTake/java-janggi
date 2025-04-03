@@ -1,47 +1,47 @@
 package piece;
 
-import direction.Point;
+import java.util.ArrayList;
+import java.util.Collections;
+import location.Position;
 import java.util.List;
-import java.util.Optional;
 
 public class Pieces {
 
     private final List<Piece> pieces;
 
     public Pieces(List<Piece> pieces) {
-        this.pieces = pieces;
+        this.pieces = new ArrayList<>(pieces);
     }
 
-    public Optional<Piece> findByPoint(Point point) {
-        return pieces.stream()
-                .filter(piece -> piece.isEqualPositionWith(point))
-                .findAny();
+    public void add(Piece piece) {
+        pieces.add(piece);
     }
 
-    public Piece getByPoint(Point point) {
+    public List<Piece> getPieces() {
+        return Collections.unmodifiableList(pieces);
+    }
+
+    public Piece getByPosition(Position targetPosition) {
         return pieces.stream()
-                .filter(piece -> piece.isEqualPositionWith(point))
+                .filter(piece -> piece.isPlacedAt(targetPosition))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 위치에 기물이 존재하지 않습니다."));
     }
 
-    public boolean isContainPiece(Point point) {
+    public boolean isContainedPieceAtPosition(Position targetPosition) {
         return pieces.stream()
-                .anyMatch(piece -> piece.isEqualPositionWith(point));
+                .anyMatch(piece -> piece.isPlacedAt(targetPosition));
     }
 
-    public List<Piece> getPieces() {
-        return pieces;
-    }
-
-    public void validateNotContainPiece(Point point) {
-        if (isContainPiece(point)) {
+    public void checkNotExistedPieceInPosition(Position position) {
+        if (isContainedPieceAtPosition(position)) {
             throw new IllegalArgumentException("[ERROR] 경로에 기물이 존재합니다.");
         }
     }
 
-    public boolean isAlreadyPieceInPosition(Point point) {
+    public int calculateTotalScore() {
         return pieces.stream()
-                .anyMatch(piece -> piece.isEqualPositionWith(point));
+                .mapToInt(Piece::getScore)
+                .sum();
     }
 }

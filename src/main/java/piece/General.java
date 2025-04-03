@@ -1,23 +1,63 @@
 package piece;
 
-import direction.Point;
+import game.Team;
+import location.Direction;
+import location.PathManager;
+import location.Position;
 
 public class General extends Piece {
+    private final PathManager pathManager;
+    private Position currentPosition;
 
-    public General(String name, Point point) {
-        super(name, point);
+    public General(int id, Team team, PathManager pathManager, Position currentPosition) {
+        super(id, team);
+        this.pathManager = pathManager;
+        this.currentPosition = currentPosition;
     }
 
     @Override
-    public void validateDestination(Point to) {
-        if (currentPosition.x() + 1 < to.x() || currentPosition.x() - 1 > to.x()
-                || currentPosition.y() + 1 < to.y() || currentPosition.y() - 1 > to.y()) {
-            throw new IllegalArgumentException("[ERROR] 선택할 수 없는 목적지입니다.");
+    public Position getCurrentPosition() {
+        return currentPosition;
+    }
+
+    @Override
+    public PieceType getPieceType() {
+        return PieceType.GENERAL;
+    }
+
+    @Override
+    public int getScore() {
+        return 0;
+    }
+
+    @Override
+    public void validateDestination(Position destination) {
+        checkInPalace(destination);
+        pathManager.checkOneMovement(currentPosition, destination);
+
+        if (Direction.isDiagonal(currentPosition, destination)) {
+            pathManager.checkValidOneDiagonalMovementInPalace(currentPosition, destination);
         }
     }
 
     @Override
-    public void checkPaths(Pieces allPieces, Point to) {
+    public void validatePaths(Pieces pieces, Position destination) {
 
+    }
+
+    @Override
+    public void updateCurrentPosition(Position destination) {
+        currentPosition = destination;
+    }
+
+    @Override
+    public boolean isPlacedAt(Position targetPosition) {
+        return currentPosition.equals(targetPosition);
+    }
+
+    private void checkInPalace(Position destination) {
+        if (!pathManager.isPalacePosition(destination)) {
+            throw new IllegalArgumentException("[ERROR] 궁성 외 좌표입니다.");
+        }
     }
 }

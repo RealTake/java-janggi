@@ -1,64 +1,52 @@
 package piece;
 
-import direction.Direction;
-import direction.Point;
-import java.util.ArrayList;
-import java.util.List;
+import game.Team;
+import location.Position;
 
 public abstract class Piece {
-    private final String name; // enum -> outputFormatter
-    protected Point currentPosition;
+    private final int id;
+    private final Team team;
+    private boolean isCatch;
 
-    public Piece(String name, Point currentPosition) {
-        this.name = name;
-        this.currentPosition = currentPosition;
+    protected Piece(int id, Team team) {
+        this.id = id;
+        this.team = team;
+        this.isCatch = false;
     }
 
-    protected Piece(String name) {
-        this.name = name;
+    public int getId() {
+        return id;
     }
 
-    public String getName() {
-        return name;
+    public Team getTeam() {
+        return team;
     }
 
-    public boolean isEqualPositionWith(Point targetPoint) {
-        return currentPosition.equals(targetPoint);
+    public void move(Pieces pieces, Position destination) {
+        validateDestination(destination);
+        validatePaths(pieces, destination);
+        updateCurrentPosition(destination);
     }
 
-    public abstract void validateDestination(Point to);
-
-    public abstract void checkPaths(Pieces allPieces, Point to);
-
-    public void move(Point to) {
-        currentPosition = to;
+    public boolean isCatch() {
+        return isCatch;
     }
 
-    protected List<Point> findStraightPaths(Point from, Point to) {
-        Direction direction = Direction.find(from, to);
-        List<Point> paths = new ArrayList<>();
-        Point current = new Point(from.x(), from.y());
-        current = current.apply(direction);
-        while (!current.equals(to)) {
-            paths.add(current);
-            current = current.apply(direction);
-        }
-        return paths;
+    public void catchByOpponent() {
+        isCatch = true;
     }
 
-    protected void validateStraightDestination(Point from, Point to) {
-        if (from.x() != to.x() && from.y() != to.y()) {
-            throw new IllegalArgumentException("[ERROR] 직선 이동만 가능합니다.");
-        }
-    }
+    public abstract Position getCurrentPosition();
 
-    protected void validateNotSamePosition(Point from, Point to) {
-        if (from.equals(to)) {
-            throw new IllegalArgumentException("[ERROR] 출발지와 목적지는 달라야 합니다.");
-        }
-    }
+    public abstract PieceType getPieceType();
 
-    protected boolean isSameType(String otherName) {
-        return name.equalsIgnoreCase(otherName);
-    }
+    public abstract int getScore();
+
+    public abstract boolean isPlacedAt(Position targetPosition);
+
+    protected abstract void validateDestination(Position destination);
+
+    protected abstract void validatePaths(Pieces pieces, Position destination);
+
+    protected abstract void updateCurrentPosition(Position destination);
 }

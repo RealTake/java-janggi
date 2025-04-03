@@ -1,66 +1,147 @@
 package game;
 
-import board.MemoryGameBoard;
-import direction.Point;
-import team.Player;
-import team.Team;
+import dao.BoardDao;
+import dao.PieceDao;
+import java.util.List;
+import piece.Piece;
+import piece.PieceType;
+import location.Position;
+import piece.Pieces;
+import view.AnswerType;
 import view.InputView;
 import view.OutputView;
 
 public class JanggiGame {
 
-    private static final String RANGE_EXCEED = "[ERROR] 범위를 넘어설 수 없습니다.";
     private static final int HORIZONTAL_START = 1;
     private static final int HORIZONTAL_END = 9;
     private static final int VERTICAL_START = 1;
     private static final int VERTICAL_END = 10;
 
-    private final MemoryGameBoard gameBoard;
+    private final BoardDao boardDao;
+    private final PieceDao pieceDao;
+    private final BoardInitializer boardInitializer;
 
-    public JanggiGame(MemoryGameBoard gameBoard) {
-        this.gameBoard = gameBoard;
+    public JanggiGame(BoardDao boardDao, PieceDao pieceDao, BoardInitializer boardInitializer) {
+        this.boardDao = boardDao;
+        this.pieceDao = pieceDao;
+        this.boardInitializer = boardInitializer;
     }
 
-    public void showInitialBoard() {
-        OutputView.displayBoard(gameBoard);
+    public void showBoard() {
+        List<Piece> greenPieces = pieceDao.findByTeam(Team.GREEN).getPieces();
+        List<Piece> redPieces = pieceDao.findByTeam(Team.RED).getPieces();
+        OutputView.displayBoard(greenPieces, redPieces);
     }
 
     public void run() {
-        for (Team team : Team.values()) {
-            Player currentPlayer = gameBoard.findPlayer(team);
+        Team winTeam = play();
 
-            Point start = requestMovementStartPosition(currentPlayer);
-            Point end = requestMovementEndPosition();
+        if (winTeam.isNotDecided()) {
+            showInterimResult();
+            return;
+        }
+        initializeBoard();
+    }
 
-            currentPlayer.validateAlreadyPlayerPieceInPosition(end);
+    private Team play() {
+        while (true) {
+            Team currentTeam = boardDao.findCurrentTeam();
+            Pieces currentTeamPieces = pieceDao.findByTeam(currentTeam);
 
-            currentPlayer.play(gameBoard.findAllPieces(), start, end);
-            OutputView.displayBoard(gameBoard);
+            if (requestEndGame().isPositive()) {
+                return Team.NONE;
+            }
+            Position start = requestMovementStartPosition(currentTeamPieces);
+            Position end = requestMovementEndPosition();
+
+            move(currentTeamPieces, start, end);
+            boolean isGeneralCatch = catchOpponentPiece(currentTeam, end);
+            if (isGeneralCatch) {
+                return currentTeam;
+            }
+            showBoard();
         }
     }
 
-    private Point requestMovementStartPosition(Player player) {
-        while (true) {
-            Point start = InputView.requestMoveStartPosition();
-            validateBoardRange(start);
+    private AnswerType requestEndGame() {
+        return InputView.requestEndGame();
+    }
 
-            if (player.isContainPiece(start)) {
+    private Position requestMovementStartPosition(Pieces currentPieces) {
+        while (true) {
+            Position start = InputView.requestMoveStartPosition();
+            validateRange(start);
+
+            if (currentPieces.isContainedPieceAtPosition(start)) {
                 return start;
             }
             OutputView.displayWrongPoint();
         }
     }
 
-    private Point requestMovementEndPosition() {
-        Point end = InputView.requestMovementEndPosition();
-        validateBoardRange(end);
+    private Position requestMovementEndPosition() {
+        Position end = InputView.requestMovementEndPosition();
+        validateRange(end);
         return end;
     }
 
-    public void validateBoardRange(Point point) {
-        if (point.y() < VERTICAL_START || point.y() > VERTICAL_END ||
-                point.x() < HORIZONTAL_START || point.x() > HORIZONTAL_END) {
-            throw new IllegalArgumentException(RANGE_EXCEED);
+    private void move(Pieces currentPieces, Position start, Position end) {
+        currentPieces.checkNotExistedPieceInPosition(end);
+        start.validateNotSame(end);
+
+        Pieces allPieces = pieceDao.findAll();
+        Piece piece = currentPieces.getByPosition(start);
+
+        piece.move(allPieces, end);
+        pieceDao.updatePosition(piece);
+    }
+
+    private boolean catchOpponentPiece(Team currentTeam, Position end) {
+        Team opponent = currentTeam.findOpponent();
+        boolean isGeneralCatch = catchPiece(opponent, end);
+        boardDao.updateCurrentTeam(opponent);
+        return isGeneralCatch;
+    }
+
+    private boolean catchPiece(Team opponent, Position end) {
+        Pieces opponentPieces = pieceDao.findByTeam(opponent);
+        if (opponentPieces.isContainedPieceAtPosition(end)) {
+            Piece opponentPiece = opponentPieces.getByPosition(end);
+            opponentPiece.catchByOpponent();
+            pieceDao.updateCatch(opponentPiece);
+            return PieceType.isGeneral(opponentPiece);
         }
+        return false;
+    }
+
+    private Team decideWinTeam(double greenPlayerTotalScore, double redPlayerTotalScore) {
+        if (greenPlayerTotalScore > redPlayerTotalScore) {
+            return Team.GREEN;
+        }
+        return Team.RED;
+    }
+
+    private void validateRange(Position position) {
+        if (position.x() < HORIZONTAL_START || position.x() > HORIZONTAL_END ||
+                position.y() < VERTICAL_START || position.y() > VERTICAL_END) {
+            throw new IllegalArgumentException("[ERROR] 위치할 수 없는 좌표입니다.");
+        }
+    }
+
+    private void showInterimResult() {
+        Pieces catchPiecesByGreen = pieceDao.findCatchAllBy(Team.GREEN);
+        Pieces catchPiecesByRed = pieceDao.findCatchAllBy(Team.RED);
+
+        double greenPlayerTotalScore = Team.GREEN.calculateFinalScore(catchPiecesByGreen.calculateTotalScore());
+        double redPlayerTotalScore = Team.RED.calculateFinalScore(catchPiecesByRed.calculateTotalScore());
+
+        Team winTeam = decideWinTeam(greenPlayerTotalScore, redPlayerTotalScore);
+        OutputView.displayResult(winTeam, greenPlayerTotalScore, redPlayerTotalScore);
+    }
+
+    private void initializeBoard() {
+        boardInitializer.initialize();
+        boardDao.resetCurrentTeam();
     }
 }
