@@ -1,12 +1,11 @@
 package janggi.view;
 
 import janggi.common.ErrorMessage;
-import janggi.common.PieceName;
-import janggi.domain.Board;
-import janggi.domain.Position;
 import janggi.domain.Side;
+import janggi.domain.movement.Position;
 import janggi.domain.piece.Piece;
 import janggi.dto.PositionDto;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.StringJoiner;
 
@@ -21,17 +20,37 @@ public class Viewer {
 
     private static final int POSITION_INPUT_SIZE = 2;
 
+    public int readGameId() {
+        System.out.println(Formatter.formatMessageWithHeader(INFO_HEADER, "게임방 아이디를 숫자로 입력해 주세요. (예: 8)"));
+        String input = scanner.nextLine();
+
+        validateGameId(input);
+        return Integer.parseInt(input);
+    }
+
+    private void validateGameId(String input) {
+        int id;
+        try {
+            id = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(ErrorMessage.INVALID_NUMBER_INPUT.getMessage());
+        }
+        if (id < 1 || id > 99) {
+            throw new IllegalArgumentException(ErrorMessage.INVALID_ID_RANGE.getMessage());
+        }
+    }
+
     public void printErrorMessage(Exception e) {
         System.out.println(Formatter.formatMessageWithHeader(ERROR_HEADER, e.getMessage()));
     }
 
-    public void printBoard(Board board) {
+    public void printBoard(Map<Position, Piece> pieces) {
         StringJoiner enterJoiner = new StringJoiner(LINE_SEPARATOR).add(formatFirstRowOfBoard());
         for (int row = 1; row <= 10; row++) {
             StringJoiner lineJoiner = new StringJoiner(BLANK);
             for (int column = 1; column <= 9; column++) {
                 Position position = Position.of(row, column);
-                lineJoiner.add(getPieceName(board, position));
+                lineJoiner.add(getPieceName(pieces, position));
             }
 
             lineJoiner.add(Formatter.formatFullWidthNumber(row));
@@ -41,10 +60,10 @@ public class Viewer {
         System.out.println(enterJoiner);
     }
 
-    private String getPieceName(Board board, Position position) {
-        if (board.hasPiece(position)) {
-            Piece piece = board.getPiece(position);
-            return PieceName.findName(piece);
+    private String getPieceName(Map<Position, Piece> pieces, Position position) {
+        if (pieces.containsKey(position)) {
+            Piece piece = pieces.get(position);
+            return Formatter.formatPieceName(piece);
         }
         return "＿";
     }
@@ -60,7 +79,8 @@ public class Viewer {
     }
 
     public void printTurnInfo(Side side) {
-        System.out.println(Formatter.formatMessageWithHeader(INFO_HEADER, Formatter.formatSide(side) + "의 차례입니다."));
+        String sideName = Formatter.formatSideName(side);
+        System.out.println(Formatter.formatMessageWithHeader(INFO_HEADER, sideName + "의 차례입니다."));
     }
 
     public PositionDto readPieceSelection() {
@@ -95,7 +115,16 @@ public class Viewer {
         return parsePosition(input);
     }
 
-    public void winner(Side side) {
-        System.out.println(Formatter.formatMessageWithHeader(INFO_HEADER, Formatter.formatSide(side) + "가 이겼습니다!"));
+    public void printWinner(Side side) {
+        String sideName = Formatter.formatSideName(side);
+        System.out.println(Formatter.formatMessageWithHeader(INFO_HEADER, sideName + "가 이겼습니다!"));
+        System.out.println("게임을 종료합니다.");
+    }
+
+    public void printPoints(Map<Side, Double> points) {
+        for (Map.Entry<Side, Double> entry : points.entrySet()) {
+            String sideName = Formatter.formatSideName(entry.getKey());
+            System.out.println(sideName + ": " + entry.getValue());
+        }
     }
 }

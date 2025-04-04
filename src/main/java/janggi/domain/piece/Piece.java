@@ -1,7 +1,7 @@
 package janggi.domain.piece;
 
-import janggi.domain.Position;
 import janggi.domain.Side;
+import janggi.domain.movement.Position;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -35,6 +35,14 @@ public abstract class Piece {
 
     public boolean isGeneral() {
         return false;
+    }
+
+    public double getPoints() {
+        return 0;
+    }
+
+    public Side getSide() {
+        return side;
     }
 
     @Override

@@ -1,8 +1,10 @@
 package janggi.domain.piece;
 
-import janggi.domain.Position;
 import janggi.domain.Side;
-import janggi.domain.Vector;
+import janggi.domain.movement.Direction;
+import janggi.domain.movement.PalaceMovement;
+import janggi.domain.movement.Position;
+import janggi.domain.movement.Vector;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,11 +12,11 @@ import java.util.Set;
 
 public class Cannon extends Piece {
 
-    private static final List<Vector> VECTORS = List.of(
-            new Vector(1, 0),
-            new Vector(0, -1),
-            new Vector(0, 1),
-            new Vector(-1, 0)
+    private static final List<Direction> MOVEMENT_DIRECTIONS = List.of(
+            Direction.DOWN,
+            Direction.LEFT,
+            Direction.RIGHT,
+            Direction.UP
     );
 
     public Cannon(Side side) {
@@ -24,11 +26,15 @@ public class Cannon extends Piece {
     @Override
     public Set<Position> generateAvailableMovePositions(Map<Position, Piece> pieces, Position currentPosition) {
         Set<Position> result = new HashSet<>();
-        for (Vector vector : VECTORS) {
+        for (Direction direction : MOVEMENT_DIRECTIONS) {
+            Vector vector = direction.getVector();
             currentPosition.calculateNextPosition(vector)
                     .ifPresent(nextPosition -> searchAvailableMoves(result, pieces, nextPosition, vector, pieces.containsKey(nextPosition)));
         }
-
+        if (PalaceMovement.isInsidePalace(currentPosition) && PalaceMovement.isCorner(currentPosition)) {
+            Set<Position> palaceMovePositions = generatePalaceMovePositions(pieces, currentPosition);
+            result.addAll(palaceMovePositions);
+        }
         return result;
     }
 
@@ -72,8 +78,43 @@ public class Cannon extends Piece {
         return !targetPiece.isSameSide(side) && !targetPiece.isCannon();
     }
 
+    private Set<Position> generatePalaceMovePositions(Map<Position, Piece> pieces, Position currentPosition) {
+        List<Direction> allDirections = PalaceMovement.getDirectionsAtPosition(currentPosition);
+        List<Direction> diagonalDirections = allDirections.stream().filter(Direction::isDiagonal).toList();
+        Set<Position> availableMovePositions = new HashSet<>();
+
+        for (Direction diagonalDirection : diagonalDirections) {
+            searchAvailablePalaceMoves(availableMovePositions, pieces, currentPosition, diagonalDirection.getVector());
+        }
+
+        return availableMovePositions;
+    }
+
+    private void searchAvailablePalaceMoves(Set<Position> result, Map<Position, Piece> pieces, Position currentPosition, Vector vector) {
+        if (currentPosition.canNotMove(vector)) {
+            return;
+        }
+        Position midPosition = currentPosition.moveToNextPosition(vector);
+        if (!pieces.containsKey(midPosition) || pieces.get(midPosition).isCannon()) {
+            return;
+        }
+        Position finalPosition = midPosition.moveToNextPosition(vector);
+        if (pieces.containsKey(finalPosition)) {
+            Piece finalPiece = pieces.get(finalPosition);
+            if (finalPiece.isCannon() || finalPiece.isSameSide(side)) {
+                return;
+            }
+        }
+        result.add(finalPosition);
+    }
+
     @Override
     public boolean isCannon() {
         return true;
+    }
+
+    @Override
+    public double getPoints() {
+        return 7;
     }
 }

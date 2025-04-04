@@ -1,18 +1,12 @@
 package janggi.view;
 
+import janggi.domain.PieceName;
 import janggi.domain.Side;
+import janggi.domain.piece.Piece;
 
 public final class Formatter {
 
     private Formatter() {
-    }
-
-    public static String formatSide(Side side) {
-        String sideName = "초나라";
-        if (side == Side.HAN) {
-            sideName = "한나라";
-        }
-        return sideName;
     }
 
     public static String formatMessageWithHeader(String header, String message) {
@@ -28,5 +22,19 @@ public final class Formatter {
         }
 
         return builder.toString();
+    }
+
+    public static String formatSideName(Side side) {
+        if (side == Side.CHO) {
+            return "\u001B[32m초나라\u001B[0m";
+        }
+        return "\u001B[31m한나라\u001B[0m";
+    }
+
+    public static String formatPieceName(Piece piece) {
+        if (piece.isSameSide(Side.CHO)) {
+            return "\u001B[32m" + PieceName.getName(piece) + "\u001B[0m";
+        }
+        return "\u001B[31m" + PieceName.getName(piece) + "\u001B[0m";
     }
 }

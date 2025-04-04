@@ -1,7 +1,6 @@
-package janggi.factory;
+package janggi.domain;
 
-import janggi.domain.Position;
-import janggi.domain.Side;
+import janggi.domain.movement.Position;
 import janggi.domain.piece.Cannon;
 import janggi.domain.piece.Chariot;
 import janggi.domain.piece.Elephant;
@@ -14,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum PieceFactory {
+
     GENERAL1(9, 5, new General(Side.CHO)),
     GUARD1(10, 4, new Guard(Side.CHO)),
     GUARD2(10, 6, new Guard(Side.CHO)),

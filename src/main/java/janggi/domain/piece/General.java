@@ -1,8 +1,9 @@
 package janggi.domain.piece;
 
-import janggi.domain.Position;
 import janggi.domain.Side;
-import janggi.domain.Vector;
+import janggi.domain.movement.Direction;
+import janggi.domain.movement.PalaceMovement;
+import janggi.domain.movement.Position;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,10 +12,7 @@ import java.util.stream.Collectors;
 
 public class General extends Piece {
 
-    private static final List<Vector> VECTORS = List.of(
-            new Vector(1, 0), new Vector(0, -1), new Vector(0, 1), new Vector(-1, 0),
-            new Vector(1, 1), new Vector(-1, -1), new Vector(1, -1), new Vector(-1, 1)
-    );
+    private static final List<Direction> MOVEMENT_DIRECTIONS = List.of(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT);
 
     public General(Side side) {
         super(side);
@@ -22,11 +20,18 @@ public class General extends Piece {
 
     @Override
     public Set<Position> generateAvailableMovePositions(Map<Position, Piece> pieces, Position currentPosition) {
-        return VECTORS.stream()
+        Set<Position> availableMovePositions = MOVEMENT_DIRECTIONS.stream()
+                .map(Direction::getVector)
                 .map(vector -> currentPosition.calculateNextPosition(vector.side(side)))
                 .flatMap(Optional::stream)
                 .filter(availablePosition -> canMoveToPosition(pieces, availablePosition))
-                .collect(Collectors.toUnmodifiableSet());
+                .filter(PalaceMovement::isInsidePalace)
+                .collect(Collectors.toSet());
+        if (PalaceMovement.isInsidePalace(currentPosition)) {
+            Set<Position> palaceMovePositions = generatePalaceMovePositions(pieces, currentPosition);
+            availableMovePositions.addAll(palaceMovePositions);
+        }
+        return availableMovePositions;
     }
 
     private boolean canMoveToPosition(Map<Position, Piece> pieces, Position position) {
@@ -35,6 +40,16 @@ public class General extends Piece {
         }
         Piece nextPiece = pieces.get(position);
         return !nextPiece.isSameSide(side);
+    }
+
+    private Set<Position> generatePalaceMovePositions(Map<Position, Piece> pieces, Position currentPosition) {
+        List<Direction> palaceDirections = PalaceMovement.getDirectionsAtPosition(currentPosition);
+        return palaceDirections.stream().map(Direction::getVector)
+                .map(currentPosition::calculateNextPosition)
+                .flatMap(Optional::stream)
+                .filter(availablePosition -> canMoveToPosition(pieces, availablePosition))
+                .filter(PalaceMovement::isInsidePalace)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override

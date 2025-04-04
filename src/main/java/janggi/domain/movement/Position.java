@@ -1,4 +1,4 @@
-package janggi.domain;
+package janggi.domain.movement;
 
 import janggi.common.ErrorMessage;
 import java.util.Objects;
@@ -64,6 +64,18 @@ public class Position {
         return new Position(newRow, newColumn);
     }
 
+    public static Vector getVerticalVector(Position start, Position end) {
+        return new Vector(end.row - start.row, 0);
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(row, column);
@@ -76,10 +88,5 @@ public class Position {
         }
         Position position = (Position) o;
         return row == position.row && column == position.column;
-    }
-
-    @Override
-    public String toString() {
-        return "Position{" + "row=" + row + ", column=" + column + '}';
     }
 }

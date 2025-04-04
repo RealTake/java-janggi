@@ -1,6 +1,7 @@
 package janggi.domain;
 
 import janggi.common.ErrorMessage;
+import janggi.domain.movement.Position;
 import janggi.domain.piece.Piece;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,13 +15,12 @@ public class Board {
         this.pieces = new HashMap<>(pieces);
     }
 
-    public boolean canMovePiece(Side currentTurn, Position selectedPosition, Position targetPosition) {
+    public void makeMove(Side currentTurn, Position selectedPosition, Position targetPosition) {
         validatePositionExists(selectedPosition);
         validateCurrentTurn(selectedPosition, currentTurn);
         validateTargetPiece(selectedPosition, targetPosition);
 
-        Piece selectedPiece = getPiece(selectedPosition);
-        return selectedPiece.canMove(Collections.unmodifiableMap(pieces), selectedPosition, targetPosition);
+        movePiece(selectedPosition, targetPosition);
     }
 
     private void validatePositionExists(Position position) {
@@ -55,9 +55,18 @@ public class Board {
         return pieces.get(position);
     }
 
-    public void movePiece(Position selectedPosition, Position targetPosition) {
+    private void movePiece(Position selectedPosition, Position targetPosition) {
         Piece selectedPiece = getPiece(selectedPosition);
+
+        if (!selectedPiece.canMove(getPieces(), selectedPosition, targetPosition)) {
+            throw new IllegalArgumentException(ErrorMessage.CANNOT_MOVE_PIECE.getMessage());
+        }
+
         updatePosition(selectedPosition, targetPosition, selectedPiece);
+    }
+
+    public Map<Position, Piece> getPieces() {
+        return Collections.unmodifiableMap(pieces);
     }
 
     private void updatePosition(Position selectedPosition, Position targetPosition, Piece selectedPiece) {
@@ -65,13 +74,18 @@ public class Board {
         pieces.put(targetPosition, selectedPiece);
     }
 
-    public boolean hasPiece(Position position) {
-        return pieces.containsKey(position);
+    public boolean hasBothGenerals() {
+        long generalCount = pieces.values()
+                .stream()
+                .filter(Piece::isGeneral)
+                .count();
+        return generalCount == 2;
     }
 
-    public boolean hasGeneral() {
-        return pieces.values()
-                .stream()
-                .anyMatch(Piece::isGeneral);
+    public double getTotalPoints(Side side) {
+        return pieces.values().stream()
+                .filter(piece -> piece.isSameSide(side))
+                .mapToDouble(Piece::getPoints)
+                .sum();
     }
 }

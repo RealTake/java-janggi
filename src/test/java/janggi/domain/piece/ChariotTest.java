@@ -1,7 +1,7 @@
 package janggi.domain.piece;
 
-import janggi.domain.Position;
 import janggi.domain.Side;
+import janggi.domain.movement.Position;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,5 +68,38 @@ class ChariotTest {
 
         // then
         assertThat(actual).isTrue();
+    }
+
+    @DisplayName("차는 궁성 영역 안에서 대각선으로 이동할 수 있다.")
+    @ParameterizedTest
+    @CsvSource(value = {"3,4,1,6", "1,4,3,6", "1,6,2,5", "3,6,2,5", "10,4,9,5", "10,6,8,4"})
+    void test4(int startingRow, int startingColumn, int endRow, int endColumn) {
+        // given
+        Position startingPosition = Position.of(startingRow, startingColumn);
+        Piece startingPiece = new Chariot(Side.HAN);
+        Position endPosition = Position.of(endRow, endColumn);
+
+        Map<Position, Piece> startingPieces = Map.of(startingPosition, startingPiece);
+
+        // when
+        boolean actual = startingPiece.canMove(startingPieces, startingPosition, endPosition);
+
+        // then
+        assertThat(actual).isTrue();
+    }
+
+    @DisplayName("차는 13점으로 계산한다.")
+    @Test
+    void test5() {
+        // given
+        Side side = Side.CHO;
+        Piece piece = new Chariot(side);
+
+        // when
+        double actual = piece.getPoints();
+        double expected = 13;
+
+        // then
+        assertThat(actual).isEqualTo(expected);
     }
 }
