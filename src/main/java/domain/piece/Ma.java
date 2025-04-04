@@ -1,22 +1,23 @@
 package domain.piece;
 
-import domain.Coordinate;
-import domain.board.Board;
+import domain.piece.coordiante.Coordinate;
+import domain.board.ReadableBoard;
 import domain.piece.movement.Movement;
+import domain.piece.movement.Movements;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Ma extends Piece {
 
-    private static final List<List<Movement>> MOVEMENTS = List.of(
-            List.of(Movement.UP, Movement.UP_UP_LEFT),
-            List.of(Movement.UP, Movement.UP_UP_RIGHT),
-            List.of(Movement.DOWN, Movement.DOWN_DOWN_LEFT),
-            List.of(Movement.DOWN, Movement.DOWN_DOWN_RIGHT),
-            List.of(Movement.LEFT, Movement.UP_LEFT_LEFT),
-            List.of(Movement.LEFT, Movement.DOWN_LEFT_LEFT),
-            List.of(Movement.RIGHT, Movement.UP_RIGHT_RIGHT),
-            List.of(Movement.RIGHT, Movement.DOWN_RIGHT_RIGHT)
+    private static final List<Movements> movements = List.of(
+            new Movements(List.of(Movement.UP, Movement.UP_UP_LEFT)),
+            new Movements(List.of(Movement.UP, Movement.UP_UP_RIGHT)),
+            new Movements(List.of(Movement.DOWN, Movement.DOWN_DOWN_LEFT)),
+            new Movements(List.of(Movement.DOWN, Movement.DOWN_DOWN_RIGHT)),
+            new Movements(List.of(Movement.LEFT, Movement.UP_LEFT_LEFT)),
+            new Movements(List.of(Movement.LEFT, Movement.DOWN_LEFT_LEFT)),
+            new Movements(List.of(Movement.RIGHT, Movement.UP_RIGHT_RIGHT)),
+            new Movements(List.of(Movement.RIGHT, Movement.DOWN_RIGHT_RIGHT))
     );
 
     public Ma(Country country) {
@@ -24,21 +25,21 @@ public class Ma extends Piece {
     }
 
     @Override
-    public List<Coordinate> availableMovePositions(Coordinate from, Board board) {
+    public List<Coordinate> findAvailablePaths(Coordinate from, ReadableBoard readableBoard) {
         List<Coordinate> availables = new ArrayList<>();
 
-        for (List<Movement> movement : MOVEMENTS) {
-            Coordinate first = from.move(movement.get(0));
-            Coordinate to = from.move(movement.get(1));
+        for (Movements movements : movements) {
+            Coordinate first = from.move(movements.getMovements().get(0));
+            Coordinate to = from.move(movements.getMovements().get(1));
 
             if (first.isOutOfBoundary() || to.isOutOfBoundary()) {
                 continue;
             }
-            if (board.hasPiece(first)) {
+            if (readableBoard.hasPiece(first)) {
                 continue;
             }
 
-            if (!board.hasPiece(to) || !board.isMyTeam(country, to)) {
+            if (!readableBoard.hasPiece(to) || !readableBoard.isMyTeam(country, to)) {
                 availables.add(to);
             }
         }

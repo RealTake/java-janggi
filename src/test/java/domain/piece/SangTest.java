@@ -2,7 +2,7 @@ package domain.piece;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import domain.Coordinate;
+import domain.piece.coordiante.Coordinate;
 import domain.board.Board;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +21,7 @@ public class SangTest {
         pieces.put(new Coordinate(5, 5), sang);
         Board board = new Board(pieces);
 
-        List<Coordinate> availableMovePositions = sang.availableMovePositions(new Coordinate(5, 5), board);
+        List<Coordinate> availableMovePositions = sang.findAvailablePaths(new Coordinate(5, 5), board);
 
         List<Coordinate> expected = List.of(
                 new Coordinate(2, 7), new Coordinate(3, 8),
@@ -42,7 +42,7 @@ public class SangTest {
         pieces.put(new Coordinate(2, 7), new Sang(Country.HAN));
         Board board = new Board(pieces);
 
-        List<Coordinate> availableMovePositions = sang.availableMovePositions(new Coordinate(5, 5), board);
+        List<Coordinate> availableMovePositions = sang.findAvailablePaths(new Coordinate(5, 5), board);
 
         assertThat(availableMovePositions.contains(new Coordinate(2, 7))).isFalse();
     }
@@ -56,7 +56,7 @@ public class SangTest {
         pieces.put(new Coordinate(4, 5), new Sang(Country.HAN));
         Board board = new Board(pieces);
 
-        List<Coordinate> availableMovePositions = sang.availableMovePositions(new Coordinate(5, 5), board);
+        List<Coordinate> availableMovePositions = sang.findAvailablePaths(new Coordinate(5, 5), board);
 
         assertThat(availableMovePositions.contains(new Coordinate(2, 3))).isFalse();
         assertThat(availableMovePositions.contains(new Coordinate(2, 7))).isFalse();
@@ -71,7 +71,7 @@ public class SangTest {
         pieces.put(new Coordinate(3, 6), new Sang(Country.HAN));
         Board board = new Board(pieces);
 
-        List<Coordinate> availableMovePositions = sang.availableMovePositions(new Coordinate(5, 5), board);
+        List<Coordinate> availableMovePositions = sang.findAvailablePaths(new Coordinate(5, 5), board);
 
         assertThat(availableMovePositions.contains(new Coordinate(2, 7))).isFalse();
     }
@@ -85,7 +85,7 @@ public class SangTest {
         pieces.put(new Coordinate(3, 4), new Sang(Country.HAN));
         Board board = new Board(pieces);
 
-        List<Coordinate> availableMovePositions = sang.availableMovePositions(new Coordinate(5, 5), board);
+        List<Coordinate> availableMovePositions = sang.findAvailablePaths(new Coordinate(5, 5), board);
 
         assertThat(availableMovePositions.contains(new Coordinate(2, 3))).isFalse();
     }
@@ -99,7 +99,7 @@ public class SangTest {
         pieces.put(new Coordinate(2, 7), new Sang(Country.CHO));
         Board board = new Board(pieces);
 
-        List<Coordinate> availableMovePositions = sang.availableMovePositions(new Coordinate(5, 5), board);
+        List<Coordinate> availableMovePositions = sang.findAvailablePaths(new Coordinate(5, 5), board);
 
         assertThat(availableMovePositions.contains(new Coordinate(2, 7))).isTrue();
     }

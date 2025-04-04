@@ -1,6 +1,6 @@
 package domain.piece.movement;
 
-import domain.Coordinate;
+import domain.piece.coordiante.Coordinate;
 
 public enum Movement {
 
@@ -30,15 +30,22 @@ public enum Movement {
     DOWN_DOWN_LEFT_LEFT_LEFT(new Coordinate(2, -3)),
     UP_UP_LEFT_LEFT_LEFT(new Coordinate(-2, -3)),
     UP_UP_UP_LEFT_LEFT(new Coordinate(-3, -2));
-    
+
     private final Coordinate direction;
 
     Movement(Coordinate direction) {
         this.direction = direction;
     }
 
-    public Coordinate getDirection() {
-        return direction;
+    public int getRow() {
+        return direction.row();
     }
 
+    public int getCol() {
+        return direction.col();
+    }
+
+    public boolean isDiagonal() {
+        return this == UP_RIGHT || this == DOWN_RIGHT || this == DOWN_LEFT || this == UP_LEFT;
+    }
 }

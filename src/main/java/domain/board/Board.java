@@ -1,21 +1,24 @@
 package domain.board;
 
-import domain.Coordinate;
+import domain.piece.coordiante.Coordinate;
+import domain.board.setting.BoardFactory;
+import domain.board.setting.ChoSettingUpStrategy;
+import domain.board.setting.HanSettingUpStrategy;
 import domain.piece.Country;
+import domain.piece.Paths;
 import domain.piece.Piece;
 import domain.piece.PieceType;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class Board {
+public class Board implements ReadableBoard {
 
     private final Map<Coordinate, Piece> board;
 
-    public Board(BoardSettingUpStrategy hanSettingUpStrategy, BoardSettingUpStrategy choSettingUpStrategy) {
-        Map<Coordinate, Piece> pieces = new HashMap<>(BoardSettingUpStrategy.setUp());
-        pieces.putAll(hanSettingUpStrategy.setUpHan());
+    public Board(ChoSettingUpStrategy choSettingUpStrategy, HanSettingUpStrategy hanSettingUpStrategy) {
+        Map<Coordinate, Piece> pieces = new BoardFactory().setUp();
         pieces.putAll(choSettingUpStrategy.setUpCho());
+        pieces.putAll(hanSettingUpStrategy.setUpHan());
         this.board = pieces;
     }
 
@@ -26,27 +29,33 @@ public final class Board {
     public void movePiece(Coordinate from, Coordinate to) {
         Piece piece = findPieceByCoordinate(from);
 
-        List<Coordinate> availables = piece.availableMovePositions(from, this);
-        validateMoveCoordinate(to, availables);
+        List<Coordinate> availablePaths = piece.findAvailablePaths(from, this);
+        Paths paths = new Paths(availablePaths);
+        paths.canMove(to);
 
         board.put(to, piece);
         board.remove(from);
     }
 
-    public Piece findPieceByCoordinate(Coordinate coordinate) {
-        validatePieceCoordinate(coordinate);
-        return board.get(coordinate);
+    @Override
+    public boolean isMyTeam(Country country, Coordinate to) {
+        return hasPiece(to) && country == findPieceByCoordinate(to).getCountry();
     }
 
+    @Override
     public PieceType findPieceTypeByCoordinate(Coordinate coordinate) {
         validatePieceCoordinate(coordinate);
         return board.get(coordinate).getType();
     }
 
-    private void validateMoveCoordinate(Coordinate newCoordinate, List<Coordinate> coordinates) {
-        if (!coordinates.contains(newCoordinate)) {
-            throw new IllegalArgumentException("[ERROR] 이동 불가능한 위치입니다.");
-        }
+    @Override
+    public boolean hasPiece(Coordinate coordinate) {
+        return board.containsKey(coordinate);
+    }
+
+    public Piece findPieceByCoordinate(Coordinate coordinate) {
+        validatePieceCoordinate(coordinate);
+        return board.get(coordinate);
     }
 
     private void validatePieceCoordinate(Coordinate coordinate) {
@@ -57,14 +66,6 @@ public final class Board {
 
     public boolean isBlankCoordinate(Coordinate coordinate) {
         return !board.containsKey(coordinate);
-    }
-
-    public boolean hasPiece(Coordinate coordinate) {
-        return board.containsKey(coordinate);
-    }
-
-    public boolean isMyTeam(Country country, Coordinate to) {
-        return hasPiece(to) && country == findPieceByCoordinate(to).getCountry();
     }
 
     public Country findCountryByCoordinate(Coordinate currCoordinate) {
@@ -85,5 +86,27 @@ public final class Board {
     public boolean isHanGungDead() {
         return board.values().stream()
                 .noneMatch(piece -> piece.getType() == PieceType.GUNG && piece.getCountry() == Country.HAN);
+    }
+
+    public int calculateHanScore() {
+        return board.values().stream()
+                .filter(Piece::isHan)
+                .mapToInt(Piece::getScore)
+                .sum();
+    }
+
+    public int calculateChoScore() {
+        return board.values().stream()
+                .filter(Piece::isCho)
+                .mapToInt(Piece::getScore)
+                .sum();
+    }
+
+    public Map<Coordinate, Piece> getBoard() {
+        return board;
+    }
+
+    public boolean isEmpty() {
+        return board.isEmpty();
     }
 }

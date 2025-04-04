@@ -2,7 +2,7 @@ package domain.piece;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import domain.Coordinate;
+import domain.piece.coordiante.Coordinate;
 import domain.board.Board;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +21,7 @@ public class ByeongTest {
         pieces.put(new Coordinate(5, 5), byeong);
         Board board = new Board(pieces);
 
-        List<Coordinate> availableMovePositions = byeong.availableMovePositions(new Coordinate(5, 5), board);
+        List<Coordinate> availableMovePositions = byeong.findAvailablePaths(new Coordinate(5, 5), board);
 
         List<Coordinate> expected = List.of(
                 new Coordinate(5, 4), new Coordinate(5, 6), new Coordinate(6, 5)
@@ -39,7 +39,7 @@ public class ByeongTest {
         pieces.put(new Coordinate(5, 5), byeong);
         Board board = new Board(pieces);
 
-        List<Coordinate> availableMovePositions = byeong.availableMovePositions(new Coordinate(5, 5), board);
+        List<Coordinate> availableMovePositions = byeong.findAvailablePaths(new Coordinate(5, 5), board);
 
         List<Coordinate> expected = List.of(
                 new Coordinate(5, 4), new Coordinate(5, 6), new Coordinate(4, 5)
@@ -57,7 +57,7 @@ public class ByeongTest {
         pieces.put(new Coordinate(5, 5), new Byeong(Country.HAN));
         Board board = new Board(pieces);
 
-        List<Coordinate> availableMovePositions = byeong.availableMovePositions(new Coordinate(4, 5), board);
+        List<Coordinate> availableMovePositions = byeong.findAvailablePaths(new Coordinate(4, 5), board);
 
         assertThat(availableMovePositions.contains(new Coordinate(5, 5))).isFalse();
     }
@@ -71,8 +71,47 @@ public class ByeongTest {
         pieces.put(new Coordinate(5, 5), new Byeong(Country.CHO));
         Board board = new Board(pieces);
 
-        List<Coordinate> availableMovePositions = byeong.availableMovePositions(new Coordinate(4, 5), board);
+        List<Coordinate> availableMovePositions = byeong.findAvailablePaths(new Coordinate(4, 5), board);
 
         assertThat(availableMovePositions.contains(new Coordinate(5, 5))).isTrue();
     }
+
+    @DisplayName("한나라 병의 궁성 내에서 이동 가능한 경로를 검사한다. "
+            + "이동 가능 경로: (1, 0), (0, 1), (0, -1), (-1, 1), (1, -1)")
+    @Test
+    void byeongTest6() {
+        Byeong byeong = new Byeong(Country.HAN);
+        Map<Coordinate, Piece> pieces = new HashMap<>();
+        pieces.put(new Coordinate(9, 5), byeong);
+        Board board = new Board(pieces);
+
+        List<Coordinate> availableMovePositions = byeong.findAvailablePaths(new Coordinate(9, 5), board);
+
+        List<Coordinate> expected = List.of(
+                new Coordinate(9, 4), new Coordinate(9, 6), new Coordinate(10, 4),
+                new Coordinate(10, 6), new Coordinate(10, 5)
+        );
+
+        assertThat(availableMovePositions).containsAnyElementsOf(expected);
+    }
+
+    @DisplayName("초나라 병의 궁성 내에서 이동 가능한 경로를 검사한다. "
+            + "이동 가능 경로: (1, 0), (0, 1), (0, -1), (-1, 1), (1, -1)")
+    @Test
+    void byeongTest7() {
+        Byeong byeong = new Byeong(Country.HAN);
+        Map<Coordinate, Piece> pieces = new HashMap<>();
+        pieces.put(new Coordinate(2, 5), byeong);
+        Board board = new Board(pieces);
+
+        List<Coordinate> availableMovePositions = byeong.findAvailablePaths(new Coordinate(2, 5), board);
+
+        List<Coordinate> expected = List.of(
+                new Coordinate(1, 4), new Coordinate(1, 6), new Coordinate(1, 5),
+                new Coordinate(2, 4), new Coordinate(2, 6)
+        );
+
+        assertThat(availableMovePositions).containsAnyElementsOf(expected);
+    }
+
 }

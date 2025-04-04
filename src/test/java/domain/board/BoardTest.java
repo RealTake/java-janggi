@@ -4,17 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import domain.Coordinate;
+import domain.piece.coordiante.Coordinate;
 import domain.piece.Byeong;
 import domain.piece.Cha;
 import domain.piece.Country;
 import domain.piece.Gung;
 import domain.piece.Ma;
-import domain.piece.Pho;
 import domain.piece.Piece;
 import domain.piece.PieceType;
 import domain.piece.Sa;
 import domain.piece.Sang;
+import domain.piece.jump.Pho;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -175,6 +175,26 @@ class BoardTest {
 
         assertThat(board.isChoGungDead()).isFalse();
         assertThat(board.isHanGungDead()).isFalse();
+    }
+
+    @DisplayName("한나라의 점수를 계산한다")
+    @Test
+    void calculateHanScoreTest() {
+        Map<Coordinate, Piece> pieces = new HashMap<>();
+        pieces.put(new Coordinate(1, 1), new Ma(Country.HAN));
+        Board board = new Board(pieces);
+
+        assertThat(board.calculateHanScore()).isEqualTo(5);
+    }
+
+    @DisplayName("초나라의 점수를 계산한다")
+    @Test
+    void calculateChoScoreTest() {
+        Map<Coordinate, Piece> pieces = new HashMap<>();
+        pieces.put(new Coordinate(1, 1), new Ma(Country.CHO));
+        Board board = new Board(pieces);
+
+        assertThat(board.calculateChoScore()).isEqualTo(5);
     }
 
 }

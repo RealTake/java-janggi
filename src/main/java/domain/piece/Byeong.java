@@ -1,33 +1,44 @@
 package domain.piece;
 
-import domain.Coordinate;
-import domain.board.Board;
+import domain.piece.coordiante.Coordinate;
+import domain.board.ReadableBoard;
 import domain.piece.movement.Movement;
+import domain.piece.movement.Movements;
 import java.util.List;
 
 public class Byeong extends Piece {
 
-    private static final List<Movement> MOVEMENTS = List.of(
-            Movement.UP, Movement.DOWN, Movement.RIGHT, Movement.LEFT);
+    private final Movements movements = new Movements(List.of(
+            Movement.UP, Movement.DOWN, Movement.RIGHT, Movement.LEFT));
 
     public Byeong(Country country) {
         super(country, PieceType.BYEONG);
     }
 
     @Override
-    public List<Coordinate> availableMovePositions(Coordinate from, Board board) {
-        return MOVEMENTS.stream()
+    public List<Coordinate> findAvailablePaths(Coordinate from, ReadableBoard readableBoard) {
+        movements.addMovementIfInGung(from);
+
+        return movements.getMovements().stream()
                 .filter(this::selectUpOrDown)
                 .map(from::move)
-                .filter(to -> !to.isOutOfBoundary())
-                .filter(to -> !board.isMyTeam(country, to))
+                .filter(Coordinate::isInBoundary)
+                .filter(to -> !readableBoard.isMyTeam(country, to))
                 .toList();
     }
 
     private boolean selectUpOrDown(Movement movement) {
         if (country.isCho()) {
-            return movement != Movement.DOWN;
+            return isHanDirection(movement);
         }
-        return movement != Movement.UP;
+        return isChoDirection(movement);
+    }
+
+    private boolean isHanDirection(Movement movement) {
+        return movement != Movement.DOWN && movement != Movement.DOWN_RIGHT && movement != Movement.DOWN_LEFT;
+    }
+
+    private boolean isChoDirection(Movement movement) {
+        return movement != Movement.UP && movement != Movement.UP_RIGHT && movement != Movement.UP_LEFT;
     }
 }
