@@ -29,16 +29,32 @@ public record Offset(
         }
     }
 
-    public boolean hasNoMovement() {
+    public boolean hasNoMove() {
         return x == 0 && y == 0;
     }
 
-    public boolean hasOneMovement() {
+    public boolean hasOneStraightMove() {
         return (x == 0 && Math.abs(y) == 1) || (Math.abs(x) == 1 && y == 0);
     }
 
-    public boolean isDiagonalMovement() {
-        return x != 0 && y != 0;
+    public boolean hasOneDiagonalMove() {
+        return (Math.abs(y) == 1) && (Math.abs(x) == 1);
+    }
+
+    public boolean isStraightMove() {
+        return x == 0 || y == 0;
+    }
+
+    public boolean isDiagonalMove() {
+        return Math.abs(x) == Math.abs(y);
+    }
+
+    public boolean isUpDirectionMove() {
+        return y > 0;
+    }
+
+    public boolean isDownDirectionMove() {
+        return y < 0;
     }
 
     public Offset getUnitDirectionOffset() {

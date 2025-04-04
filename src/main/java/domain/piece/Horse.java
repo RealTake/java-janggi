@@ -9,8 +9,9 @@ import static domain.board.Offset.RIGHT_DOWN;
 import static domain.board.Offset.RIGHT_UP;
 import static domain.board.Offset.UP;
 
-import domain.Team;
 import domain.board.Offset;
+import domain.board.movement.Movement;
+import domain.janggi.Team;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,8 @@ public class Horse extends Piece {
     }
 
     @Override
-    protected void validateOffset(final Offset offset) {
+    protected void validateMovement(final Movement movement) {
+        final Offset offset = movement.calcaulteOffset();
         if (!MOVEMENT_RULES.containsKey(offset)) {
             throw new IllegalArgumentException("해당 말은 해당 위치로 이동할 수 없습니다.");
         }
@@ -41,10 +43,5 @@ public class Horse extends Piece {
     @Override
     protected List<Offset> createMovementRule(final Offset offset) {
         return MOVEMENT_RULES.get(offset);
-    }
-
-    @Override
-    public String toString() {
-        return "마";
     }
 }

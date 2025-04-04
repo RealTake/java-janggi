@@ -1,8 +1,10 @@
 package domain.piece;
 
-import domain.Team;
 import domain.board.BoardPosition;
 import domain.board.Offset;
+import domain.board.movement.Movement;
+import domain.janggi.Score;
+import domain.janggi.Team;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,13 +22,13 @@ public abstract class Piece {
             final BoardPosition before,
             final BoardPosition after
     ) {
-        final Offset offset = after.calculateOffset(before);
-        validateOffset(offset);
+        final Movement movement = Movement.of(before, after);
+        validateMovement(movement);
 
-        return createMovementRule(offset);
+        return createMovementRule(movement.calcaulteOffset());
     }
 
-    protected abstract void validateOffset(final Offset offset);
+    protected abstract void validateMovement(final Movement movement);
 
     protected abstract List<Offset> createMovementRule(final Offset offset);
 
@@ -60,11 +62,20 @@ public abstract class Piece {
         return Objects.hashCode(team);
     }
 
-    public PieceType getPieceType() {
-        return pieceType;
+    @Override
+    public String toString() {
+        return "(" + pieceType.getTitle() + ", " + team.getTitle() + ")";
+    }
+
+    public Score getScore() {
+        return pieceType.getScore();
     }
 
     public Team getTeam() {
         return team;
+    }
+
+    public PieceType getPieceType() {
+        return pieceType;
     }
 }

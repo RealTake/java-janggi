@@ -1,7 +1,8 @@
 package domain.piece;
 
-import domain.Team;
 import domain.board.Offset;
+import domain.board.movement.Movement;
+import domain.janggi.Team;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -12,8 +13,8 @@ public class Chariot extends Piece {
     }
 
     @Override
-    protected void validateOffset(final Offset offset) {
-        if (offset.isDiagonalMovement()) {
+    protected void validateMovement(final Movement movement) {
+        if (!movement.isMoveOnLine()) {
             throw new IllegalArgumentException("해당 말은 해당 위치로 이동할 수 없습니다.");
         }
     }
@@ -36,10 +37,5 @@ public class Chariot extends Piece {
             distance++;
         }
         return distance;
-    }
-
-    @Override
-    public String toString() {
-        return "차";
     }
 }

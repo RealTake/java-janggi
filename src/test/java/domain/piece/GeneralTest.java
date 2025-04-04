@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import domain.Team;
 import domain.board.BoardPosition;
 import domain.board.Offset;
+import domain.janggi.Team;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -21,20 +21,37 @@ class GeneralTest {
     @Nested
     class ValidCases {
 
-        @DisplayName("왕의 이동 위치를 통해 이동 경로를 찾는다.")
+        @DisplayName("왕이 일반 영역에서 이동할 때 이동 경로를 찾는다.")
         @Test
-        void findMovementRule() {
+        void findMovementRuleInNormalMovement() {
             // given
             General general = new General(Team.RED);
-            BoardPosition before = new BoardPosition(0, 0);
-            BoardPosition after = new BoardPosition(1, 0);
+            BoardPosition before = new BoardPosition(3, 1);
+            BoardPosition after = new BoardPosition(3, 2);
 
             // when
             List<Offset> route = general.findMovementRule(before, after);
 
             // then
             assertThat(route).containsExactly(
-                    new Offset(1, 0)
+                    new Offset(0, 1)
+            );
+        }
+
+        @DisplayName("왕이 궁성 영역에서 이동할 때 이동 경로를 찾는다.")
+        @Test
+        void findMovementRuleInPalaceMovement() {
+            // given
+            General general = new General(Team.RED);
+            BoardPosition before = new BoardPosition(5, 0);
+            BoardPosition after = new BoardPosition(4, 1);
+
+            // when
+            List<Offset> route = general.findMovementRule(before, after);
+
+            // then
+            assertThat(route).containsExactly(
+                    new Offset(-1, 1)
             );
         }
 
@@ -74,6 +91,20 @@ class GeneralTest {
                     Arguments.of(new BoardPosition(5, 5), new BoardPosition(3, 5)),
                     Arguments.of(new BoardPosition(3, 3), new BoardPosition(4, 4))
             );
+        }
+
+        @DisplayName("왕이 이동하는 위치가 궁성 밖이라면 예외를 발생시킨다.")
+        @Test
+        void validateMoveInPalaceArea() {
+            // given
+            General general = new General(Team.RED);
+            BoardPosition before = new BoardPosition(5, 2);
+            BoardPosition after = new BoardPosition(5, 3);
+
+            // when & then
+            assertThatThrownBy(() -> general.findMovementRule(before, after))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("해당 말은 해당 위치로 이동할 수 없습니다.");
         }
     }
 }
