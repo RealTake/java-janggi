@@ -1,111 +1,111 @@
 package position;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static position.PositionFile.FILE_1;
-import static position.PositionFile.FILE_5;
-import static position.PositionFile.FILE_8;
-import static testUtil.TestConstant.RANK_1;
-import static testUtil.TestConstant.RANK_2;
-import static testUtil.TestConstant.RANK_3;
-import static testUtil.TestConstant.RANK_4;
-import static testUtil.TestConstant.RANK_5;
-import static testUtil.TestConstant.RANK_7;
-import static testUtil.TestConstant.RANK_9;
+import game.Board;
+import org.junit.jupiter.api.Test;
+import piece.Country;
+import piece.Rook;
 
 import java.util.List;
-import org.junit.jupiter.api.Test;
-import piece.MoveDirection;
-import piece.Piece;
-import piece.PieceType;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.*;
+import static testutil.TestConstant.*;
 
 class PathTest {
 
-
     @Test
-    void 현재_위치에서_이동_방향을_통해_경로를_구할_수_있다() {
+    void 마지막_위치를_가져올_수_있다() {
         // given
-        final Position startPosition = new Position(PositionFile.FILE_5, RANK_5);
+        Path path = new Path(List.of(B5, C5, D5));
 
         // when
-        final List<Path> result = Path.getMovablePaths(startPosition,
-                List.of(MoveDirection.DOWN, MoveDirection.DOWN_LEFT));
+        Position last = path.getLast();
 
         // then
-        assertThat(result).containsExactlyInAnyOrder(new Path(
-                new Position(PositionFile.FILE_4, RANK_3),
-                List.of(new Position(PositionFile.FILE_5, RANK_5), new Position(PositionFile.FILE_5, RANK_4),
-                        new Position(PositionFile.FILE_4, RANK_3))
-        ));
+        assertThat(last).isEqualTo(D5);
     }
 
     @Test
-    void 중간에_마주치는_기물들을_반환할_수_있다() {
+    void 마지막_위치를_제외한_Path를_반환한다() {
         // given
-        final Path path = new Path(new Position(FILE_5, RANK_5), List.of(
-                new Position(FILE_5, RANK_1),
-                new Position(FILE_5, RANK_2),
-                new Position(FILE_5, RANK_3),
-                new Position(FILE_5, RANK_4),
-                new Position(FILE_5, RANK_5)
-        ));
+        Path path = new Path(List.of(B5, C5, D5));
 
         // when
-        final List<Piece> result = path.getEncounteredMiddlePieces(List.of(
-                new Piece(new Position(FILE_5, RANK_2), PieceType.HORSE),
-                new Piece(new Position(FILE_5, RANK_3), PieceType.HORSE),
-                new Piece(new Position(FILE_8, RANK_7), PieceType.CHO_SOLDIER),
-                new Piece(new Position(FILE_8, RANK_7), PieceType.CHO_SOLDIER)
-        ));
+        Path trimmed = path.withoutLast();
 
         // then
-        assertAll(
-                () -> assertThat(result.getFirst().getPosition()).isEqualTo(new Position(FILE_5, RANK_2)),
-                () -> assertThat(result.get(1).getPosition()).isEqualTo(new Position(FILE_5, RANK_3))
-        );
+        assertThat(trimmed.positions()).containsExactly(B5, C5);
     }
 
     @Test
-    void 마지막에_기물을_마주치는지_반환할_수_있다() {
+    void 마지막_요소_없이_비어있는_Path를_반환한다() {
         // given
-        final Path path = new Path(new Position(FILE_5, RANK_5), List.of(
-                new Position(FILE_5, RANK_1),
-                new Position(FILE_5, RANK_2),
-                new Position(FILE_5, RANK_3),
-                new Position(FILE_5, RANK_4),
-                new Position(FILE_5, RANK_5)
-        ));
+        Path path = new Path(List.of(E5));
 
         // when
-        final boolean result = path.isEncounteredLast(List.of(
-                new Piece(new Position(FILE_5, RANK_9), PieceType.GENERAL),
-                new Piece(new Position(FILE_8, RANK_7), PieceType.ELEPHANT),
-                new Piece(new Position(FILE_5, RANK_5), PieceType.CHO_SOLDIER)
-        ));
+        Path trimmed = path.withoutLast();
 
         // then
-        assertThat(result).isTrue();
+        assertThat(trimmed.positions()).isEmpty();
     }
 
     @Test
-    void 마지막에_기물을_마주치지_않으면_false를_반환한다() {
+    void 특정_위치를_포함하는지_확인한다() {
         // given
-        final Path path = new Path(new Position(FILE_5, RANK_5), List.of(
-                new Position(FILE_5, RANK_1),
-                new Position(FILE_5, RANK_2),
-                new Position(FILE_5, RANK_3),
-                new Position(FILE_5, RANK_4),
-                new Position(FILE_5, RANK_5)
-        ));
-
-        // when
-        final boolean result = path.isEncounteredLast(List.of(
-                new Piece(new Position(FILE_1, RANK_9), PieceType.GENERAL),
-                new Piece(new Position(FILE_1, RANK_7), PieceType.ELEPHANT),
-                new Piece(new Position(FILE_1, RANK_5), PieceType.CHO_SOLDIER)
-        ));
+        Path path = new Path(List.of(B5, C5, D5));
 
         // then
-        assertThat(result).isFalse();
+        assertThat(path.contains(C5)).isTrue();
+        assertThat(path.contains(E1)).isFalse();
+    }
+
+    @Test
+    void 목적지가_일치하면_true를_반환한다() {
+        // given
+        Path path = new Path(List.of(B5, C5, D5));
+
+        // then
+        assertThat(path.isDestination(D5)).isTrue();
+        assertThat(path.isDestination(C5)).isFalse();
+    }
+
+    @Test
+    void 장애물이_없으면_예외없이_통과한다() {
+        // given
+        Board board = new Board(Map.of());
+        Path path = new Path(List.of(B5, C5, D5));
+
+        // expect
+        assertThatCode(() -> path.validateNoObstacles(board))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 중간에_기물이_있으면_예외를_던진다() {
+        // given
+        Board board = new Board(Map.of(C5, new Rook(Country.CHO)));
+        Path path = new Path(List.of(B5, C5, D5));
+
+        // expect
+        assertThatThrownBy(() -> path.validateNoObstacles(board))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("중간에 기물이 있어 갈 수 없습니다.");
+    }
+
+    @Test
+    void 비어있는_Path에서_getLast_호출시_예외를_던진다() {
+        // given
+        Path path = new Path(List.of());
+
+        // expect
+        assertThatThrownBy(path::getLast)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(  "경로가 비어 있습니다.");
+    }
+
+    @Test
+    void isEmpty_는_경로가_비어있는지_확인한다() {
+        assertThat(new Path(List.of()).isEmpty()).isTrue();
+        assertThat(new Path(List.of(A1)).isEmpty()).isFalse();
     }
 }

@@ -1,102 +1,65 @@
 package piece;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
+import game.Board;
 import position.Path;
 import position.Position;
 
-public final class Piece {
+public abstract class Piece {
+    private final PieceType pieceType;
+    private final Country country;
 
-    private final Position position;
-    private final PieceType type;
-
-    public PieceType getType() {
-        return type;
+    protected Piece(final PieceType pieceType, final Country country) {
+        this.pieceType = pieceType;
+        this.country = country;
     }
 
-    public Piece(final Position position, final PieceType type) {
-        this.position = position;
-        this.type = type;
-    }
+    public static Piece of(final String pieceType, final String country) {
+        PieceType type = PieceType.valueOf(pieceType);
+        Country team = Country.valueOf(country);
 
-    public Piece movePiece(
-            final Position newPosition,
-            final List<Piece> allyPieces,
-            final List<Piece> enemyPieces
-    ) {
-        List<Path> movablePaths = type.getMovablePaths(position);
-        movablePaths = filterMiddleBlocked(movablePaths, allyPieces, enemyPieces);
-        movablePaths = filterFinalIsAlly(movablePaths, allyPieces);
-        movablePaths = filterFinalIsPoWhenTypeIsPo(movablePaths, enemyPieces);
-        if (!isNewPositionExistInMovablePath(newPosition, movablePaths)) {
-            throw new IllegalArgumentException("움직일 수 없는 위치입니다.");
-        }
-
-        return new Piece(newPosition, type);
-    }
-
-    private List<Path> filterFinalIsPoWhenTypeIsPo(final List<Path> paths, final List<Piece> enemyPieces) {
-        if (type != PieceType.CANNON) {
-            return paths;
-        }
-
-        final List<Piece> poPiece = enemyPieces.stream()
-                .filter(piece -> piece.type == PieceType.CANNON)
-                .toList();
-
-        return paths.stream()
-                .filter(path -> !path.isEncounteredLast(poPiece))
-                .toList();
-    }
-
-    private List<Path> filterMiddleBlocked(
-            final List<Path> paths,
-            final List<Piece> allyPieces,
-            final List<Piece> enemyPieces
-    ) {
-        final List<Piece> allPieces = new ArrayList<>();
-        allPieces.addAll(allyPieces);
-        allPieces.addAll(enemyPieces);
-
-        return paths.stream()
-                .filter(middleBlockPathPredicate(allPieces))
-                .toList();
-    }
-
-    private Predicate<Path> middleBlockPathPredicate(List<Piece> allPieces) {
-        return path -> {
-            if (type == PieceType.CANNON) {
-                List<Piece> piece = path.getEncounteredMiddlePieces(allPieces);
-                return piece.size() == 1 && piece.getFirst().type != PieceType.CANNON;
-            } else {
-                return path.getEncounteredMiddlePieces(allPieces).isEmpty();
-            }
+        return switch (type) {
+            case SOLDIER -> new Soldier(team);
+            case ELEPHANT -> new Elephant(team);
+            case GENERAL -> new General(team);
+            case HORSE -> new Horse(team);
+            case ROOK -> new Rook(team);
+            case CANNON -> new Cannon(team);
+            case GUARD -> new Guard(team);
         };
     }
 
-    private List<Path> filterFinalIsAlly(final List<Path> paths, final List<Piece> allyPieces) {
-        return paths.stream()
-                .filter(path -> !path.isEncounteredLast(allyPieces))
-                .toList();
+
+    public void validateMove(final Position fromPosition, final Position toPosition, Board board) {
+        Path path = findPathForMove(fromPosition, toPosition);
+        validateTarget(toPosition, board);
+        validateTargetSpecialRule(toPosition, board);
+        validatePath(path, board);
     }
 
-    private static boolean isNewPositionExistInMovablePath(final Position newPosition, final List<Path> paths) {
-        return paths.stream()
-                .map(Path::finalPosition)
-                .toList()
-                .contains(newPosition);
+    public abstract Path findPathForMove(Position fromPosition, Position toPosition);
+
+    public abstract void validatePath(Path path, Board board);
+
+    public void validateTarget(Position toPosition, Board board) {
+        board.findCountryByPosition(toPosition).ifPresent(targetCountry -> {
+            if (country == targetCountry) {
+                throw new IllegalArgumentException("아군 기물이 위치해 있습니다.");
+            }
+        });
     }
 
-    public Position getPosition() {
-        return position;
+    public void validateTargetSpecialRule(Position toPosition, Board board) {
     }
 
-    @Override
-    public String toString() {
-        return "Piece{" +
-                "position=" + position +
-                ", type=" + type +
-                '}';
+    public PieceType getPieceType() {
+        return pieceType;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public int getPieceScore() {
+        return pieceType.getPieceScore();
     }
 }

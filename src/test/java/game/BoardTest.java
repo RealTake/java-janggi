@@ -2,69 +2,169 @@ package game;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static piece.Country.CHO;
+import static piece.PieceType.ELEPHANT;
+import static piece.PieceType.HORSE;
+import static testutil.TestConstant.B1;
+import static testutil.TestConstant.B0;
+import static testutil.TestConstant.C1;
+import static testutil.TestConstant.C0;
+import static testutil.TestConstant.E1;
+import static testutil.TestConstant.E5;
+import static testutil.TestConstant.G1;
+import static testutil.TestConstant.G0;
+import static testutil.TestConstant.H1;
+import static testutil.TestConstant.H0;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import piece.PieceType;
-import piece.StaticPieceInitializer;
+import piece.Piece;
+import piece.Rook;
 import position.Position;
-import position.PositionFile;
-import testUtil.TestConstant;
 
 public class BoardTest {
 
+    @Nested
+    class 상차림에_따라_말들이_배치된다 {
+        @Test
+        void MA_SANG_MA_SANG_초나라_상차림이_정확하게_배치된다() {
+            // given
+            Board board = new Board(StartSet.MA_SANG_MA_SANG, StartSet.MA_SANG_MA_SANG);
+            Map<Position, Piece> boardMap = board.getBoard();
 
-    @Test
-    void 보드를_만들_수_있다() {
-        // given
-        final Team team1 = new Team(StartingPosition.RIGHT_ELEPHANT_SETUP, new StaticPieceInitializer(), Country.CHO);
-        final Team team2 = new Team(StartingPosition.RIGHT_ELEPHANT_SETUP, new StaticPieceInitializer(), Country.HAN);
+            // when & then
+            assertAll(
+                    () -> assertThat(boardMap.get(B1).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(C1).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(G1).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(H1).getPieceType()).isEqualTo(ELEPHANT)
+            );
+        }
 
-        // expected
-        assertThatCode(() -> new Board(team1, team2))
-                .doesNotThrowAnyException();
-    }
+        @Test
+        void MA_SANG_MA_SANG_한나라_상차림이_정확하게_배치된다() {
+            // given
+            Board board = new Board(StartSet.MA_SANG_MA_SANG, StartSet.MA_SANG_MA_SANG);
+            Map<Position, Piece> boardMap = board.getBoard();
 
-    @Test
-    void 보드에_추가된_팀들은_서로_달라야_한다() {
-        // given
-        final Team team1 = new Team(StartingPosition.RIGHT_ELEPHANT_SETUP, new StaticPieceInitializer(), Country.CHO);
-        final Team team2 = new Team(StartingPosition.RIGHT_ELEPHANT_SETUP, new StaticPieceInitializer(), Country.CHO);
+            // when & then
+            assertAll(
+                    () -> assertThat(boardMap.get(H0).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(G0).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(C0).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(B0).getPieceType()).isEqualTo(ELEPHANT)
+            );
+        }
 
-        // expected
-        assertThatThrownBy(() -> new Board(team1, team2))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("두 개의 장기판의 나라는 서로 달라야 합니다.");
-    }
+        @Test
+        void SANG_MA_SANG_MA_초나라_상차림이_정확하게_배치된다() {
+            Board board = new Board(StartSet.SANG_MA_SANG_MA, StartSet.SANG_MA_SANG_MA);
+            Map<Position, Piece> boardMap = board.getBoard();
 
-    @Test
-    void 팀이_null이면_예외가_발생한다() {
-        // given
-        final Team team1 = new Team(StartingPosition.RIGHT_ELEPHANT_SETUP, new StaticPieceInitializer(), Country.CHO);
-        final Team team2 = null;
+            assertAll(
+                    () -> assertThat(boardMap.get(B1).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(C1).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(G1).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(H1).getPieceType()).isEqualTo(HORSE)
+            );
+        }
 
-        // expected
-        assertThatThrownBy(() -> new Board(team1, team2))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("장기판은 필수값입니다.");
-    }
+        @Test
+        void SANG_MA_SANG_MA_한나라_상차림이_정확하게_배치된다() {
+            Board board = new Board(StartSet.SANG_MA_SANG_MA, StartSet.SANG_MA_SANG_MA);
+            Map<Position, Piece> boardMap = board.getBoard();
 
-    @Test
-    void move_메서드는_현재_턴_플레이어의_말을_옮긴다() {
-        // given
-        final Team cho = new Team(StartingPosition.RIGHT_ELEPHANT_SETUP, new StaticPieceInitializer(), Country.CHO);
-        final Team han = new Team(StartingPosition.RIGHT_ELEPHANT_SETUP, new StaticPieceInitializer(), Country.HAN);
-        final Board board = new Board(cho, han);
+            assertAll(
+                    () -> assertThat(boardMap.get(H0).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(G0).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(C0).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(B0).getPieceType()).isEqualTo(HORSE)
+            );
+        }
 
-        Position from = new Position(PositionFile.FILE_5, TestConstant.RANK_4);
-        Position to = new Position(PositionFile.FILE_5, TestConstant.RANK_5);
+        @Test
+        void SANG_MA_MA_SANG_초나라_상차림이_정확하게_배치된다() {
+            Board board = new Board(StartSet.SANG_MA_MA_SANG, StartSet.SANG_MA_MA_SANG);
+            Map<Position, Piece> boardMap = board.getBoard();
 
-        // when
-        board.move(from, to);
+            assertAll(
+                    () -> assertThat(boardMap.get(B1).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(C1).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(G1).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(H1).getPieceType()).isEqualTo(ELEPHANT)
+            );
+        }
 
-        // then
-        assertThat(cho.getPieces()).doesNotContainKey(from);
-        assertThat(cho.getPieces().get(to)).extracting("type").isEqualTo(PieceType.CHO_SOLDIER);
+        @Test
+        void SANG_MA_MA_SANG_한나라_상차림이_정확하게_배치된다() {
+            Board board = new Board(StartSet.SANG_MA_MA_SANG, StartSet.SANG_MA_MA_SANG);
+            Map<Position, Piece> boardMap = board.getBoard();
+
+            assertAll(
+                    () -> assertThat(boardMap.get(H0).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(G0).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(C0).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(B0).getPieceType()).isEqualTo(ELEPHANT)
+            );
+        }
+
+        @Test
+        void MA_SANG_SANG_MA_초나라_상차림이_정확하게_배치된다() {
+            Board board = new Board(StartSet.MA_SANG_SANG_MA, StartSet.MA_SANG_SANG_MA);
+            Map<Position, Piece> boardMap = board.getBoard();
+
+            assertAll(
+                    () -> assertThat(boardMap.get(B1).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(C1).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(G1).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(H1).getPieceType()).isEqualTo(HORSE)
+            );
+        }
+
+        @Test
+        void MA_SANG_SANG_MA_한나라_상차림이_정확하게_배치된다() {
+            Board board = new Board(StartSet.MA_SANG_SANG_MA, StartSet.MA_SANG_SANG_MA);
+            Map<Position, Piece> boardMap = board.getBoard();
+
+            assertAll(
+                    () -> assertThat(boardMap.get(H0).getPieceType()).isEqualTo(HORSE),
+                    () -> assertThat(boardMap.get(G0).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(C0).getPieceType()).isEqualTo(ELEPHANT),
+                    () -> assertThat(boardMap.get(B0).getPieceType()).isEqualTo(HORSE)
+            );
+        }
+
+        @Test
+        void 보드의_기물을_움직인다() {
+            // given
+            Map<Position, Piece> boardMap = new HashMap<>();
+            boardMap.put(E5, new Rook(CHO));
+            Board board = new Board(boardMap);
+
+            // then
+            assertThatCode(() -> board.movePiece(E5, E1,CHO))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 보드의_기물을_움직일_때_기물이_없으면_예외가_발생한다() {
+            // given
+            Map<Position, Piece> boardMap = new HashMap<>();
+            Board board = new Board(boardMap);
+
+            // when
+
+            // then
+            Assertions.assertThatThrownBy(() -> board.movePiece(E5, E1,CHO))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("해당 위치에 기물이 없습니다.");
+        }
+
+
     }
 
 }

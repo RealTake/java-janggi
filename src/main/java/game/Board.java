@@ -1,56 +1,101 @@
 package game;
 
+import dto.PieceDto;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import piece.Country;
+import piece.Piece;
+import piece.PieceType;
 import position.Position;
 
-public final class Board {
+public class Board {
 
-    private final Team cho;
-    private final Team han;
-    private boolean isChoTurn = true;
+    private final Map<Position, Piece> board;
+    private final double secondMovePoint = 1.5;
 
-    public Team getCho() {
-        return cho;
+    public Board(final Map<Position, Piece> board) {
+        this.board = board;
     }
 
-    public Team getHan() {
-        return han;
+    public Board(StartSet choStartSet, StartSet hanStartSet) {
+        BoardSetting boardSetting = new BoardSetting();
+        Map<Position, Piece> board = new HashMap<>();
+        board.putAll(boardSetting.setting(Country.CHO, choStartSet));
+        board.putAll(boardSetting.setting(Country.HAN, hanStartSet));
+        this.board = board;
     }
 
-    public Board(final Team cho, final Team han) {
-        validateTeamIsNotNull(cho, han);
-        validateCountryIsNotSame(cho, han);
-        this.cho = Team.getFirstTeam(cho, han);
-        this.han = Team.getSecondTeam(cho, han);
-    }
-
-    private void validateTeamIsNotNull(final Team team1, final Team team2) {
-        if (team1 == null || team2 == null) {
-            throw new IllegalArgumentException("장기판은 필수값입니다.");
+    public static Board toBoard(List<PieceDto> pieces) {
+        Map<Position, Piece> board = new HashMap<>();
+        for (PieceDto dto : pieces) {
+            Position pos = Position.of(dto.column(), dto.row());
+            Piece piece = Piece.of(dto.pieceType(), dto.country());
+            board.put(pos, piece);
         }
+        return new Board(board);
     }
 
-    private void validateCountryIsNotSame(final Team team1, final Team team2) {
-        if (team1.getCountry().equals(team2.getCountry())) {
-            throw new IllegalArgumentException("두 개의 장기판의 나라는 서로 달라야 합니다.");
+
+    public void movePiece(Position fromPosition, Position toPosition, Country country) {
+        if (!board.containsKey(fromPosition)) {
+            throw new IllegalArgumentException("해당 위치에 기물이 없습니다.");
         }
-    }
-
-    public void move(Position fromPosition, Position tagetPosition) {
-        if (isChoTurn) {
-            cho.move(fromPosition, tagetPosition, han.getPieces());
-            han.removeIfExist(tagetPosition);
-        } else {
-            han.move(fromPosition, tagetPosition, cho.getPieces());
-            cho.removeIfExist(tagetPosition);
+        Piece piece = board.get(fromPosition);
+        if (piece.getCountry() != country) {
+            throw new IllegalArgumentException("같은 팀의 기물이 아닙니다.");
         }
-        nextTurn();
+        piece.validateMove(fromPosition, toPosition, this);
+        board.remove(fromPosition);
+        board.put(toPosition, piece);
+
     }
 
-    private void nextTurn() {
-        isChoTurn = !isChoTurn;
+    public boolean isGeneralDead() {
+        return (isChoGeneralDead() || isHanGeneralDead());
     }
 
-    public Team getCurrentTurnTeam() {
-        return isChoTurn ? cho : han;
+    private boolean isChoGeneralDead() {
+        return board.values().stream()
+                .noneMatch(piece -> piece.getPieceType() == PieceType.GENERAL && piece.getCountry() == Country.CHO);
+    }
+
+    private boolean isHanGeneralDead() {
+        return board.values().stream()
+                .noneMatch(piece -> piece.getPieceType() == PieceType.GENERAL && piece.getCountry() == Country.HAN);
+    }
+
+    public PieceType findPieceTypeByPosition(final Position position) {
+        if (!board.containsKey(position)) {
+            throw new IllegalArgumentException("해당 위치에 기물이 없습니다.");
+        }
+        return board.get(position).getPieceType();
+    }
+
+    public Optional<Country> findCountryByPosition(final Position position) {
+        return Optional.ofNullable(board.get(position))
+                .map(Piece::getCountry);
+    }
+
+    public boolean hasPieceAt(final Position position) {
+        return board.containsKey(position);
+    }
+
+    public Map<Position, Piece> getBoard() {
+        return board;
+    }
+
+    public double getCountryScore(Country country) {
+
+        double totalPoint = board.values().stream()
+                .filter(piece -> piece.getCountry() == country)
+                .mapToInt(Piece::getPieceScore)
+                .sum();
+        if (country == Country.HAN) {
+            totalPoint += 1.5;
+        }
+        return totalPoint;
+
     }
 }

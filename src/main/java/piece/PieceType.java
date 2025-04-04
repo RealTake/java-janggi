@@ -1,76 +1,31 @@
 package piece;
 
-import java.util.Arrays;
-import java.util.List;
-import position.Path;
-import position.Position;
-
 public enum PieceType {
-    GENERAL("장",
-            List.of(MoveDirection.UP),
-            List.of(MoveDirection.DOWN),
-            List.of(MoveDirection.LEFT),
-            List.of(MoveDirection.RIGHT)
-    ),
-    GUARD("사",
-            List.of(MoveDirection.UP),
-            List.of(MoveDirection.DOWN),
-            List.of(MoveDirection.LEFT),
-            List.of(MoveDirection.RIGHT)
-    ),
-    ROOK("차",
-            List.of(MoveDirection.CROSS_INF)
-    ),
-    HORSE("마",
-            List.of(MoveDirection.DOWN, MoveDirection.DOWN_RIGHT),
-            List.of(MoveDirection.DOWN, MoveDirection.DOWN_LEFT),
-            List.of(MoveDirection.UP, MoveDirection.UP_RIGHT),
-            List.of(MoveDirection.UP, MoveDirection.UP_LEFT),
-            List.of(MoveDirection.LEFT, MoveDirection.DOWN_LEFT),
-            List.of(MoveDirection.LEFT, MoveDirection.UP_LEFT),
-            List.of(MoveDirection.RIGHT, MoveDirection.DOWN_RIGHT),
-            List.of(MoveDirection.RIGHT, MoveDirection.UP_RIGHT)
-    ),
-    ELEPHANT("상",
-            List.of(MoveDirection.DOWN, MoveDirection.DOWN_RIGHT, MoveDirection.DOWN_RIGHT),
-            List.of(MoveDirection.DOWN, MoveDirection.DOWN_LEFT, MoveDirection.DOWN_LEFT),
-            List.of(MoveDirection.UP, MoveDirection.UP_RIGHT, MoveDirection.UP_RIGHT),
-            List.of(MoveDirection.UP, MoveDirection.UP_LEFT, MoveDirection.UP_LEFT),
-            List.of(MoveDirection.LEFT, MoveDirection.DOWN_LEFT, MoveDirection.DOWN_LEFT),
-            List.of(MoveDirection.LEFT, MoveDirection.UP_LEFT, MoveDirection.UP_LEFT),
-            List.of(MoveDirection.RIGHT, MoveDirection.DOWN_RIGHT, MoveDirection.DOWN_RIGHT),
-            List.of(MoveDirection.RIGHT, MoveDirection.UP_RIGHT, MoveDirection.UP_RIGHT)
-    ),
-    CANNON("포",
-            List.of(MoveDirection.CROSS_INF)
-    ),
-    CHO_SOLDIER("졸",
-            List.of(MoveDirection.UP),
-            List.of(MoveDirection.LEFT),
-            List.of(MoveDirection.RIGHT)
-    ),
-    HAN_SOLDIER("병",
-            List.of(MoveDirection.DOWN),
-            List.of(MoveDirection.LEFT),
-            List.of(MoveDirection.RIGHT)
-    );
+    GENERAL("장", 0),
+    GUARD("사", 3),
+    ELEPHANT("상", 3),
+    HORSE("마", 5),
+    ROOK("차", 13),
+    SOLDIER("병", 2),
+    CANNON("포", 7);
 
     private final String displayName;
-    private final List<MoveDirection>[] moveOptions;
+    private final int pieceScore;
 
-    PieceType(final String displayName, final List<MoveDirection>... moveOptions) {
+    PieceType(final String displayName, final int pieceScore) {
         this.displayName = displayName;
-        this.moveOptions = moveOptions;
+        this.pieceScore = pieceScore;
     }
 
-    public List<Path> getMovablePaths(final Position currentPosition) {
-        return Arrays.stream(moveOptions)
-                .flatMap(directions -> Path.getMovablePaths(currentPosition, directions).stream())
-                .toList();
+    public static PieceType of(final String pieceType) {
+        return valueOf(pieceType);
     }
-
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public int getPieceScore() {
+        return pieceScore;
     }
 }

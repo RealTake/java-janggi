@@ -1,35 +1,44 @@
 package view;
 
+import game.StartSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import piece.Country;
 
 public class InputView {
 
     private final Scanner scanner = new Scanner(System.in);
 
-    public int getStartingPosition() {
+    private static final String moveCommandPattern = "move [A-I][0-9] [A-I][0-9]";
+
+
+    public StartSet getStartingPosition(Country country) {
+        System.out.print(country.name());
         System.out.println("상차림을 입력하세요.\n"
                 + "1 : 마상마상\n"
                 + "2 : 상마상마\n"
                 + "3 : 상마마상\n"
                 + "4 : 마상상마");
-
-        try {
-            return Integer.parseInt(scanner.nextLine().trim());
-        } catch (NumberFormatException e) {
-            System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
-            return getStartingPosition();
+        final String pattern = "[1-4]";
+        String input = scanner.nextLine().trim();
+        if (!input.matches(pattern)) {
+            throw new IllegalArgumentException("올바른 형식으로 입력해주세요. (예: 1)");
         }
+        return StartSet.fromOption(Integer.parseInt(input));
     }
 
     public List<String> readMoveCommand() {
-        System.out.println("이동할 말을 입력하세요 (예: move 가1 자8):");
-        final String input = scanner.nextLine();
-        final String pattern = "move [가-자][0-9] [가-자][0-9]";
+        System.out.println("이동할 말을 입력하세요 (예: move A1 I8) 또는 종료하려면 'quit' 입력:");
+        final String input = scanner.nextLine().trim();
+        if (input.equalsIgnoreCase("quit")) {
+            List<String> quitCommand = new ArrayList<>();
+            quitCommand.add("quit");
+            return quitCommand;
+        }
 
-        if (!input.matches(pattern)) {
-            throw new IllegalArgumentException("[ERROR] 올바른 형식으로 입력해주세요. (예: move 가1 자8)");
+        if (!input.matches(moveCommandPattern)) {
+            throw new IllegalArgumentException("올바른 형식으로 입력해주세요. (예: move A1 C2)");
         }
 
         List<String> moveInfo = new ArrayList<>();
@@ -40,6 +49,7 @@ public class InputView {
         return moveInfo;
     }
 
+
     private String convertRankChar(char ch) {
         if (ch == '0') {
             return "10";
@@ -47,4 +57,9 @@ public class InputView {
         return String.valueOf(ch);
     }
 
+    public boolean askLoadSavedGame() {
+        System.out.print("이전 저장된 게임을 불러오시겠습니까? (y/n): ");
+        String input = scanner.nextLine().trim().toLowerCase();
+        return input.equals("y");
+    }
 }

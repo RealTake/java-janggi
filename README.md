@@ -1,3 +1,29 @@
+## DB 연결
+
+docker-compose.yml 을 도커로 실행 후 아래의 테이블들을 추가한다.
+
+```sql
+use
+janggi
+CREATE TABLE piece
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    column_name VARCHAR(1)  NOT NULL,
+    row_name    VARCHAR(1)  NOT NULL,
+    country     VARCHAR(3)  NOT NULL,
+    piece_type  VARCHAR(10) NOT NULL
+);
+```
+
+```sql
+
+CREATE TABLE turn
+(
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    country_name VARCHAR(3) NOT NULL
+);
+```
+
 # 기능 요구 사항
 
 ## 위치
@@ -53,3 +79,20 @@
 - 상: Z자 (직선 + 대각*2), 중간 2칸 막힘 체크
 - 포: 직선 무제한, 중간에 1기물 필요 (포 제외)
 - 졸/병: 전진 + 좌우 한 칸 (나라에 따라 전진 방향 다름)
+
+## 궁성 영역
+
+- 왕, 사는 궁성 영역 내에서만 움직일 수 있다.
+- 왕, 사는 정가운데를 포함한 궁성 영역의 양 꼭짓점에서 대각선 이동이 가능하다.
+- 포, 차는 정가운데를 포함한 궁성 영역의 양 꼭짓점에서 대각선 이동이 가능하다.
+
+### 점수
+- 말이 움직일 때마다 점수가 출력된다
+- 기본 점수는 72점, 한나라는 1.5점을 추가로 얻는다. 각 말마다 배정된 점수는 다음과 같다. 
+- GENERAL("장", 0),
+- GUARD("사", 3),
+-  ELEPHANT("상", 3),
+-  HORSE("마", 5),
+-  ROOK("차", 13),
+-  SOLDIER("병", 2),
+-  CANNON("포", 7);

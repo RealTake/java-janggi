@@ -1,71 +1,105 @@
 package position;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public record Position(
-        PositionFile file,
-        PositionRank rank
+        Column column,
+        Row row
 ) {
-    public Position {
-        validateFile(file);
-        validateRank(rank);
+
+    public Position(Column column, Row row) {
+        this.column = column;
+        this.row = row;
     }
 
-    private void validateFile(final PositionFile file) {
-        if (file == null) {
-            throw new IllegalArgumentException("파일은 필수값입니다.");
+    public static Position of(final String column, final String row) {
+        return new Position(Column.of(column), Row.of(row));
+    }
+
+    public Position move(Movement movement) {
+        return new Position(column.move(movement.x()), row.move(movement.y()));
+    }
+
+    public boolean canMove(Movement movement) {
+        if (column.canMove(movement.x()) && row.canMove(movement.y())) {
+            return true;
         }
+        return false;
     }
 
-    private void validateRank(final PositionRank rank) {
-        if (rank == null) {
-            throw new IllegalArgumentException("랭크는 필수값입니다.");
+    public Path findMovablePath(List<Movement> pieceMovements) {
+        List<Position> positions = pieceMovements.stream()
+                .filter(this::canMove)
+                .map(this::move)
+                .toList();
+        return new Path(positions);
+    }
+
+
+
+    public boolean isStraight(Position toPosition) {
+        if (column == toPosition.column || row == toPosition.row) {
+            return true;
         }
+        return false;
+
     }
 
-
-    public Position add(final int fileAmount, final int rankAmount) {
-        return new Position(file.add(fileAmount), rank.add(rankAmount));
-    }
-
-    public boolean isValidToAdd(final int fileAmount, final int rankAmount) {
-        return file.validateAdd(fileAmount) && rank.validateAdd(rankAmount);
-    }
-
-    public List<Position> getAllCrossPositions() {
-        List<Position> positions = new ArrayList<>();
-        Arrays.stream(PositionFile.values())
-                .filter(f -> !f.equals(file))
-                .forEach(f -> positions.add(new Position(f, rank)));
-        PositionRank.getAllRanks().stream()
-                .filter(r -> !r.equals(rank))
-                .forEach(r -> positions.add(new Position(file, r)));
-        return positions;
-    }
-
-    public int distance(Position other) {
-        return Math.max(this.file.distance(other.file), this.rank.distance(other.rank));
-    }
-
-    public List<Position> createPositionsUntil(final Position nextPosition) {
-        if (this.file == nextPosition.file) {
-            List<PositionRank> ranks = this.rank.getBetweenRanks(nextPosition.rank);
-            return ranks.stream()
-                    .map(newRank -> new Position(file, newRank))
+    public Path findStraightPath(Position toPosition) {
+        List<Position> positions;
+        if (column == toPosition.column) {
+            positions = row.findBetweenRows(toPosition.row)
+                    .stream()
+                    .map(row -> new Position(column, row))
                     .toList();
         }
-
-        if (this.rank == nextPosition.rank) {
-            List<PositionFile> files = this.file.getBetweenFiles(nextPosition.file);
-            return files.stream()
-                    .map(newFile -> new Position(newFile, rank))
+        else {
+            positions = column.findBetweenColumn(toPosition.column)
+                    .stream()
+                    .map(column -> new Position(column, row))
                     .toList();
         }
+        return new Path(positions);
+    }
+    public boolean isDiagonal(Position toPosition) {
+        return Math.abs(column.ordinal() - toPosition.column().ordinal()) ==
+                Math.abs(row.ordinal() - toPosition.row().ordinal());
+    }
+    public Path findPalaceDiagonalPath(Position toPosition) {
+        List<Position> diagonalPositions = createDiagonalPath(toPosition);
+        validatePassesThroughCenter(diagonalPositions, toPosition);
+        return new Path(diagonalPositions);
+    }
 
-        throw new IllegalArgumentException("일자로 연결되지 않으면 위치를 생성할 수 없습니다.");
+    private List<Position> createDiagonalPath(Position toPosition) {
+        List<Row> betweenRows = row.findBetweenRows(toPosition.row());
+        List<Column> betweenColumns = column.findBetweenColumn(toPosition.column());
+        List<Position> path = new ArrayList<>();
+        for (int i = 0; i < betweenRows.size(); i++) {
+            path.add(new Position(betweenColumns.get(i), betweenRows.get(i)));
+        }
+        return path;
+    }
+
+    private void validatePassesThroughCenter(List<Position> path, Position toPosition) {
+        boolean passedThroughCenter = this.isCenterOfPalace() || toPosition.isCenterOfPalace()
+                || path.stream().anyMatch(Position::isCenterOfPalace);
+        if (!passedThroughCenter) {
+            throw new IllegalArgumentException("해당 위치로 이동할 수 없습니다.");
+        }
     }
 
 
+    public Position reverse() {
+        return new Position(column.reverse(), row.reverse());
+    }
+
+    public boolean onPalace() {
+        return (row.isInChoPalaceRow() || row.isInHanPalaceRow()) && column.isInPalaceColumn();
+    }
+
+    public boolean isCenterOfPalace() {
+        return (column == Column.E && row == Row.TWO) || (column == Column.E && row == Row.NINE);
+    }
 }
