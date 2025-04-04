@@ -1,63 +1,32 @@
 package domain.piece;
 
 import domain.Position;
-import domain.Team;
-import java.util.ArrayList;
+import domain.movestrategy.RangeMoveStrategy;
+import domain.movestrategy.RangeMoveStrategyChangeable;
+import domain.player.Player;
 import java.util.List;
 
-public class Cannon extends Piece {
+public class Cannon extends Piece implements RangeMoveStrategyChangeable {
 
-    public Cannon(Team team) {
-        super(team);
-    }
+    private RangeMoveStrategy moveStrategy;
 
-    @Override
-    public boolean isCanon() {
-        return true;
-    }
-
-    @Override
-    public boolean isKing() {
-        return false;
+    public Cannon(Player player, RangeMoveStrategy moveStrategy, int point) {
+        super(player, point);
+        this.moveStrategy = moveStrategy;
     }
 
     @Override
     public List<Position> calculatePath(Position startPosition, Position targetPosition) {
-
-        List<Position> path = new ArrayList<>();
-        Position newPosition = startPosition;
-        if (startPosition.compareRow(targetPosition) != 0 && startPosition.compareColumn(targetPosition) == 0) {
-            newPosition = calculateNewPosition(startPosition.compareRow(targetPosition), newPosition, path, Move.BACK,
-                    Move.FRONT);
-        }
-        if (startPosition.compareRow(targetPosition) == 0 && startPosition.compareColumn(targetPosition) != 0) {
-            calculateNewPosition(startPosition.compareColumn(targetPosition), newPosition, path, Move.RIGHT,
-                    Move.LEFT);
-        }
-        if (startPosition.compareRow(targetPosition) != 0 && startPosition.compareColumn(targetPosition) != 0) {
-            throw new IllegalArgumentException("이 위치로는 움직일 수 없습니다.");
-        }
-
-        return path;
+        return moveStrategy.calculatePath(startPosition, targetPosition);
     }
 
-    private Position calculateNewPosition(int startPosition, Position newPosition,
-                                          List<Position> path, Move backOrLeft,
-                                          Move frontOrRight) {
-        if (startPosition < 0) {
-            newPosition = addNewPositionOnPath(Math.abs(startPosition), newPosition, backOrLeft, path);
-        }
-        if (startPosition > 0) {
-            newPosition = addNewPositionOnPath(startPosition, newPosition, frontOrRight, path);
-        }
-        return newPosition;
+    @Override
+    public PieceType getPieceType() {
+        return PieceType.CANNON;
     }
 
-    private Position addNewPositionOnPath(int count, Position newPosition, Move backOrLeft, List<Position> path) {
-        for (int i = 0; i < count - 1; i++) {
-            newPosition = newPosition.movePosition(backOrLeft);
-            path.add(newPosition);
-        }
-        return newPosition;
+    @Override
+    public void changeStrategy(RangeMoveStrategy rangeMoveStrategy) {
+        this.moveStrategy = rangeMoveStrategy;
     }
 }

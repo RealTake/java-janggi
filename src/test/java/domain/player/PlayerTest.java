@@ -1,5 +1,6 @@
-package domain;
+package domain.player;
 
+import domain.Team;
 import domain.piece.Horse;
 import domain.piece.Piece;
 import org.assertj.core.api.Assertions;
@@ -12,8 +13,8 @@ class PlayerTest {
     @Test
     void test() {
         // given
-        Piece piece = new Horse(Team.RED);
-        Player player = new Player("짱구", Team.RED);
+        Player player = new Player(1, "짱구", Team.RED);
+        Piece piece = new Horse(player, 5);
         // when
         boolean result = player.isTeam(piece);
         // then

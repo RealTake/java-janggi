@@ -1,14 +1,17 @@
-package domain;
+package domain.player;
 
+import domain.Team;
 import domain.piece.Piece;
 
 public class Player {
 
+    private final int id;
     private final String name;
     private final Team team;
 
 
-    public Player(String name, Team team) {
+    public Player(int id, String name, Team team) {
+        this.id = id;
         this.name = name;
         this.team = team;
     }
@@ -23,5 +26,9 @@ public class Player {
 
     public Team getTeam() {
         return team;
+    }
+
+    public int getId() {
+        return id;
     }
 }

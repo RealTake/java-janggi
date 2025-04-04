@@ -1,4 +1,4 @@
-package domain.piece;
+package domain.move;
 
 public enum Move {
 
@@ -9,8 +9,7 @@ public enum Move {
     FRONT_RIGHT(-1, 1),
     FRONT_LEFT(-1, -1),
     BACK_RIGHT(1, 1),
-    BACK_LEFT(1, -1)
-    ;
+    BACK_LEFT(1, -1);
 
     private final int dy;
     private final int dx;
@@ -19,6 +18,7 @@ public enum Move {
         this.dy = dy;
         this.dx = dx;
     }
+
 
     public int getDy() {
         return dy;

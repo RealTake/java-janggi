@@ -1,61 +1,32 @@
 package domain.piece;
 
 import domain.Position;
-import domain.Team;
-import java.util.ArrayList;
+import domain.movestrategy.RangeMoveStrategy;
+import domain.movestrategy.RangeMoveStrategyChangeable;
+import domain.player.Player;
 import java.util.List;
 
-public class Chariot extends Piece {
+public class Chariot extends Piece implements RangeMoveStrategyChangeable {
 
-    public Chariot(Team team) {
-        super(team);
+    private RangeMoveStrategy moveStrategy;
+
+    public Chariot(Player player, RangeMoveStrategy moveStrategy, int point) {
+        super(player, point);
+        this.moveStrategy = moveStrategy;
     }
 
     @Override
     public List<Position> calculatePath(Position startPosition, Position targetPosition) {
-
-        List<Position> path = new ArrayList<>();
-        Position newPosition = startPosition;
-        if (startPosition.compareRow(targetPosition) != 0 && startPosition.compareColumn(targetPosition) == 0) {
-            newPosition = calculateNewPosition(startPosition.compareRow(targetPosition), newPosition, path, Move.BACK,
-                    Move.FRONT);
-        }
-        if (startPosition.compareRow(targetPosition) == 0 && startPosition.compareColumn(targetPosition) != 0) {
-            calculateNewPosition(startPosition.compareColumn(targetPosition), newPosition, path, Move.RIGHT, Move.LEFT);
-        }
-        if (startPosition.compareRow(targetPosition) != 0 && startPosition.compareColumn(targetPosition) != 0) {
-            throw new IllegalArgumentException("이 위치로는 움직일 수 없습니다.");
-        }
-        return path;
-    }
-
-    private Position calculateNewPosition(int startPosition, Position newPosition, List<Position> path,
-                                          Move backOrRight,
-                                          Move frontOrLeft) {
-        if (startPosition < 0) {
-            newPosition = addNewPositionOnPath(Math.abs(startPosition), newPosition, path, backOrRight);
-        }
-        if (startPosition > 0) {
-            newPosition = addNewPositionOnPath(startPosition, newPosition, path, frontOrLeft);
-        }
-        return newPosition;
-    }
-
-    private Position addNewPositionOnPath(int count, Position newPosition, List<Position> path, Move movement) {
-        for (int i = 0; i < count - 1; i++) {
-            newPosition = newPosition.movePosition(movement);
-            path.add(newPosition);
-        }
-        return newPosition;
+        return moveStrategy.calculatePath(startPosition, targetPosition);
     }
 
     @Override
-    public boolean isCanon() {
-        return false;
+    public PieceType getPieceType() {
+        return PieceType.CHARIOT;
     }
 
     @Override
-    public boolean isKing() {
-        return false;
+    public void changeStrategy(RangeMoveStrategy rangeMoveStrategy) {
+        this.moveStrategy = rangeMoveStrategy;
     }
 }

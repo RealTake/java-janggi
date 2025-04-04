@@ -1,22 +1,22 @@
 package view;
 
-import domain.Player;
 import domain.Position;
 import domain.Team;
 import domain.piece.Piece;
-import java.util.List;
+import domain.player.Player;
+import domain.player.Players;
 import java.util.Map;
 
 public class OutputView {
 
-    public void displayPlayerInfo(List<Player> playerNames) {
+    public void displayPlayerInfo(Players players) {
         System.out.println("┌───────────────────────────┐");
         System.out.println("│        Korea Chase        │");
         System.out.println("└───────────────────────────┘");
         System.out.println();
-        System.out.printf("%s님의 팀은 %s청팀%s 입니다.\n%s님의 팀은 %s홍팀%s 입니다.\n", playerNames.getFirst().getName(),
+        System.out.printf("%s님의 팀은 %s청팀%s 입니다.\n%s님의 팀은 %s홍팀%s 입니다.\n", players.getBluePlayerName(),
                 TextColor.blue,
-                TextColor.exit, playerNames.getLast().getName(), TextColor.red, TextColor.exit);
+                TextColor.exit, players.getRedPlayerName(), TextColor.red, TextColor.exit);
     }
 
     public void displayJanggiBoard(Map<Position, Piece> board) {
@@ -60,8 +60,25 @@ public class OutputView {
         String result =
                 """
                         왕이 죽었습니다. 게임을 종료합니다.
-                        (%s)팀의 플레이어인 %s님이 게임을 승리하셨습니다.
+                        %s(%s)%s팀의 플레이어인 %s님이 게임을 승리하셨습니다.
                         """;
-        System.out.printf(result, thisTurnPlayer.getTeam(), thisTurnPlayer.getName());
+        System.out.printf(result, TextColor.specifyTeamColor(thisTurnPlayer), thisTurnPlayer.getTeam(), TextColor.exit,
+                thisTurnPlayer.getName());
+    }
+
+    public void displayJanggiScore(Map<Player, Integer> score) {
+        for (Map.Entry<Player, Integer> entry : score.entrySet()) {
+            String color = entry.getKey().getTeam() == Team.RED ? TextColor.red : TextColor.blue;
+            System.out.println(color + entry.getKey().getName() + "'s Score: " + entry.getValue() + TextColor.exit);
+        }
+    }
+
+    public void startExistedGame(int gameId) {
+        System.out.printf("%d방 게임에 입장했습니다. 장기를 시작합니다.\n", gameId);
+    }
+
+    public void startNewGame(int gameId) {
+        System.out.printf("%d방을 만들었습니다. 장기를 시작합니다.\n", gameId);
+
     }
 }

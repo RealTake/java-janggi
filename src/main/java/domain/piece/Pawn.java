@@ -1,38 +1,32 @@
 package domain.piece;
 
 import domain.Position;
-import domain.Team;
+import domain.movestrategy.FixedMoveStrategy;
+import domain.movestrategy.FixedMoveStrategyChangeable;
+import domain.player.Player;
 import java.util.List;
 
-public class Pawn extends Piece {
+public class Pawn extends Piece implements FixedMoveStrategyChangeable {
 
-    private final List<Move> moves = List.of(Move.FRONT, Move.BACK, Move.RIGHT, Move.LEFT);
+    private FixedMoveStrategy moveStrategy;
 
-    public Pawn(Team team) {
-        super(team);
+    public Pawn(Player player, FixedMoveStrategy moveStrategy, int point) {
+        super(player, point);
+        this.moveStrategy = moveStrategy;
     }
 
     @Override
     public List<Position> calculatePath(Position startPosition, Position targetPosition) {
-        for (Move move : moves) {
-            if (!startPosition.canMovePosition(move)) {
-                continue;
-            }
-            Position newPosition = startPosition.movePosition(move);
-            if (newPosition.equals(targetPosition)) {
-                return List.of();
-            }
-        }
-        throw new IllegalArgumentException("이 위치로 이동할 수 없습니다.");
+        return moveStrategy.calculatePath(startPosition, targetPosition, player);
     }
 
     @Override
-    public boolean isCanon() {
-        return false;
+    public PieceType getPieceType() {
+        return PieceType.PAWN;
     }
 
     @Override
-    public boolean isKing() {
-        return false;
+    public void changeStrategy(FixedMoveStrategy fixedMoveStrategy) {
+        this.moveStrategy = fixedMoveStrategy;
     }
 }

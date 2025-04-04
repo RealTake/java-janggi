@@ -1,6 +1,6 @@
 package domain;
 
-import domain.piece.Move;
+import domain.move.Move;
 import java.util.Objects;
 
 public class Position {
@@ -32,12 +32,12 @@ public class Position {
         return true;
     }
 
-    public int compareRow(Position position) {
-        return this.row - position.row;
+    public int compareRow(Position targetPosition) {
+        return this.row - targetPosition.row;
     }
 
-    public int compareColumn(Position position) {
-        return this.column - position.column;
+    public int compareColumn(Position targetPosition) {
+        return this.column - targetPosition.column;
     }
 
     @Override
@@ -55,5 +55,20 @@ public class Position {
     @Override
     public int hashCode() {
         return Objects.hash(row, column);
+    }
+
+    public boolean isInsidePalace(Team team) {
+        if (team == Team.RED) {
+            return row >= 3 && row <= 5 && column >= 4 && column <= 6;
+        }
+        return row >= 8 && row <= 10 && column >= 4 && column <= 6;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getColumn() {
+        return column;
     }
 }

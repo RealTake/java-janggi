@@ -1,8 +1,11 @@
 package domain;
 
 import domain.boardgenerator.BoardGenerator;
+import domain.palace.Palace;
 import domain.piece.Piece;
-import java.util.List;
+import domain.player.Player;
+import domain.player.Players;
+import java.util.HashMap;
 import java.util.Map;
 
 public class JanggiGame {
@@ -10,31 +13,34 @@ public class JanggiGame {
     public static final int SEQUENCE_ZERO = 0;
     public static final int SEQUENCE_ONE = 1;
 
+
     private final JanggiBoard janggiBoard;
-    private final List<Player> players;
+    private final Players players;
     private int sequence = SEQUENCE_ZERO;
 
 
-    public JanggiGame(BoardGenerator boardGenerator, List<Player> players) {
-        this.janggiBoard = new JanggiBoard(boardGenerator);
+    public JanggiGame(BoardGenerator boardGenerator, Players players, Palace palace) {
+        this.janggiBoard = new JanggiBoard(boardGenerator, palace);
         this.players = players;
     }
 
-    public void move(Position startPosition, Position targetPosition) {
+
+    public Map<Position, Piece> move(Position startPosition, Position targetPosition) {
         validateMovePiece(startPosition, targetPosition);
-        janggiBoard.move(startPosition, targetPosition);
+        Map<Position, Piece> startAndTargetPieces = janggiBoard.move(startPosition, targetPosition);
         if (sequence == SEQUENCE_ZERO) {
             sequence = SEQUENCE_ONE;
-            return;
+            return startAndTargetPieces;
         }
         sequence = SEQUENCE_ZERO;
+        return startAndTargetPieces;
     }
 
     private void validateMovePiece(Position startPosition, Position targetPosition) {
         if (janggiBoard.findPiece(startPosition) == null) {
             throw new IllegalArgumentException("해당 자리에는 말이 없습니다.");
         }
-        if (!players.get(sequence).isTeam(janggiBoard.findPiece(startPosition))) {
+        if (!players.getThisTurnPlayer(sequence).isTeam(janggiBoard.findPiece(startPosition))) {
             throw new IllegalArgumentException("자신의 말만 움직일 수 있습니다.");
         }
         if (startPosition.equals(targetPosition)) {
@@ -43,7 +49,7 @@ public class JanggiGame {
     }
 
     public Player getThisTurnPlayer() {
-        return players.get(sequence);
+        return players.getThisTurnPlayer(sequence);
     }
 
     public Map<Position, Piece> getBoardState() {
@@ -52,5 +58,31 @@ public class JanggiGame {
 
     public boolean checkKingIsDead() {
         return janggiBoard.checkKingIsDead();
+    }
+
+    public Map<Player, Integer> calculateScore() {
+        Map<Player, Integer> score = new HashMap<>();
+        score.put(players.getPlayerByTeam(Team.RED), 0);
+        score.put(players.getPlayerByTeam(Team.BLUE), 0);
+
+        Map<Position, Piece> board = janggiBoard.getBoard();
+        for (Piece piece : board.values()) {
+            Player player = piece.getPlayer();
+            score.put(player, score.get(player) + piece.getPoint());
+        }
+
+        return score;
+    }
+
+    public boolean isTargetPositionIsEmpty(Position position) {
+        return janggiBoard.isPositionEmpty(position);
+    }
+
+    public int getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(int currentTurn) {
+        this.sequence = currentTurn;
     }
 }
