@@ -1,19 +1,19 @@
 package domain.piece;
 
-import static domain.board.Direction.DOWN;
-import static domain.board.Direction.LEFT;
-import static domain.board.Direction.RIGHT;
-import static domain.board.Direction.UP;
+import static domain.board.MoveDirection.DOWN;
+import static domain.board.MoveDirection.LEFT;
+import static domain.board.MoveDirection.RIGHT;
+import static domain.board.MoveDirection.UP;
 
 import domain.board.BoardLocation;
 import domain.board.BoardVector;
-import domain.board.Direction;
+import domain.board.MoveDirection;
 import java.util.List;
 import java.util.Map;
 
 public class Horse extends Piece {
 
-    private static final Map<BoardVector, Direction> DIRECTIONS = Map.of(
+    private static final Map<BoardVector, MoveDirection> DIRECTIONS = Map.of(
             new BoardVector(1, 2), DOWN,
             new BoardVector(1, -2), UP,
             new BoardVector(-1, 2), DOWN,
@@ -25,7 +25,7 @@ public class Horse extends Piece {
     );
 
     public Horse(Team team) {
-        super(team);
+        super(team, new Score(5));
     }
 
     @Override
@@ -37,11 +37,11 @@ public class Horse extends Piece {
     }
 
     @Override
-    protected List<BoardLocation> createAllPath(BoardLocation current, BoardLocation destination) {
+    protected List<BoardLocation> extractIntermediatePath(BoardLocation current, BoardLocation destination) {
         BoardVector boardVector = BoardVector.between(current, destination);
 
-        Direction direction = DIRECTIONS.get(boardVector);
-        BoardLocation path = current.moveDirection(direction);
+        MoveDirection moveDirection = DIRECTIONS.get(boardVector);
+        BoardLocation path = current.moveDirection(moveDirection);
 
         return List.of(path);
     }

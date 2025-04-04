@@ -1,6 +1,6 @@
 package domain.piece;
 
-import domain.board.Direction;
+import domain.board.MoveDirection;
 import domain.board.BoardLocation;
 import domain.board.BoardVector;
 import java.util.ArrayList;
@@ -9,19 +9,19 @@ import java.util.Map;
 
 public class Elephant extends Piece {
 
-    private static final Map<BoardVector, List<Direction>> DIRECTIONS = Map.of(
-            new BoardVector(2, 3), List.of(Direction.DOWN, Direction.DOWN_RIGHT),
-            new BoardVector(2, -3), List.of(Direction.UP, Direction.UP_LEFT),
-            new BoardVector(-2, 3), List.of(Direction.DOWN, Direction.UP_RIGHT),
-            new BoardVector(-2, -3), List.of(Direction.UP, Direction.UP_LEFT),
-            new BoardVector(3, 2), List.of(Direction.RIGHT, Direction.DOWN_RIGHT),
-            new BoardVector(3, -2), List.of(Direction.RIGHT, Direction.DOWN_LEFT),
-            new BoardVector(-3, 2), List.of(Direction.LEFT, Direction.UP_RIGHT),
-            new BoardVector(-3, -2), List.of(Direction.LEFT, Direction.UP_LEFT)
+    private static final Map<BoardVector, List<MoveDirection>> DIRECTIONS = Map.of(
+            new BoardVector(2, 3), List.of(MoveDirection.DOWN, MoveDirection.DOWN_RIGHT),
+            new BoardVector(2, -3), List.of(MoveDirection.UP, MoveDirection.UP_LEFT),
+            new BoardVector(-2, 3), List.of(MoveDirection.DOWN, MoveDirection.UP_RIGHT),
+            new BoardVector(-2, -3), List.of(MoveDirection.UP, MoveDirection.UP_LEFT),
+            new BoardVector(3, 2), List.of(MoveDirection.RIGHT, MoveDirection.DOWN_RIGHT),
+            new BoardVector(3, -2), List.of(MoveDirection.RIGHT, MoveDirection.DOWN_LEFT),
+            new BoardVector(-3, 2), List.of(MoveDirection.LEFT, MoveDirection.UP_RIGHT),
+            new BoardVector(-3, -2), List.of(MoveDirection.LEFT, MoveDirection.UP_LEFT)
     );
 
     public Elephant(Team team) {
-        super(team);
+        super(team, new Score(3));
     }
 
     @Override
@@ -33,14 +33,14 @@ public class Elephant extends Piece {
     }
 
     @Override
-    protected List<BoardLocation> createAllPath(BoardLocation current, BoardLocation destination) {
+    protected List<BoardLocation> extractIntermediatePath(BoardLocation current, BoardLocation destination) {
         BoardVector boardVector = BoardVector.between(current, destination);
 
-        List<Direction> directions = DIRECTIONS.get(boardVector);
+        List<MoveDirection> moveDirections = DIRECTIONS.get(boardVector);
         List<BoardLocation> paths = new ArrayList<>();
 
-        for (Direction direction : directions) {
-            current = current.moveDirection(direction);
+        for (MoveDirection moveDirection : moveDirections) {
+            current = current.moveDirection(moveDirection);
             paths.add(current);
         }
 

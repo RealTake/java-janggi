@@ -5,6 +5,8 @@ import domain.board.BoardLocation;
 import domain.board.PieceExtractor;
 import domain.board.PieceFinder;
 import domain.piece.Piece;
+import domain.piece.Score;
+import domain.piece.Team;
 
 public class JanggiGame {
     private final Board board;
@@ -23,12 +25,20 @@ public class JanggiGame {
         turn.opposite();
     }
 
+    public boolean isGameStopped() {
+        return board.isGameStopped();
+    }
+
     public Board getBoard() {
         return board;
     }
 
     public Turn getTurn() {
         return turn;
+    }
+
+    public Score calculateScoreByTeam(Team team) {
+        return board.calculateScoreByTeam(team);
     }
 
     private void validateMovable(BoardLocation current, BoardLocation destination, Piece piece){

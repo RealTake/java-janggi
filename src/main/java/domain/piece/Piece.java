@@ -8,14 +8,21 @@ import java.util.List;
 public abstract class Piece {
 
     protected final Team team;
+    protected final Score score;
 
-    public Piece(Team team) {
+    public Piece(Team team, Score score) {
         this.team = team;
+        this.score = score;
     }
 
-    public void validateMovable(BoardLocation current, BoardLocation destination, PieceExtractor pieceExtractor, PieceFinder pieceFinder) {
+    public void validateMovable(
+            BoardLocation current,
+            BoardLocation destination,
+            PieceExtractor pieceExtractor,
+            PieceFinder pieceFinder
+    ) {
         validateArrival(current, destination);
-        List<BoardLocation> allPath = createAllPath(current, destination);
+        List<BoardLocation> allPath = extractIntermediatePath(current, destination);
         List<Piece> pathPiece = pieceExtractor.extract(allPath);
         validateMovePath(pathPiece);
         pieceFinder.findByLocation(destination)
@@ -24,7 +31,7 @@ public abstract class Piece {
 
     protected abstract void validateArrival(BoardLocation current, BoardLocation target);
 
-    protected abstract List<BoardLocation> createAllPath(BoardLocation current, BoardLocation target);
+    protected abstract List<BoardLocation> extractIntermediatePath(BoardLocation current, BoardLocation target);
 
     protected abstract void validateMovePath(List<Piece> pathPiece);
 
@@ -46,11 +53,23 @@ public abstract class Piece {
         return this.team;
     }
 
-    private boolean isNotEqualTeam(Team team) {
-        return this.team != team;
+    public Score getScore() {
+        return score;
+    }
+
+    public boolean isStoppedGameIfDie() {
+        return false;
+    }
+
+    public boolean isEqualTeam(Team team) {
+        return this.team == team;
     }
 
     private boolean isEqualTeam(Piece piece) {
         return this.team == piece.team;
+    }
+
+    private boolean isNotEqualTeam(Team team) {
+        return this.team != team;
     }
 }

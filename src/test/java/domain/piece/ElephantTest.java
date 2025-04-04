@@ -1,7 +1,6 @@
 package domain.piece;
 
 import static domain.piece.Team.CHO;
-import static domain.piece.Team.DEFAULT;
 import static domain.piece.Team.HAN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -14,11 +13,11 @@ import org.junit.jupiter.api.Test;
 
 public class ElephantTest {
 
-    Elephant elephant = new Elephant(DEFAULT);
+    Elephant elephant = new Elephant(HAN);
 
     @DisplayName("상은 상하좌우 한 칸 그리고 대각선 두 칸 움직일 때의 목적지 좌표로 위치 가능하다면 예와를 발생시키지않는다")
     @Test
-    void test() {
+    void validateArrival1() {
         // given
         BoardLocation current = new BoardLocation(1, 1);
         BoardLocation destination = new BoardLocation(3, 4);
@@ -31,7 +30,7 @@ public class ElephantTest {
 
     @DisplayName("상은 현재 위치에서 한 방향으로 목적지에 도착할 수 없다면 예외를 발생시킨다.")
     @Test
-    void test2() {
+    void validateArrival2() {
         // given
         BoardLocation current = new BoardLocation(1, 1);
         BoardLocation destination = new BoardLocation(3, 5);
@@ -44,13 +43,13 @@ public class ElephantTest {
 
     @DisplayName("상의 현재 위치에서 목표 좌표까지 이동하는 모든 경로를 반환한다")
     @Test
-    void test3() {
+    void extractIntermediatePath1() {
         // given
         BoardLocation current = new BoardLocation(1, 1);
         BoardLocation destination = new BoardLocation(3, 4);
 
         // when
-        List<BoardLocation> allPath = elephant.createAllPath(current, destination);
+        List<BoardLocation> allPath = elephant.extractIntermediatePath(current, destination);
 
         // then
         assertThat(allPath).containsAll(List.of(new BoardLocation(1, 2), new BoardLocation(2, 3)));
@@ -58,10 +57,10 @@ public class ElephantTest {
 
     @DisplayName("이동 경로에 기물이 있다면 예외를 발생시킨다.")
     @Test
-    void test4() {
+    void validateMovePath1() {
         // given
-        List<Piece> pathPiece = List.of(new Pawn(Team.DEFAULT));
-        Piece piece = new Elephant(Team.DEFAULT);
+        List<Piece> pathPiece = List.of(new Pawn(Team.HAN));
+        Piece piece = new Elephant(Team.HAN);
         // when & then
         assertThatThrownBy(() -> {
             piece.validateMovePath(pathPiece);
@@ -70,10 +69,10 @@ public class ElephantTest {
 
     @DisplayName("이동 경로에 기물이 없으면 예와를 발생시키지않는다")
     @Test
-    void test5() {
+    void validateMovePath2() {
         // given
         List<Piece> pathPiece = List.of();
-        Piece piece = new Elephant(Team.DEFAULT);
+        Piece piece = new Elephant(Team.HAN);
 
         // when & then
         assertThatCode(
@@ -83,7 +82,7 @@ public class ElephantTest {
 
     @DisplayName("목표 위치에 아군 기물이 있다면 예외를 발생시킨다.")
     @Test
-    void test11() {
+    void validateKillable1() {
         // given
         Piece destination = new Pawn(HAN);
         Piece start = new Elephant(HAN);
@@ -96,7 +95,7 @@ public class ElephantTest {
 
     @DisplayName("목표 위치에 적군 기물이 있다면 예와를 발생시키지않는다")
     @Test
-    void test12() {
+    void validateKillable2() {
         // given
         Piece destination = new Pawn(CHO);
         Piece start = new Elephant(HAN);

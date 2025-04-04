@@ -8,19 +8,31 @@ public record BoardVector(
 ) {
 
     public static BoardVector between(BoardLocation current, BoardLocation destination) {
-        return new BoardVector(destination.x() - current.x(), destination.y() - current.y());
+        return new BoardVector(destination.column() - current.column(), destination.row() - current.row());
     }
 
     public boolean isNotAxis() {
         return dx != 0 && dy != 0;
     }
 
-    public boolean isAxis() {
-        return dx == 0 || dy == 0;
+    public boolean isNotDiagonal() {
+        return Math.abs(dx) != Math.abs(dy);
     }
 
-    public boolean isStepAxisMove(int step) {
+    public boolean hasStepAxisMove(int step) {
         return Math.abs(dx) == step || Math.abs(dy) == step;
+    }
+
+    public boolean hasStepDiagonalMove(int step) {
+        return Math.abs(dx) == step && Math.abs(dy) == step;
+    }
+
+    public int getAbsDx() {
+        return Math.abs(dx);
+    }
+
+    public int getAbsDy() {
+        return Math.abs(dy);
     }
 
     @Override
