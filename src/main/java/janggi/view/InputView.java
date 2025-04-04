@@ -1,7 +1,7 @@
 package janggi.view;
 
-import janggi.Team.Team;
-import janggi.position.Position;
+import janggi.domain.position.Position;
+import janggi.domain.team.TeamType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -17,9 +17,19 @@ public class InputView {
         scanner = new Scanner(System.in);
     }
 
-    public String readElephantSetting(Team team) {
-        System.out.printf(LINE + "%s나라의 배치 순서를 선택해주세요." + LINE, team.getTitle());
+    public String readElephantSetting(TeamType teamType) {
+        System.out.printf(LINE + "%s나라의 배치 순서를 선택해주세요." + LINE, teamType.getTitle());
         return scanner.nextLine();
+    }
+
+    public Menu readMenu() {
+        System.out.println(LINE + """
+                메뉴를 선택해주세요.
+                1. MOVE (기물 이동)
+                2. SAVE (저장 후 중단)
+                3. QUIT (종료 및 결과 확인)
+                """);
+        return Menu.of(scanner.nextLine());
     }
 
     public List<Position> readMovingPosition() {

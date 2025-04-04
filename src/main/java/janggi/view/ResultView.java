@@ -1,8 +1,8 @@
 package janggi.view;
 
-import janggi.Team.Team;
-import janggi.piece.Piece;
-import janggi.position.Position;
+import janggi.domain.piece.Piece;
+import janggi.domain.position.Position;
+import janggi.domain.team.TeamType;
 import java.util.Map;
 
 public class ResultView {
@@ -11,9 +11,15 @@ public class ResultView {
     private static final String BLANK = "ㅤ";
     private static final String HEADER = "   1    2    3    4    5    6    7    8   9%n";
     private static final String BOARD_LINE = "   |    |    |    |    |    |    |    |   |%n";
+    private static final String BOARD_LINE_HEAD_GUNG_CASTLE = "   |    |    |    | \\  |  / |    |    |   |%n";
+    private static final String BOARD_LINE_TAIL_GUNG_CASTLE = "   |    |    |    | /  |  \\ |    |    |   |%n";
     private static final String BLUE_CODE = "\u001B[34m";
     private static final String RED_CODE = "\u001B[31m";
     private static final String EXIT_CODE = "\u001B[0m";
+
+    public void printLoadingDoneMessage() {
+        System.out.println("진행 중인 게임 정보를 불러왔습니다.");
+    }
 
     public void printSetting() {
         System.out.println("""
@@ -39,28 +45,47 @@ public class ResultView {
                     continue;
                 }
                 Piece piece = pieces.get(currentPosition);
-                Team team = piece.getTeam();
-                sb.append(convertColor(team, PieceTitle.getTitleFromTypeAndTeam(piece.getPieceType(), team)));
+                TeamType teamType = piece.getTeamType();
+                sb.append(convertColor(teamType, PieceTitle.getTitleFromTypeAndTeam(piece.getPieceType(), teamType)));
             }
             System.out.println(sb);
-            if (y != 10) {
-                System.out.printf(BOARD_LINE);
+            if (y == 1 || y == 8) {
+                System.out.printf(BOARD_LINE_HEAD_GUNG_CASTLE);
+                continue;
             }
+            if (y == 2 || y == 9) {
+                System.out.printf(BOARD_LINE_TAIL_GUNG_CASTLE);
+                continue;
+            }
+            if (y == 10) {
+                System.out.print(LINE);
+                continue;
+            }
+            System.out.printf(BOARD_LINE);
         }
     }
 
-    public void printOrder(final Team team) {
-        System.out.printf(LINE + "%s나라의 순서입니다." + LINE, team.getTitle());
+    public void printOrder(final TeamType teamType) {
+        System.out.printf(LINE + "%s나라의 순서입니다." + LINE, teamType.getTitle());
     }
 
-    public void printJanggiResult(final Team team) {
-        System.out.printf(LINE + """
-                궁이 잡혔습니다.
-                %s나라의 승리입니다!""", team.getTitle());
+    public void printScoreBoard(final Map<TeamType, Double> scores) {
+        scores.forEach((key, value) -> {
+            String colorfulScore = convertColor(key, String.format("%.1f", value));
+            System.out.printf("%s나라 : %s점%s", key.getTitle(), colorfulScore, LINE);
+        });
     }
 
-    private String convertColor(Team team, String input) {
-        if (team == Team.HAN) {
+    public void printCatchingGungMessage() {
+        System.out.println("궁이 잡혔습니다.");
+    }
+
+    public void printJanggiResult(final TeamType teamType) {
+        System.out.printf(LINE + "%s나라의 승리입니다!", teamType.getTitle());
+    }
+
+    private String convertColor(TeamType teamType, String input) {
+        if (teamType == TeamType.HAN) {
             return RED_CODE + input + EXIT_CODE;
         }
         return BLUE_CODE + input + EXIT_CODE;
