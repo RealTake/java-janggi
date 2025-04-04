@@ -1,4 +1,4 @@
-package domain;
+package domain.piece.move;
 
 import domain.position.Direction;
 import domain.position.Position;
@@ -37,6 +37,6 @@ public class Path {
     }
 
     private boolean isInvalidMove(Position curPosition, Direction direction) {
-        return !curPosition.canMoveDirection(direction);
+        return !curPosition.canMovePosition(direction.getDeltaRow(), direction.getDeltaColumn());
     }
 }

@@ -1,9 +1,9 @@
 package domain.piece;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import domain.Board;
 import domain.TeamType;
 import domain.position.Position;
 import java.util.Map;
@@ -126,5 +126,17 @@ class ChariotTest {
         // when & then
         assertThatCode(() -> chariot.validateMove(startPosition, expectedPosition, board))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("해당 점수를 반환한다")
+    void getScore() {
+        // given
+        Chariot chariot = new Chariot(TeamType.HAN);
+
+        // when & then
+        double actual = chariot.getScore();
+        double expected = 13.0;
+        assertThat(actual).isEqualTo(expected);
     }
 }

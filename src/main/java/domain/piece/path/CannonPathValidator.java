@@ -1,6 +1,6 @@
 package domain.piece.path;
 
-import domain.Board;
+import domain.piece.Board;
 import domain.piece.Piece;
 import domain.piece.PieceType;
 import domain.position.Position;
@@ -16,7 +16,7 @@ public class CannonPathValidator implements PathValidator {
         validateDestination(to, board, movePiece);
     }
 
-    public void validateMovePath(List<Position> positions, Board board) {
+    private void validateMovePath(List<Position> positions, Board board) {
         if (isCannonOnPath(positions, board)) {
             throw new IllegalArgumentException("포는 포를 뛰어넘을 수 없습니다.");
         }
@@ -27,7 +27,7 @@ public class CannonPathValidator implements PathValidator {
 
     }
 
-    public void validateDestination(Position to, Board board, Piece movePiece) {
+    private void validateDestination(Position to, Board board, Piece movePiece) {
         if (board.isEmptyPosition(to)) {
             return;
         }

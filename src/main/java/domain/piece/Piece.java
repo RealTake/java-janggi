@@ -1,6 +1,5 @@
 package domain.piece;
 
-import domain.Board;
 import domain.TeamType;
 import domain.piece.move.MoveRule;
 import domain.piece.path.PathValidator;
@@ -20,6 +19,14 @@ public abstract class Piece {
     }
 
     public abstract PieceType getType();
+
+    public double getScore() {
+        return getType().getScore();
+    }
+
+    public TeamType getTeamType() {
+        return teamType;
+    }
 
     public boolean isSameTeam(Piece piece) {
         return this.teamType.equals(piece.teamType);

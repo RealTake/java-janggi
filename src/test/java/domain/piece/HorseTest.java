@@ -1,9 +1,9 @@
 package domain.piece;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import domain.Board;
 import domain.TeamType;
 import domain.position.Position;
 import java.util.Map;
@@ -101,5 +101,17 @@ class HorseTest {
         // when & then
         assertThatCode(() -> horse.validateMove(startPosition, movePosition, board))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("해당 점수를 반환한다")
+    void getScore() {
+        // given
+        Horse horse = new Horse(TeamType.HAN);
+
+        // when & then
+        double actual = horse.getScore();
+        double expected = 5.0;
+        assertThat(actual).isEqualTo(expected);
     }
 }

@@ -1,13 +1,14 @@
-package domain;
+package domain.player;
 
+import domain.TeamType;
 import java.util.Objects;
 
 public class Player {
 
-    private final String name;
+    private final Username name;
     private final TeamType teamType;
 
-    public Player(String name, TeamType teamType) {
+    public Player(Username name, TeamType teamType) {
         this.name = name;
         this.teamType = teamType;
     }
@@ -17,7 +18,11 @@ public class Player {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
+    }
+
+    public TeamType getTeamType() {
+        return teamType;
     }
 
     @Override

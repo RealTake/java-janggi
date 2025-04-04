@@ -1,12 +1,13 @@
 package view;
 
-import domain.Player;
 import domain.TeamType;
 import domain.piece.Piece;
+import domain.player.Player;
 import domain.position.Column;
 import domain.position.Position;
 import domain.position.Row;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -22,6 +23,13 @@ public class OutputView {
 
     public void printWinner(Player player) {
         System.out.printf("%s가 승리했습니다!\n", player.getName());
+    }
+
+    public void printScoreWinner(Player winner, Map<String, Double> teamScore) {
+        printWinner(winner);
+        for (Entry<String, Double> entry : teamScore.entrySet()) {
+            System.out.printf("%s: %.1f점\n", entry.getKey(), entry.getValue());
+        }
     }
 
     private void printBoardInfo(Map<Position, Piece> pieces) {

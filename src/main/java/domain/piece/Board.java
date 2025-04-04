@@ -1,14 +1,17 @@
-package domain;
+package domain.piece;
 
+import domain.TeamType;
 import domain.piece.Piece;
 import domain.piece.PieceType;
 import domain.position.Position;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Board {
 
+    private static final double HAN_BONUS_SCORE = 1.5;
     private static final int GAME_RUNNING_KING_COUNT = 2;
     private final Map<Position, Piece> pieces;
 
@@ -56,6 +59,26 @@ public class Board {
         return !pieces.containsKey(position);
     }
 
+    public Map<TeamType, Double> calculateTeamScore() {
+        Map<TeamType, Double> teamScores = new EnumMap<>(TeamType.class);
+
+        for (TeamType team : TeamType.values()) {
+            teamScores.put(team, calculateScoreByTeam(team));
+        }
+
+        addHanBonusScore(teamScores);
+
+        return teamScores;
+    }
+
+    public Map<Position, Piece> getAlivePieces() {
+        return new HashMap<>(pieces);
+    }
+
+    private static void addHanBonusScore(Map<TeamType, Double> teamScores) {
+        teamScores.put(TeamType.HAN, teamScores.get(TeamType.HAN) + HAN_BONUS_SCORE);
+    }
+
     private void changePosition(Position from, Position to, Piece foundPiece) {
         pieces.remove(from);
         pieces.put(to, foundPiece);
@@ -78,7 +101,11 @@ public class Board {
         return !piece.isSameTeam(team);
     }
 
-    public Map<Position, Piece> getAlivePieces() {
-        return new HashMap<>(pieces);
+    private double calculateScoreByTeam(TeamType team) {
+        return pieces.values().stream()
+                .filter(piece -> piece.isSameTeam(team))
+                .map(Piece::getScore)
+                .reduce(Double::sum)
+                .orElse(0.0);
     }
 }
