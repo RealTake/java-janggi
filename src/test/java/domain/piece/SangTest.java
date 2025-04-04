@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class SangTest {
@@ -37,7 +36,7 @@ class SangTest {
 
             JanggiBoard board = new JanggiBoard(map);
 
-            assertThatThrownBy(() -> piece.validateMove(board, myPiece, ourMa))
+            assertThatThrownBy(() -> piece.validateDestination(board, myPiece, ourMa))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -56,7 +55,7 @@ class SangTest {
 
             JanggiBoard board = new JanggiBoard(map);
 
-            assertDoesNotThrow(() -> piece.validateMove(board, myPiece, enemyMa));
+            assertDoesNotThrow(() -> piece.validatePieceMove(board, myPiece, enemyMa));
         }
 
         @DisplayName("기물이 현재 위치에서 도달 가능한 위치를 검사한다")
@@ -70,7 +69,7 @@ class SangTest {
 
             JanggiBoard board = new JanggiBoard(map);
 
-            assertDoesNotThrow(() -> piece.validateMove(board, pieceCoordinate, coordinate));
+            assertDoesNotThrow(() -> piece.validatePieceMove(board, pieceCoordinate, coordinate));
         }
 
         private static Stream<Arguments> reachableArguments() {
@@ -97,7 +96,7 @@ class SangTest {
 
             JanggiBoard board = new JanggiBoard(map);
 
-            assertThatThrownBy(() -> piece.validateMove(board, pieceCoordinate, coordinate))
+            assertThatThrownBy(() -> piece.validatePieceMove(board, pieceCoordinate, coordinate))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -116,10 +115,10 @@ class SangTest {
             Ma obstaclePiece = new Ma(Country.HAN);
             Map<JanggiCoordinate, Piece> map = new HashMap<>();
 
-            JanggiCoordinate sangCoordinate = new JanggiCoordinate(5, 5);
-            JanggiCoordinate obstacleCoordinate1 = new JanggiCoordinate(4, 6);
-            JanggiCoordinate obstacleCoordinate2 = new JanggiCoordinate(3, 7);
-
+            JanggiCoordinate sangCoordinate = new JanggiCoordinate(7, 5);
+            JanggiCoordinate obstacleCoordinate1 = new JanggiCoordinate(6, 5);
+            JanggiCoordinate obstacleCoordinate2 = new JanggiCoordinate(5, 6);
+            JanggiCoordinate dstCoordinate = new JanggiCoordinate(4, 7);
 
             map.put(sangCoordinate, sang);
             map.put(obstacleCoordinate1, obstaclePiece);
@@ -127,13 +126,8 @@ class SangTest {
 
             JanggiBoard board = new JanggiBoard(map);
 
-
-            assertAll(
-                    () -> assertThatThrownBy(() -> sang.validateMove(board, sangCoordinate, obstacleCoordinate1))
-                            .isInstanceOf(IllegalArgumentException.class),
-                    () -> assertThatThrownBy(() -> sang.validateMove(board, sangCoordinate, obstacleCoordinate2))
-                            .isInstanceOf(IllegalArgumentException.class)
-            );
+            assertThatThrownBy(() -> sang.validatePieceMove(board, sangCoordinate, dstCoordinate))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
 
         @DisplayName("상의 이동경로에 다른 기물이 막고 있지 않으면 이동할 수 있다")
@@ -154,8 +148,8 @@ class SangTest {
 
             JanggiBoard board = new JanggiBoard(map);
 
-            assertDoesNotThrow(() -> sang.validateMove(board, sangCoordinate, moveCoordinate1));
-            assertDoesNotThrow(() -> sang.validateMove(board, sangCoordinate, moveCoordinate2));
+            assertDoesNotThrow(() -> sang.validatePieceMove(board, sangCoordinate, moveCoordinate1));
+            assertDoesNotThrow(() -> sang.validatePieceMove(board, sangCoordinate, moveCoordinate2));
         }
     }
 }

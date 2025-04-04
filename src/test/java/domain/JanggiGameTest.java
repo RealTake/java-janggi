@@ -30,7 +30,7 @@ class JanggiGameTest {
             JanggiCoordinate pieceCoordinate = new JanggiCoordinate(5, 5);
             map.put(pieceCoordinate, piece);
 
-            JanggiGame janggiGame = new JanggiGame(map);
+            JanggiGame janggiGame = new JanggiGame(map, Country.CHO);
 
             assertDoesNotThrow(() -> janggiGame.movePlayerPiece(pieceCoordinate, dstCoordinate));
         }
@@ -64,7 +64,7 @@ class JanggiGameTest {
             JanggiCoordinate pieceCoordinate = new JanggiCoordinate(5, 5);
             map.put(pieceCoordinate, piece);
 
-            JanggiGame janggiGame = new JanggiGame(map);
+            JanggiGame janggiGame = new JanggiGame(map, Country.CHO);
 
             assertThatThrownBy(() -> janggiGame.movePlayerPiece(pieceCoordinate, dstCoordinate))
                     .isInstanceOf(IllegalArgumentException.class);
@@ -94,7 +94,7 @@ class JanggiGameTest {
             JanggiCoordinate pieceCoordinate = new JanggiCoordinate(5, 5);
             map.put(pieceCoordinate, piece);
 
-            JanggiGame janggiGame = new JanggiGame(map);
+            JanggiGame janggiGame = new JanggiGame(map, Country.CHO);
 
             assertThatThrownBy(() -> janggiGame.movePlayerPiece(pieceCoordinate, dstCoordinate))
                     .isInstanceOf(IllegalArgumentException.class);
@@ -125,11 +125,11 @@ class JanggiGameTest {
             JanggiCoordinate choCoordinate = new JanggiCoordinate(3, 5);
             map.put(choCoordinate, choPiece);
 
-            Piece hanPiece = new Gung(Country.HAN);
+            Piece hanPiece = new Cha(Country.HAN);
             JanggiCoordinate hanCoordinate = new JanggiCoordinate(3, 3);
             map.put(hanCoordinate, hanPiece);
 
-            JanggiGame janggiGame = new JanggiGame(map);
+            JanggiGame janggiGame = new JanggiGame(map, Country.CHO);
 
             Country firstTurn = janggiGame.getCurrTurn();
             janggiGame.movePlayerPiece(choCoordinate, new JanggiCoordinate(5, 6));
@@ -144,6 +144,56 @@ class JanggiGameTest {
                     () -> assertThat(secondTurn).isEqualTo(Country.HAN),
                     () -> assertThat(thirdTurn).isEqualTo(Country.CHO)
             );
+        }
+    }
+
+    @Nested
+    class PlayerWinnerTest {
+
+        @DisplayName("궁을 처치한 나라가 승리한다")
+        @Test
+        void janggiWinningTest() {
+            Map<JanggiCoordinate, Piece> map = new HashMap<>();
+
+            Piece choPiece = new Gung(Country.CHO);
+            JanggiCoordinate choCoordinate = new JanggiCoordinate(2, 5);
+            map.put(choCoordinate, choPiece);
+
+            Piece hanPiece = new Gung(Country.HAN);
+            JanggiCoordinate hanCoordinate = new JanggiCoordinate(1, 4);
+            map.put(hanCoordinate, hanPiece);
+
+            JanggiGame janggiGame = new JanggiGame(map, Country.CHO);
+
+            janggiGame.movePlayerPiece(choCoordinate, hanCoordinate);
+
+            assertThat(janggiGame.getWinner()).isEqualTo(Country.CHO);
+        }
+    }
+
+    @Nested
+    class PlayerPieceCalcTest {
+
+        @DisplayName("보드판에 있는 국가의 기물 점수를 계산한다")
+        @Test
+        void calcScore() {
+            Map<JanggiCoordinate, Piece> map = new HashMap<>();
+
+            Piece choGungPiece = new Gung(Country.CHO);
+            Piece choChaPiece = new Cha(Country.CHO);
+            Piece choMaPiece = new Ma(Country.CHO);
+
+            JanggiCoordinate choGungCoordinate = new JanggiCoordinate(3, 4);
+            JanggiCoordinate choChaCoordinate = new JanggiCoordinate(3, 5);
+            JanggiCoordinate choMaCoordinate = new JanggiCoordinate(3, 6);
+
+            map.put(choGungCoordinate, choGungPiece);
+            map.put(choChaCoordinate, choChaPiece);
+            map.put(choMaCoordinate, choMaPiece);
+
+            JanggiGame janggiGame = new JanggiGame(map, Country.CHO);
+
+            assertThat(janggiGame.getCountryScore(Country.CHO)).isEqualTo(18);
         }
     }
 }

@@ -3,7 +3,11 @@ package view;
 import domain.Country;
 import domain.JanggiBoard;
 import domain.JanggiCoordinate;
+import domain.dto.GameRoomDto;
 import domain.piece.Piece;
+
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static domain.JanggiBoard.COL_SIZE;
 import static domain.JanggiBoard.ROW_SIZE;
@@ -50,6 +54,19 @@ public class OutputView {
         }
     }
 
+    public void printError(String message) {
+        System.out.println(message);
+    }
+
+    public void printWinner(Country winner) {
+        System.out.println("승자는 " + winner.getName() + " 입니다.");
+    }
+
+    public void printScore(Country country, double countryScore) {
+        String stringScore = scoreFormater(countryScore);
+        System.out.println(country.getName() + "의 점수는 : " + stringScore + " 입니다.");
+    }
+
     private String getColorBy(Piece piece) {
         if (piece.getCountry() == Country.CHO) {
             return GREEN + piece.getPieceType().getName();
@@ -57,7 +74,23 @@ public class OutputView {
         return RED + piece.getPieceType().getName();
     }
 
-    public void printError(String message) {
-        System.out.println(message);
+    private String scoreFormater(double score) {
+        if (score % 1 == 0) {
+            return String.valueOf((int) score);
+        }
+        return String.valueOf(score);
+    }
+
+    public void printGameNames(List<GameRoomDto> allGames) {
+        System.out.println("현재 세이브 되어있는 게임 목록입니다.");
+        System.out.println();
+        for (GameRoomDto dto : allGames) {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 a h시 m분");
+            String creationTime = dto.creationDate().format(dateTimeFormatter);
+            System.out.println("게임 이름 : " + dto.gameRoomName());
+            System.out.println("현재 턴 : " + dto.currTurn());
+            System.out.println("저장된 시간 " + creationTime);
+            System.out.println();
+        }
     }
 }
