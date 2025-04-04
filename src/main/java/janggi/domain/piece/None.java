@@ -1,10 +1,17 @@
 package janggi.domain.piece;
 
+import janggi.domain.Team;
 import java.util.Map;
 
 public class None extends Piece {
-    public None() {
-        super("ㅁ", null, Team.NONE);
+
+    public None(Position position) {
+        super(PieceType.NONE, position, Team.NONE);
+    }
+
+    @Override
+    public Piece from(Position position) {
+        throw new IllegalArgumentException("빈칸은 움직일 수 없습니다.");
     }
 
     @Override
@@ -13,7 +20,7 @@ public class None extends Piece {
     }
 
     @Override
-    public boolean isNone() {
-        return true;
+    public void validatePositionToMove(Map<Position, Piece> pieces, Position positionToMove) {
+        throw new IllegalArgumentException("빈칸은 움직일 수 없습니다.");
     }
 }

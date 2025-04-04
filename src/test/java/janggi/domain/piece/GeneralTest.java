@@ -3,8 +3,10 @@ package janggi.domain.piece;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import janggi.domain.Team;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 class GeneralTest {
+
     Map<Position, Piece> pieces;
 
     @BeforeEach
@@ -19,17 +22,17 @@ class GeneralTest {
         pieces = new HashMap<>();
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 9; j++) {
-                pieces.put(new Position(i, j), new None());
+                pieces.put(new Position(i, j), new None(new Position(i, j)));
             }
         }
     }
+
     @DisplayName("이동 위치 값을 입력 받아 이동한다.")
     @Test
     void move() {
-        General general = new General(new Position(5, 5), Team.BLUE);
-        Position positionToMove = new Position(5, 6);
-
-        General movedGeneral = general.move(pieces, positionToMove);
+        Piece general = new General(new Position(9, 5), Team.BLUE);
+        Position positionToMove = new Position(8, 5);
+        Piece movedGeneral = general.move(pieces, positionToMove);
 
         assertThat(movedGeneral.getPosition()).isEqualTo(positionToMove);
     }
@@ -38,9 +41,31 @@ class GeneralTest {
     @CsvSource(value = {"7,5", "5,7"})
     @ParameterizedTest
     void move2(int x, int y) {
-        General general = new General(new Position(5, 5), Team.BLUE);
+        General general = new General(new Position(9, 5), Team.BLUE);
         Position positionToMove = new Position(x, y);
         assertThatThrownBy(() -> general.move(pieces, positionToMove))
-                .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("궁은 궁성 내부에서만 이동이 가능하다")
+    @Test
+    void move3() {
+        General general = new General(new Position(8, 4), Team.BLUE);
+        pieces.put(general.getPosition(), general);
+        Assertions.assertAll(
+            () -> assertThatThrownBy(() -> general.move(pieces, new Position(7, 4)))
+                .isInstanceOf(IllegalArgumentException.class),
+            () -> assertThatThrownBy(() -> general.move(pieces, new Position(8, 3)))
+                .isInstanceOf(IllegalArgumentException.class)
+        );
+    }
+
+    @DisplayName("궁은 궁선 내 간선을 통해서 이동이 가능하다")
+    @Test
+    void move4() {
+        General general = new General(new Position(9, 5), Team.BLUE);
+        Position afterPosition = new Position(8, 4);
+        Piece movedGeneral = general.move(pieces, afterPosition);
+        assertThat(movedGeneral.getPosition()).isEqualTo(afterPosition);
     }
 }

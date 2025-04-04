@@ -1,35 +1,41 @@
 package janggi.domain.piece;
 
-import java.util.List;
-import java.util.Map;
+import janggi.domain.Team;
+import janggi.domain.piece.movement.Movement;
 
-public class General extends Piece {
-    private static final Position INITIAL_POSITIONS_BLUE = new Position(9, 5);
-    private static final Position INITIAL_POSITIONS_RED = new Position(2, 5);
+import java.util.List;
+
+public class General extends PathMovingPiece {
 
     public General(final Position position, final Team team) {
-        super("궁", position, team);
+        super(PieceType.GENERAL, position, team);
+        validateIsPalace(position);
     }
 
-    public static List<Piece> createWithInitialPositions(final Team team) {
-        if (team.equals(Team.BLUE)) {
-            return List.of(new General(INITIAL_POSITIONS_BLUE, team));
+    @Override
+    public Piece from(Position position) {
+        return new General(position, team);
+    }
+
+    @Override
+    protected List<Movement> findMovements(Position positionToMove) {
+        if (getPosition().isInSameDiagonalInPalace(positionToMove)) {
+            return List.of(
+                    Movement.getDiagonal(
+                            positionToMove.x() - getPosition().x(),
+                            positionToMove.y() - getPosition().y()
+                    )
+            );
         }
-        return List.of(new General(INITIAL_POSITIONS_RED, team));
+        return List.of(Movement.getOrthogonal(
+                positionToMove.x() - getPosition().x(),
+                positionToMove.y() - getPosition().y()
+        ));
     }
 
-    public General move(final Map<Position, Piece> pieces, final Position positionToMove) {
-        validateIsPositionMovable(positionToMove);
-        return new General(positionToMove, team);
-    }
-
-    private void validateIsPositionMovable(final Position value) {
-        if (checkIsPositionNotMovable(value)) {
-            throw new IllegalArgumentException("불가능한 이동입니다.");
+    private void validateIsPalace(Position position) {
+        if(position.isNotPalace()) {
+            throw new IllegalArgumentException("궁성에만 존재 가능합니다");
         }
-    }
-
-    private boolean checkIsPositionNotMovable(final Position value) {
-        return Math.abs(value.x() - getPosition().x()) + Math.abs(value.y() - getPosition().y()) != 1;
     }
 }

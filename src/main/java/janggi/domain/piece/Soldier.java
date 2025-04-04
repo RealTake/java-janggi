@@ -1,60 +1,46 @@
 package janggi.domain.piece;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import janggi.domain.Team;
+import janggi.domain.piece.movement.Movement;
 
-public class Soldier extends Piece {
-    private static final List<Position> INITIAL_POSITIONS_BLUE = List.of(
-            new Position(7, 1),
-            new Position(7, 3),
-            new Position(7, 5),
-            new Position(7, 7),
-            new Position(7, 9)
-    );
-    private static final List<Position> INITIAL_POSITIONS_RED = List.of(
-            new Position(4, 1),
-            new Position(4, 3),
-            new Position(4, 5),
-            new Position(4, 7),
-            new Position(4, 9)
-    );
+import java.util.List;
+
+public class Soldier extends PathMovingPiece {
 
     public Soldier(final Position position, final Team team) {
-        super("졸", position, team);
+        super(PieceType.SOLDIER, position, team);
     }
 
-    public static List<Piece> createWithInitialPositions(final Team team) {
-        List<Piece> soldiers = new ArrayList<>();
-        if (team.equals(Team.BLUE)) {
-            INITIAL_POSITIONS_BLUE.forEach(position ->
-                    soldiers.add(new Soldier(position, team)));
-            return soldiers;
+    @Override
+    public Piece from(Position position) {
+        return new Soldier(position, team);
+    }
+
+    @Override
+    protected List<Movement> findMovements(Position positionToMove) {
+        validateSoldierMovement(positionToMove);
+        if (getPosition().isInSameDiagonalInPalace(positionToMove)) {
+            return List.of(
+                    Movement.getDiagonal(
+                            positionToMove.x() - getPosition().x(),
+                            positionToMove.y() - getPosition().y()
+                    )
+            );
         }
-        INITIAL_POSITIONS_RED.forEach(position ->
-                soldiers.add(new Soldier(position, team)));
-        return soldiers;
+        return List.of(Movement.getOrthogonal(
+                positionToMove.x() - getPosition().x(),
+                positionToMove.y() - getPosition().y()
+        ));
     }
 
-    public Soldier move(final Map<Position, Piece> pieces, final Position positionToMove) {
-        validateIsPositionMovable(positionToMove);
-        return new Soldier(positionToMove, team);
-    }
-
-    private void validateIsPositionMovable(final Position value) {
-        if (checkIsDirectionNotMovable(value) || checkIsPositionNotMovable(value)) {
-            throw new IllegalArgumentException("불가능한 이동입니다.");
+    private void validateSoldierMovement(Position positionToMove) {
+        if(getTeam() == Team.BLUE &&
+                positionToMove.x() - getPosition().x() > 0) {
+                throw new IllegalArgumentException("불가능한 이동입니다");
         }
-    }
-
-    private boolean checkIsDirectionNotMovable(final Position value) {
-        if (team == Team.BLUE) {
-            return value.x() - getPosition().x() > 0;
+        if(getTeam() == Team.RED &&
+                positionToMove.x() - getPosition().x() < 0) {
+                throw new IllegalArgumentException("불가능한 이동입니다");
         }
-        return value.x() - getPosition().x() < 0;
-    }
-
-    private boolean checkIsPositionNotMovable(final Position value) {
-        return Math.abs(value.x() - getPosition().x()) + Math.abs(value.y() - getPosition().y()) != 1;
     }
 }
