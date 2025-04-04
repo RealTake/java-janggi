@@ -14,9 +14,11 @@ public class Board {
     public static final int COLUMN_SIZE = 9;
 
     private final Map<Position, Piece> board;
+    private final Palace palace;
 
     public Board(PlaceStrategy placeStrategy) {
         this.board = placeStrategy.initialize();
+        this.palace = new Palace();
     }
 
     public void movePiece(Position start, Position goal, Team team) {
@@ -69,5 +71,45 @@ public class Board {
 
     public boolean existPiece(Position position) {
         return board.containsKey(position);
+    }
+
+    // 출발지와 목적지가 궁성 내부에 있는지
+    public boolean isInnerBottomPalace(Position position) {
+        return palace.isInnerBottomPalace(position);
+    }
+
+    public boolean isInnerUpperPalace(Position position) {
+        return palace.isInnerUpperPalace(position);
+    }
+
+    // 해당 포지션이 궁성 코너 좌표와 같은지
+    public boolean isBottomPalaceCorner(Position other) {
+        return palace.isBottomPalaceCorner(other);
+    }
+
+    public boolean isUpperPalaceCorner(Position other) {
+        return palace.isUpperPalaceCorner(other);
+    }
+
+    public Position getBottomPalaceCenter() {
+        return palace.getBottomPalaceCenter();
+    }
+
+    public Position getUpperPalaceCenter() {
+        return palace.getUpperPalaceCenter();
+    }
+
+    public double calculateGreenScore() {
+        return board.keySet().stream()
+                .filter(position -> board.get(position).getTeam() == Team.GREEN)
+                .mapToInt(position -> board.get(position).getType().getPoint())
+                .sum();
+    }
+
+    public double calculateRedScore() {
+        return Team.RED.getBonusPoint() + board.keySet().stream()
+                .filter(position -> board.get(position).getTeam() == Team.RED)
+                .mapToInt(position -> board.get(position).getType().getPoint())
+                .sum();
     }
 }

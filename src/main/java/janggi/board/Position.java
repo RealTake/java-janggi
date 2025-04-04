@@ -68,6 +68,14 @@ public class Position {
         return row;
     }
 
+    public boolean isIncludedColumnRange(int minColumn, int maxColumn) {
+        return (column >= minColumn && column <= maxColumn);
+    }
+
+    public boolean isIncludedRowRange(int minColumn, int maxColumn) {
+        return (row >= minColumn && row <= maxColumn);
+    }
+
     private void validateColumnRange(int column) {
         if (column < MIN_COLUMN || column > MAX_COLUMN) {
             throw new IllegalArgumentException("[ERROR] 좌표의 Column이 제한 범위를 벗어났습니다.");
@@ -78,5 +86,15 @@ public class Position {
         if (row < MIN_ROW || row > MAX_ROW) {
             throw new IllegalArgumentException("[ERROR] 좌표의 Column이 제한 범위를 벗어났습니다.");
         }
+    }
+
+    public boolean isConnectedTo(Position other) {
+        int columnDiff = Math.abs(this.column - other.column);
+        int rowDiff = Math.abs(this.row - other.row);
+
+        if (columnDiff == 0 || rowDiff == 0) {
+            return true;
+        }
+        return columnDiff == rowDiff;
     }
 }

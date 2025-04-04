@@ -5,18 +5,32 @@ import janggi.board.Position;
 
 import java.util.List;
 
-public class Canon extends Piece {
-    protected static final PieceType TYPE = PieceType.CANNON;
+public class Cannon extends Piece {
+    private final PieceType pieceType;
 
-    public Canon(Team team) {
+    public Cannon(Team team) {
         super(team);
+        this.pieceType = PieceType.CANNON;
     }
 
     @Override
     public void validateMovable(Board board, Position start, Position goal) {
-        validateStraightMove(start, goal);
+        if (!isPalaceCorner(board, start, goal)) {
+            validateStraightMove(start, goal);
+        }
         validatePath(board, start, goal);
         validatePieceOnGoal(board, goal);
+    }
+
+    private boolean isPalaceCorner(Board board, Position start, Position goal) {
+        return (board.isBottomPalaceCorner(start) && board.isBottomPalaceCorner(goal)) ||
+                (board.isUpperPalaceCorner(start) && board.isUpperPalaceCorner(goal));
+    }
+
+    private void validateStraightMove(Position start, Position goal) {
+        if (!start.equalColumn(goal) && !start.equalRow(goal)) {
+            throw new IllegalArgumentException("[ERROR] 포의 이동 규칙에 어긋나는 움직임입니다.");
+        }
     }
 
     protected void validatePath(Board board, Position start, Position goal) {
@@ -38,12 +52,6 @@ public class Canon extends Piece {
         }
     }
 
-    private void validateStraightMove(Position start, Position goal) {
-        if (!start.equalColumn(goal) && !start.equalRow(goal)) {
-            throw new IllegalArgumentException("[ERROR] 포의 이동 규칙에 어긋나는 움직임입니다.");
-        }
-    }
-
     protected void validatePieceOnGoal(Board board, Position goal) {
         Piece other = board.getPiece(goal);
         if (other != null && other.isSameType(PieceType.CANNON)) {
@@ -53,11 +61,16 @@ public class Canon extends Piece {
 
     @Override
     protected String getName() {
-        return TYPE.getName();
+        return pieceType.getName();
     }
 
     @Override
     public boolean isSameType(PieceType pieceType) {
-        return pieceType == TYPE;
+        return this.pieceType == pieceType;
+    }
+
+    @Override
+    public PieceType getType() {
+        return pieceType;
     }
 }
