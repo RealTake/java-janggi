@@ -16,56 +16,75 @@ public final class StaticPieceInitializer implements PieceInitializer {
     @Override
     public Map<Position, Piece> init(final StartingPosition startingPosition, final Country country) {
         final Map<Position, Piece> board = new HashMap<>();
+        insertCountryDependentPieces(country, board);
+        insertStartingPositionIndependentPieces(country, board);
+        insertStartingPositionDependentPieces(startingPosition, country, board);
+        return board;
+    }
 
-        PieceType 졸병 = country == Country.CHO ? PieceType.졸 : PieceType.병;
-
-        insertIntoMap(
-                board,
-                new Piece(new Position(PositionFile.FILE_1, PositionRank.of(1, country)), PieceType.차),
-                new Piece(new Position(PositionFile.FILE_4, PositionRank.of(1, country)), PieceType.사),
-                new Piece(new Position(PositionFile.FILE_6, PositionRank.of(1, country)), PieceType.사),
-                new Piece(new Position(PositionFile.FILE_9, PositionRank.of(1, country)), PieceType.차),
-                new Piece(new Position(PositionFile.FILE_5, PositionRank.of(2, country)), PieceType.장),
-                new Piece(new Position(PositionFile.FILE_2, PositionRank.of(3, country)), PieceType.포),
-                new Piece(new Position(PositionFile.FILE_8, PositionRank.of(3, country)), PieceType.포),
-                new Piece(new Position(PositionFile.FILE_1, PositionRank.of(4, country)), 졸병),
-                new Piece(new Position(PositionFile.FILE_3, PositionRank.of(4, country)), 졸병),
-                new Piece(new Position(PositionFile.FILE_5, PositionRank.of(4, country)), 졸병),
-                new Piece(new Position(PositionFile.FILE_7, PositionRank.of(4, country)), 졸병),
-                new Piece(new Position(PositionFile.FILE_9, PositionRank.of(4, country)), 졸병)
+    private static void insertCountryDependentPieces(final Country country, final Map<Position, Piece> board) {
+        if (country == Country.CHO) {
+            insertIntoMap(board,
+                    new Piece(PieceType.JOL, new Position(PositionFile.FILE_1, PositionRank.of(4, country))),
+                    new Piece(PieceType.JOL, new Position(PositionFile.FILE_3, PositionRank.of(4, country))),
+                    new Piece(PieceType.JOL, new Position(PositionFile.FILE_5, PositionRank.of(4, country))),
+                    new Piece(PieceType.JOL, new Position(PositionFile.FILE_7, PositionRank.of(4, country))),
+                    new Piece(PieceType.JOL, new Position(PositionFile.FILE_9, PositionRank.of(4, country)))
+            );
+            return;
+        }
+        insertIntoMap(board,
+                new Piece(PieceType.BYEONG, new Position(PositionFile.FILE_1, PositionRank.of(4, country))),
+                new Piece(PieceType.BYEONG, new Position(PositionFile.FILE_3, PositionRank.of(4, country))),
+                new Piece(PieceType.BYEONG, new Position(PositionFile.FILE_5, PositionRank.of(4, country))),
+                new Piece(PieceType.BYEONG, new Position(PositionFile.FILE_7, PositionRank.of(4, country))),
+                new Piece(PieceType.BYEONG, new Position(PositionFile.FILE_9, PositionRank.of(4, country)))
         );
+    }
 
+    private static void insertStartingPositionIndependentPieces(final Country country, final Map<Position, Piece> board) {
+        insertIntoMap(board,
+                new Piece(PieceType.CHA, new Position(PositionFile.FILE_1, PositionRank.of(1, country))),
+                new Piece(PieceType.CHA, new Position(PositionFile.FILE_9, PositionRank.of(1, country))),
+                new Piece(PieceType.PO, new Position(PositionFile.FILE_2, PositionRank.of(3, country))),
+                new Piece(PieceType.PO, new Position(PositionFile.FILE_8, PositionRank.of(3, country))),
+                new Piece(PieceType.SA, new Position(PositionFile.FILE_4, PositionRank.of(1, country))),
+                new Piece(PieceType.SA, new Position(PositionFile.FILE_6, PositionRank.of(1, country))),
+                new Piece(PieceType.GUNG, new Position(PositionFile.FILE_5, PositionRank.of(2, country)))
+        );
+    }
+
+    private static void insertStartingPositionDependentPieces(final StartingPosition startingPosition, final Country country, final Map<Position, Piece> board) {
         switch (startingPosition) {
-            case 마상마상 -> insertIntoMap(
+            case MA_SANG_MA_SANG -> insertIntoMap(
                     board,
-                    new Piece(new Position(PositionFile.FILE_2, PositionRank.of(1, country)), PieceType.마),
-                    new Piece(new Position(PositionFile.FILE_3, PositionRank.of(1, country)), PieceType.상),
-                    new Piece(new Position(PositionFile.FILE_7, PositionRank.of(1, country)), PieceType.마),
-                    new Piece(new Position(PositionFile.FILE_8, PositionRank.of(1, country)), PieceType.상)
+                    new Piece(PieceType.MA, new Position(PositionFile.FILE_2, PositionRank.of(1, country))),
+                    new Piece(PieceType.SANG, new Position(PositionFile.FILE_3, PositionRank.of(1, country))),
+                    new Piece(PieceType.MA, new Position(PositionFile.FILE_7, PositionRank.of(1, country))),
+                    new Piece(PieceType.SANG, new Position(PositionFile.FILE_8, PositionRank.of(1, country)))
             );
-            case 상마상마 -> insertIntoMap(
+            case SAMG_MA_SANG_MA -> insertIntoMap(
                     board,
-                    new Piece(new Position(PositionFile.FILE_2, PositionRank.of(1, country)), PieceType.상),
-                    new Piece(new Position(PositionFile.FILE_3, PositionRank.of(1, country)), PieceType.마),
-                    new Piece(new Position(PositionFile.FILE_7, PositionRank.of(1, country)), PieceType.상),
-                    new Piece(new Position(PositionFile.FILE_8, PositionRank.of(1, country)), PieceType.마)
+                    new Piece(PieceType.SANG, new Position(PositionFile.FILE_2, PositionRank.of(1, country))),
+                    new Piece(PieceType.MA, new Position(PositionFile.FILE_3, PositionRank.of(1, country))),
+                    new Piece(PieceType.SANG, new Position(PositionFile.FILE_7, PositionRank.of(1, country))),
+                    new Piece(PieceType.MA, new Position(PositionFile.FILE_8, PositionRank.of(1, country)))
             );
-            case 상마마상 -> insertIntoMap(
+            case SANG_MA_MA_SANG -> insertIntoMap(
                     board,
-                    new Piece(new Position(PositionFile.FILE_2, PositionRank.of(1, country)), PieceType.상),
-                    new Piece(new Position(PositionFile.FILE_3, PositionRank.of(1, country)), PieceType.마),
-                    new Piece(new Position(PositionFile.FILE_7, PositionRank.of(1, country)), PieceType.마),
-                    new Piece(new Position(PositionFile.FILE_8, PositionRank.of(1, country)), PieceType.상)
+                    new Piece(PieceType.SANG, new Position(PositionFile.FILE_2, PositionRank.of(1, country))),
+                    new Piece(PieceType.MA, new Position(PositionFile.FILE_3, PositionRank.of(1, country))),
+                    new Piece(PieceType.MA, new Position(PositionFile.FILE_7, PositionRank.of(1, country))),
+                    new Piece(PieceType.SANG, new Position(PositionFile.FILE_8, PositionRank.of(1, country)))
             );
-            case 마상상마 -> insertIntoMap(
+            case MA_SANG_SANG_MA -> insertIntoMap(
                     board,
-                    new Piece(new Position(PositionFile.FILE_2, PositionRank.of(1, country)), PieceType.마),
-                    new Piece(new Position(PositionFile.FILE_3, PositionRank.of(1, country)), PieceType.상),
-                    new Piece(new Position(PositionFile.FILE_7, PositionRank.of(1, country)), PieceType.상),
-                    new Piece(new Position(PositionFile.FILE_8, PositionRank.of(1, country)), PieceType.마)
+                    new Piece(PieceType.MA, new Position(PositionFile.FILE_2, PositionRank.of(1, country))),
+                    new Piece(PieceType.SANG, new Position(PositionFile.FILE_3, PositionRank.of(1, country))),
+                    new Piece(PieceType.SANG, new Position(PositionFile.FILE_7, PositionRank.of(1, country))),
+                    new Piece(PieceType.MA, new Position(PositionFile.FILE_8, PositionRank.of(1, country)))
             );
         }
-        return board;
     }
 
     private static void insertIntoMap(final Map<Position, Piece> board, final Piece... pieces) {

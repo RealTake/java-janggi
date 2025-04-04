@@ -34,10 +34,10 @@ public enum PositionRank {
     }
 
     private static int getReversedRankAmount(final int value) {
-        return 11 - value;
+        return maxRankAmount() - value + 1;
     }
 
-    private static PositionRank findByAmount(final int amount) {
+    public static PositionRank findByAmount(final int amount) {
         return Arrays.stream(PositionRank.values())
                 .filter(rank -> rank.amount == amount)
                 .findAny()
@@ -54,24 +54,43 @@ public enum PositionRank {
         return Arrays.stream(values()).toList();
     }
 
-    public PositionRank add(final int i) {
-        return findByAmount(amount + i);
+    public PositionRank add(final int rankAmount) {
+        return findByAmount(amount + rankAmount);
     }
 
-    public boolean validateAdd(final int rankAmount) {
+    public boolean isValidToAdd(final int rankAmount) {
         return Arrays.stream(PositionRank.values())
                 .anyMatch(r -> r.amount == this.amount + rankAmount);
     }
 
+    /**
+     * 두 랭크 사이의 랭크들을 반환하는 기능입니다.
+     * 첫 랭크와 끝 랭크를 포함하지 않습니다.
+     *
+     * @param rank 끝 랭크
+     * @return 두 랭크 사이의 랭크들
+     */
     public List<PositionRank> getBetweenRanks(final PositionRank rank) {
+        if (this.ordinal() > rank.ordinal()) {
+            return rank.getBetweenRanks(this).reversed();
+        }
+
         List<PositionRank> betweenRanks = new ArrayList<>();
-        for (int newAmount = Math.min(amount, rank.amount) + 1; newAmount < Math.max(amount, rank.amount); newAmount++) {
+        for (int newAmount = amount + 1; newAmount < rank.amount; newAmount++) {
             betweenRanks.add(findByAmount(newAmount));
         }
         return betweenRanks;
     }
 
-    public int distance(final PositionRank rank) {
-        return Math.abs(amount - rank.amount);
+    public boolean isBetween(final PositionRank minRank, final PositionRank maxRank) {
+        return minRank.ordinal() <= ordinal() && ordinal() <= maxRank.ordinal();
+    }
+
+    public int amount() {
+        return amount;
+    }
+
+    public static int maxRankAmount() {
+        return RANK_10.amount;
     }
 }

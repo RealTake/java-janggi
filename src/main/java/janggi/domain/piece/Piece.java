@@ -1,80 +1,43 @@
 package janggi.domain.piece;
 
-import janggi.domain.position.Path;
+import janggi.domain.path.Path;
+import janggi.domain.path.path_filter.PathFilter;
+import janggi.domain.path.path_filter.PathFilterRequest;
+import janggi.domain.path.path_provider.PathProvider;
 import janggi.domain.position.Position;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class Piece {
 
-    private final Position position;
-    private final PieceType type;
+    private final PieceType pieceType;
 
-    public Piece(final Position position, final PieceType type) {
+    private Position position;
+
+    public Piece(final PieceType pieceType, final Position position) {
+        this.pieceType = pieceType;
         this.position = position;
-        this.type = type;
     }
 
-    public Piece move(
-            final Position newPosition,
-            final List<Piece> allyPieces,
-            final List<Piece> enemyPieces
-    ) {
-        List<Path> moveablePaths = type.getMoveablePaths(position);
-        moveablePaths = filterMiddleBlocked(moveablePaths, allyPieces, enemyPieces);
-        moveablePaths = filterFinalIsAlly(moveablePaths, allyPieces);
-        moveablePaths = filterFinalIsPoWhenTypeIsPo(moveablePaths, enemyPieces);
+    public void move(final Position newPosition, final List<Piece> allyPieces, final List<Piece> enemyPieces) {
+        Set<Path> paths = new HashSet<>();
+        for (final PathProvider pathProvider : pieceType.getPathProviders()) {
+            paths.addAll(pathProvider.get(position));
+        }
+        for (final PathFilter pathFilter : pieceType.getPathFilters()) {
+            paths = pathFilter.filter(paths, new PathFilterRequest(this, allyPieces, enemyPieces));
+        }
 
-        if (!isNewPositionExistInMoveablePath(newPosition, moveablePaths)) {
+        if (!isNewPositionExistInMoveablePath(newPosition, paths)) {
             throw new IllegalArgumentException("움직일 수 없는 위치입니다.");
         }
 
-        return new Piece(newPosition, type);
+        this.position = newPosition;
     }
 
-    private List<Path> filterFinalIsPoWhenTypeIsPo(final List<Path> paths, final List<Piece> enemyPieces) {
-        if (type != PieceType.포) {
-            return paths;
-        }
-
-        final List<Piece> poPiece = enemyPieces.stream()
-                .filter(piece -> piece.type == PieceType.포)
-                .toList();
-
-        return paths.stream()
-                .filter(path -> !path.isEncounteredLast(poPiece))
-                .toList();
-    }
-
-    private List<Path> filterMiddleBlocked(
-            final List<Path> paths,
-            final List<Piece> allyPieces,
-            final List<Piece> enemyPieces
-    ) {
-        final List<Piece> allPieces = new ArrayList<>();
-        allPieces.addAll(allyPieces);
-        allPieces.addAll(enemyPieces);
-
-        return paths.stream()
-                .filter(path -> {
-                    if (type == PieceType.포) {
-                        List<Piece> encounteredPieces = path.getEncounteredMiddlePieces(allPieces);
-                        return encounteredPieces.size() == 1 && encounteredPieces.getFirst().type != PieceType.포;
-                    } else {
-                        return path.getEncounteredMiddlePieces(allPieces).isEmpty();
-                    }
-                })
-                .toList();
-    }
-
-    private List<Path> filterFinalIsAlly(final List<Path> paths, final List<Piece> allyPieces) {
-        return paths.stream()
-                .filter(path -> !path.isEncounteredLast(allyPieces))
-                .toList();
-    }
-
-    private static boolean isNewPositionExistInMoveablePath(final Position newPosition, final List<Path> paths) {
+    private boolean isNewPositionExistInMoveablePath(final Position newPosition, final Set<Path> paths) {
         return paths.stream()
                 .map(Path::finalPosition)
                 .toList()
@@ -85,11 +48,11 @@ public final class Piece {
         return position;
     }
 
-    @Override
-    public String toString() {
-        return "Piece{" +
-                "position=" + position +
-                ", type=" + type +
-                '}';
+    public PieceType getPieceType() {
+        return pieceType;
+    }
+
+    public int getScore() {
+        return pieceType.getScore();
     }
 }

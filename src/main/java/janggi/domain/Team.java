@@ -1,11 +1,13 @@
 package janggi.domain;
 
 import janggi.domain.piece.Piece;
+import janggi.domain.piece.PieceType;
 import janggi.domain.piece_initiaizer.PieceInitializer;
 import janggi.domain.position.Position;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class Team {
 
@@ -19,6 +21,17 @@ public final class Team {
     ) {
         this.country = country;
         this.pieces = initializer.init(startingPosition, country);
+    }
+
+    public Team(
+            final List<Piece> pieces,
+            final Country country
+    ) {
+        this.country = country;
+        this.pieces = pieces.stream().collect(Collectors.toMap(
+                Piece::getPosition,
+                piece -> piece
+        ));
     }
 
     public static Team getFirstTeam(final Team team1, final Team team2) {
@@ -43,17 +56,46 @@ public final class Team {
         }
     }
 
-    public Map<Position, Piece> getPieces() {
-        return Collections.unmodifiableMap(pieces);
+    public List<Piece> getPieces() {
+        return pieces.values().stream().toList();
     }
 
-    public void move(final Position fromPosition, final Position tagetPosition, final Map<Position, Piece> enemyPieces) {
-        validateIsPieceExistInPosition(fromPosition);
+    public int getScore() {
+        return pieces.values().stream()
+                .map(Piece::getScore)
+                .reduce(Integer::sum)
+                .orElseThrow();
+    }
 
-        final Piece movePiece = pieces.get(fromPosition);
-        final Piece movedPiece = movePiece.move(tagetPosition, pieces.values().stream().toList(), enemyPieces.values().stream().toList());
+    public Country getCountry() {
+        return country;
+    }
+
+    public void move(final Position fromPosition, final Position targetPosition, final Team otherTeam) {
+        validateIsPieceExistInPosition(fromPosition);
+        final Piece movingPiece = pieces.get(fromPosition);
+
+        movingPiece.move(targetPosition, getPiecesWithout(fromPosition), otherTeam.pieces.values().stream().toList());
+
+        if (otherTeam.isPieceExistAt(targetPosition)) {
+            otherTeam.die(targetPosition);
+        }
         pieces.remove(fromPosition);
-        pieces.put(movedPiece.getPosition(), movedPiece);
+        pieces.put(targetPosition, movingPiece);
+    }
+
+    private boolean isPieceExistAt(final Position position) {
+        return pieces.get(position) != null;
+    }
+
+    private void die(final Position position) {
+        pieces.remove(position);
+    }
+
+    private List<Piece> getPiecesWithout(final Position fromPosition) {
+        return pieces.values().stream()
+                .filter(piece -> !piece.getPosition().equals(fromPosition))
+                .toList();
     }
 
     private void validateIsPieceExistInPosition(final Position fromPosition) {
@@ -64,5 +106,10 @@ public final class Team {
 
     public boolean isSameCountry(final Team team2) {
         return country == team2.country;
+    }
+
+    public boolean isEnd() {
+        return pieces.values().stream()
+                .noneMatch(piece -> piece.getPieceType().equals(PieceType.GUNG));
     }
 }
