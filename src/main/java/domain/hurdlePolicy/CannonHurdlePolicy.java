@@ -1,32 +1,32 @@
 package domain.hurdlePolicy;
 
-import domain.chessPiece.ChessPiece;
+import domain.janggiPiece.JanggiChessPiece;
+import domain.janggiPiece.Piece;
 import domain.path.Path;
-import domain.position.ChessPiecePositions;
-import domain.position.ChessPosition;
-import domain.type.ChessPieceType;
-import domain.type.ChessTeam;
+import domain.position.JanggiPosition;
+import domain.position.JanggiPositions;
+import domain.type.JanggiTeam;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CannonHurdlePolicy implements HurdlePolicy {
     @Override
-    public List<ChessPosition> pickDestinations(ChessTeam team, List<Path> coordinates, ChessPiecePositions positions) {
-        final List<ChessPosition> destinations = new ArrayList<>();
+    public List<JanggiPosition> pickDestinations(JanggiTeam team, List<Path> coordinates, JanggiPositions positions) {
+        final List<JanggiPosition> destinations = new ArrayList<>();
         for (Path path : coordinates) {
-            List<ChessPosition> overHurdlePaths = getOverHurdlePaths(team, path, positions);
+            List<JanggiPosition> overHurdlePaths = getOverHurdlePaths(path, positions);
             destinations.addAll(getOverHurdleDestinations(team, overHurdlePaths, positions));
         }
         return destinations;
     }
 
-    private List<ChessPosition> getOverHurdlePaths(ChessTeam team, Path path, ChessPiecePositions positions) {
-        List<ChessPosition> pathPositions = path.getPath();
+    private List<JanggiPosition> getOverHurdlePaths(Path path, JanggiPositions positions) {
+        List<JanggiPosition> pathPositions = path.getPath();
         for (int i = 0; i < pathPositions.size(); i++) {
-            ChessPosition currentPosition = pathPositions.get(i);
-            if (isHurdle(team, currentPosition, positions)) {
-                return pathPositions.subList(i+1, pathPositions.size());
+            JanggiPosition currentPosition = pathPositions.get(i);
+            if (isHurdle(currentPosition, positions)) {
+                return pathPositions.subList(i + 1, pathPositions.size());
             }
             if (isWall(currentPosition, positions)) {
                 return List.of();
@@ -35,29 +35,28 @@ public class CannonHurdlePolicy implements HurdlePolicy {
         return List.of();
     }
 
-    private boolean isHurdle(ChessTeam team, ChessPosition targetPosition, ChessPiecePositions positions) {
+    private boolean isHurdle(JanggiPosition targetPosition, JanggiPositions positions) {
         if (!positions.existChessPieceByPosition(targetPosition)) {
             return false;
         }
-        ChessPiece other = positions.getChessPieceByPosition(targetPosition);
-        return !isWall(targetPosition, positions) && team != other.getTeam();
+        return !isWall(targetPosition, positions);
     }
 
-    private boolean isWall(ChessPosition targetPosition, ChessPiecePositions positions) {
+    private boolean isWall(JanggiPosition targetPosition, JanggiPositions positions) {
         if (!positions.existChessPieceByPosition(targetPosition)) {
             return false;
         }
-        ChessPiece other = positions.getChessPieceByPosition(targetPosition);
-        return other.getChessPieceType() == ChessPieceType.CANNON;
+        JanggiChessPiece other = positions.getJanggiPieceByPosition(targetPosition);
+        return other.getChessPieceType() == Piece.CANNON;
     }
 
-    private List<ChessPosition> getOverHurdleDestinations(
-            ChessTeam team,
-            List<ChessPosition> overHurdlePaths,
-            ChessPiecePositions positions
+    private List<JanggiPosition> getOverHurdleDestinations(
+            JanggiTeam team,
+            List<JanggiPosition> overHurdlePaths,
+            JanggiPositions positions
     ) {
-        List<ChessPosition> result = new ArrayList<>();
-        for (ChessPosition currentPosition : overHurdlePaths) {
+        List<JanggiPosition> result = new ArrayList<>();
+        for (JanggiPosition currentPosition : overHurdlePaths) {
             if (canMove(team, currentPosition, positions)) {
                 result.add(currentPosition);
             }
@@ -68,7 +67,14 @@ public class CannonHurdlePolicy implements HurdlePolicy {
         return result;
     }
 
-    private boolean canMove(ChessTeam team, ChessPosition targetPosition, ChessPiecePositions positions) {
-        return !positions.existChessPieceByPosition(targetPosition) || isHurdle(team, targetPosition, positions);
+    private boolean canMove(JanggiTeam team, JanggiPosition targetPosition, JanggiPositions positions) {
+        if (!positions.existChessPieceByPosition(targetPosition)) {
+            return true;
+        }
+        if (isWall(targetPosition, positions)) {
+            return false;
+        }
+        JanggiChessPiece targetPiece = positions.getJanggiPieceByPosition(targetPosition);
+        return targetPiece.getTeam() != team;
     }
 }

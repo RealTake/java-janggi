@@ -1,16 +1,16 @@
 package domain.hurdlePolicy;
 
-import domain.chessPiece.ChessPiece;
+import domain.janggiPiece.JanggiChessPiece;
 import domain.path.Path;
-import domain.position.ChessPiecePositions;
-import domain.position.ChessPosition;
-import domain.type.ChessTeam;
+import domain.position.JanggiPosition;
+import domain.position.JanggiPositions;
+import domain.type.JanggiTeam;
 
 import java.util.List;
 
 public class UnpassableHurdlePolicy implements HurdlePolicy {
     @Override
-    public List<ChessPosition> pickDestinations(ChessTeam team, List<Path> coordinates, ChessPiecePositions positions) {
+    public List<JanggiPosition> pickDestinations(JanggiTeam team, List<Path> coordinates, JanggiPositions positions) {
         return coordinates.stream()
                 .filter(path -> !existChessPiece(positions, path))
                 .map(Path::getDestination)
@@ -18,10 +18,10 @@ public class UnpassableHurdlePolicy implements HurdlePolicy {
                 .toList();
     }
 
-    private boolean existChessPiece(final ChessPiecePositions positions, final Path path) {
-        List<ChessPosition> pathPositions = path.getPath();
+    private boolean existChessPiece(final JanggiPositions positions, final Path path) {
+        List<JanggiPosition> pathPositions = path.getPath();
         for (int i = 0; i < pathPositions.size() - 1; i++) {
-            ChessPosition currentPosition = pathPositions.get(i);
+            JanggiPosition currentPosition = pathPositions.get(i);
             if (positions.existChessPieceByPosition(currentPosition)) {
                 return true;
             }
@@ -29,11 +29,11 @@ public class UnpassableHurdlePolicy implements HurdlePolicy {
         return false;
     }
 
-    private boolean isAbleToCatch(ChessTeam team, ChessPosition targetPosition, ChessPiecePositions positions) {
+    private boolean isAbleToCatch(JanggiTeam team, JanggiPosition targetPosition, JanggiPositions positions) {
         if (!positions.existChessPieceByPosition(targetPosition)) {
             return true;
         }
-        ChessPiece targetPiece = positions.getChessPieceByPosition(targetPosition);
+        JanggiChessPiece targetPiece = positions.getJanggiPieceByPosition(targetPosition);
         return targetPiece.getTeam() != team;
     }
 }
