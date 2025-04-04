@@ -3,12 +3,17 @@ package janggi.view;
 import janggi.domain.GameStatus;
 import janggi.domain.Player;
 import janggi.domain.Position;
+import janggi.domain.Score;
 import janggi.domain.piece.Piece;
 import java.util.Map;
 
 public class OutputView {
 
     public static final String EMPTY_POSITION = "＿";
+
+    public void printExistBeforeGame(Player redPlayer, Player greenPlayer) {
+        System.out.printf("진행중인 게임이 존재합니다:%s vs %s%n", redPlayer.getName(), greenPlayer.getName());
+    }
 
     public void printBoard(final Map<Position, Piece> board) {
         for (int row = Position.MIN_ROW; row <= Position.MAX_ROW; row++) {
@@ -41,5 +46,10 @@ public class OutputView {
 
     public void printEndMessage() {
         System.out.println("게임을 종료합니다.");
+    }
+
+    public void printScore(final Score redScore, final Score greenScore) {
+        System.out.println("현재 점수");
+        System.out.printf("초: %.1f 점, 한: %.1f 점%n", greenScore.value(), redScore.value());
     }
 }
