@@ -25,16 +25,12 @@ public enum Team {
         return HAN;
     }
 
-    public boolean headsBack(Direction direction) {
-        return direction == this.forward.reverse();
-    }
-
-    public int calculateRowForwarding(int times) {
-        return backwardRow + forward.getRowOffset() * times;
-    }
-
     public boolean isCho() {
         return this == CHO;
+    }
+
+    public Direction getForwardDirection() {
+        return forward;
     }
 
     public String getText() {

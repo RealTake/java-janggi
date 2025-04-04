@@ -1,10 +1,10 @@
-package janggi.movement.route;
+package janggi.movement.middleRoute;
 
-import janggi.piece.Movable;
+import janggi.piece.Piece;
 import janggi.point.Point;
-import janggi.movement.crash.Crashes;
 import janggi.movement.direction.Direction;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class Route {
@@ -16,15 +16,13 @@ public class Route {
 
     public static Route repeat(Direction direction, Point startPoint, Point targetPoint) {
         List<Point> route = new ArrayList<>();
-        Point pointer = startPoint;
-        while (true) {
+        Point pointer = startPoint.move(direction.getRowOffset(), direction.getColumnOffset());
+        while (!pointer.equals(targetPoint)) {
             try {
-                pointer = pointer.move(direction.getRowOffset(), direction.getColumnOffset());
-                if (pointer.equals(targetPoint)) {
-                    break;
-                }
                 route.add(pointer);
+                pointer = pointer.move(direction.getRowOffset(), direction.getColumnOffset());
             } catch (IllegalArgumentException ignore) {
+                throw new IllegalStateException("시스템에 문제가 발생했습니다.");
             }
         }
         return new Route(route);
@@ -39,6 +37,7 @@ public class Route {
                 pointer = pointer.move(direction.getRowOffset(), direction.getColumnOffset());
                 route.add(pointer);
             } catch (IllegalArgumentException ignore) {
+                throw new IllegalStateException("시스템에 문제가 발생했습니다.");
             }
         }
         return new Route(route);
@@ -48,7 +47,7 @@ public class Route {
         return route.stream().anyMatch(hurdles::containsPoint);
     }
 
-    public Movable findFirstCrash(Hurdles hurdles) {
+    public Piece findFirstCrash(Hurdles hurdles) {
         return route.stream()
                 .filter(hurdles::containsPoint)
                 .map(hurdles::findByPoint)
@@ -71,8 +70,8 @@ public class Route {
             return false;
         }
         Route target = (Route) o;
-        return target.route.containsAll(this.route)
-                && this.route.containsAll(target.route);
+        return new HashSet<>(target.route).containsAll(this.route)
+                && new HashSet<>(this.route).containsAll(target.route);
     }
 
     @Override

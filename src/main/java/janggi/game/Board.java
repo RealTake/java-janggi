@@ -1,14 +1,16 @@
 package janggi.game;
 
+import janggi.dto.MovementDto;
+import janggi.movement.target.AttackedPiece;
 import janggi.piece.Byeong;
 import janggi.piece.Cha;
 import janggi.piece.Gung;
 import janggi.piece.Ma;
-import janggi.piece.Movable;
+import janggi.piece.Piece;
 import janggi.piece.Po;
 import janggi.piece.Sa;
 import janggi.piece.Sang;
-import janggi.movement.route.Hurdles;
+import janggi.movement.middleRoute.Hurdles;
 import janggi.point.Point;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,16 +19,14 @@ import java.util.List;
 import java.util.Map;
 
 public class Board {
-    private final List<Movable> runningPieces;
-    private Team turn;
+    private final List<Piece> runningPieces;
 
-    public Board(List<Movable> runningPieces) {
+    public Board(List<Piece> runningPieces) {
         this.runningPieces = runningPieces;
-        this.turn = Team.CHO;
     }
 
     public static Board init() {
-        List<Movable> pieces = new ArrayList<>();
+        List<Piece> pieces = new ArrayList<>();
         for (Team team : Team.values()) {
             pieces.addAll(Gung.init(team));
             pieces.addAll(Sa.init(team));
@@ -39,11 +39,7 @@ public class Board {
         return new Board(pieces);
     }
 
-    public void reverseTurn() {
-        this.turn = turn.reverse();
-    }
-
-    public Movable findByPoint(Point point) {
+    public Piece findByPoint(Point point) {
         return runningPieces.stream()
                 .filter(piece -> piece.getPoint().equals(point))
                 .findFirst()
@@ -55,53 +51,43 @@ public class Board {
                 .anyMatch(piece -> piece.getPoint().equals(point));
     }
 
-    public void move(Point beforePoint, Point afterPoint) {
-        Movable movingPiece = findByPoint(beforePoint);
-        validatePieceTeam(movingPiece);
+    public MovementDto move(Piece movingPiece, Point afterPoint) {
         validatePieceMovable(afterPoint, movingPiece);
-
-        Movable updatedMoving = movingPiece.updatePoint(afterPoint);
-        removeAttackedPiece(afterPoint);
-        updateMovedPiece(movingPiece, updatedMoving);
+        Piece updatedMovingPiece = movingPiece.updatePoint(afterPoint);
+        AttackedPiece attackedPiece = removePieceIfAttacked(afterPoint);
+        updateMovedPiece(movingPiece, updatedMovingPiece);
+        return new MovementDto(updatedMovingPiece, attackedPiece);
     }
 
-    private void validatePieceTeam(Movable movingPiece) {
-        if (turn != movingPiece.getTeam()) {
-            throw new IllegalArgumentException(turn.getText() + "의 기물만 이동할 수 있습니다.");
-        }
-    }
-
-    private void validatePieceMovable(Point afterPoint, Movable movingPiece) {
+    private void validatePieceMovable(Point afterPoint, Piece movingPiece) {
         if (!movingPiece.canMove(afterPoint, findHurdles())) {
             throw new IllegalArgumentException("해당 위치로 이동할 수 없습니다.");
         }
     }
 
-    private void removeAttackedPiece(Point afterPoint) {
+    private AttackedPiece removePieceIfAttacked(Point afterPoint) {
         if (hasPieceOnPoint(afterPoint)) {
-            Movable prey = findByPoint(afterPoint);
-            runningPieces.remove(prey);
+            Piece attackedPiece = findByPoint(afterPoint);
+            runningPieces.remove(attackedPiece);
+            return new AttackedPiece(attackedPiece);
         }
+        return AttackedPiece.notAttacked();
     }
 
-    private void updateMovedPiece(Movable movingPiece, Movable updatedMoving) {
+    private void updateMovedPiece(Piece movingPiece, Piece updatedMoving) {
         runningPieces.remove(movingPiece);
         runningPieces.add(updatedMoving);
     }
 
     public Hurdles findHurdles() {
-        Map<Point, Movable> hurdles = new HashMap<>();
+        Map<Point, Piece> hurdles = new HashMap<>();
         runningPieces.forEach(piece ->
                 hurdles.put(piece.getPoint(), piece)
         );
         return new Hurdles(hurdles);
     }
 
-    public List<Movable> getRunningPieces() {
+    public List<Piece> getRunningPieces() {
         return Collections.unmodifiableList(runningPieces);
-    }
-
-    public Team getTurn() {
-        return turn;
     }
 }
