@@ -1,6 +1,7 @@
 package model;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.HashMap;
@@ -32,7 +33,8 @@ class ByeongTest {
             Byeong byeong = new Byeong(Team.BLUE);
             assertAll(
                     () -> assertThat(byeong.isValidPoint(Point.of(0,0), Point.of(0,1))).isTrue(),
-                    () -> assertThat(byeong.isValidPoint(Point.of(0,0), Point.of(0,-1))).isFalse()
+                    () -> assertThatThrownBy(() -> byeong.isValidPoint(Point.of(0, 0), Point.of(0, -1))).isInstanceOf(
+                            IllegalArgumentException.class)
             );
         }
 
@@ -41,8 +43,23 @@ class ByeongTest {
         void test2() {
             Byeong byeong = new Byeong(Team.RED);
             assertAll(
-                    () -> assertThat(byeong.isValidPoint(Point.of(0,0), Point.of(0,1))).isFalse(),
+                    () -> assertThatThrownBy(() -> byeong.isValidPoint(Point.of(0, 0), Point.of(0, 1))).isInstanceOf(
+                            IllegalArgumentException.class),
                     () -> assertThat(byeong.isValidPoint(Point.of(0,0), Point.of(0,-1))).isTrue()
+            );
+        }
+
+        @Test
+        @DisplayName("초나라 병 상대 궁에서 대각선 이동 가능")
+        void test4() {
+            Byeong byeong = new Byeong(Team.BLUE);
+            assertAll(
+                    () -> assertThat(byeong.isValidPoint(Point.of(3, 7), Point.of(4, 8))).isTrue(),
+                    () -> assertThat(byeong.isValidPoint(Point.of(3, 8), Point.of(4, 8))).isTrue(),
+                    () -> assertThatThrownBy(() -> byeong.isValidPoint(Point.of(3, 8), Point.of(4, 9))).isInstanceOf(
+                            IllegalArgumentException.class),
+                    () -> assertThatThrownBy(() -> byeong.isValidPoint(Point.of(3, 9), Point.of(4, 8))).isInstanceOf(
+                            IllegalArgumentException.class)
             );
         }
 
@@ -50,7 +67,8 @@ class ByeongTest {
         @DisplayName("병 이동 불가능")
         void test3() {
             Byeong byeong = new Byeong(Team.RED);
-            assertThat(byeong.isValidPoint(Point.of(0,0), Point.of(2,0))).isFalse();
+            assertThatThrownBy(() -> byeong.isValidPoint(Point.of(0, 0), Point.of(2, 0))).isInstanceOf(
+                    IllegalArgumentException.class);
         }
     }
 

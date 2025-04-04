@@ -1,47 +1,32 @@
 package model.piece;
 
 import java.util.Map;
-import model.Path;
+import model.Moving;
 import model.Point;
 import model.Team;
 
 public class Ma extends Piece {
 
+    private static final int MA_DISTANCE = 5;
+    private static final int MINIMUM_PIECES_COUNT_IN_PATH = 1;
+
     public Ma(Team team) {
-        super(team, PieceName.MA);
+        super(team, PieceName.MA,Score.MA);
     }
 
     @Override
     public boolean isValidPoint(Point beforePoint, Point targetPoint) {
-        int vectorX = getVectorX(beforePoint, targetPoint);
-        int vectorY = getVectorY(beforePoint, targetPoint);
-
-        return Math.pow(vectorX, 2) + Math.pow(vectorY, 2) == 5;
-    }
-
-    @Override
-    public Path calculatePath(Point beforePoint, Point targetPoint) {
-        int vectorX = getVectorX(beforePoint, targetPoint);
-        int vectorY = getVectorY(beforePoint, targetPoint);
-
-        int unitVectorX = getUnitVector(vectorX);
-        int unitVectorY = getUnitVector(vectorY);
-
-        Point middlePoint = new Point(targetPoint.x() - unitVectorX, targetPoint.y() - unitVectorY);
-        Point endPoint = new Point(targetPoint.x(), targetPoint.y());
-
-        Path path = new Path();
-        path.addPoint(middlePoint);
-        path.addPoint(endPoint);
-        return path;
+        Moving moving = new Moving(beforePoint, targetPoint);
+        return moving.isDistance(MA_DISTANCE);
     }
 
     @Override
     public boolean canMove(Map<Piece, Boolean> piecesOnPathWithTargetOrNot) {
-        if (piecesOnPathWithTargetOrNot.size() == 2) {
+        if (piecesOnPathWithTargetOrNot.size() > MINIMUM_PIECES_COUNT_IN_PATH) {
+
             return false;
         }
-        if (piecesOnPathWithTargetOrNot.size() == 1) {
+        if (piecesOnPathWithTargetOrNot.size() == MINIMUM_PIECES_COUNT_IN_PATH) {
             if (!piecesOnPathWithTargetOrNot.values()
                     .stream()
                     .findFirst()
@@ -52,7 +37,7 @@ public class Ma extends Piece {
                     .stream()
                     .findFirst()
                     .get()
-                    .getTeam() != this.team;
+                    .getTeam() != getTeam();
         }
         return true;
     }
