@@ -3,9 +3,9 @@ package view;
 import domain.game.Board;
 import domain.piece.Piece;
 import domain.piece.Pieces;
-import domain.piece.Position;
 import domain.player.Player;
-import domain.player.TeamColor;
+import domain.player.Team;
+import domain.position.Position;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +47,13 @@ public class OutputView {
         System.out.println("우승자 : " + winner.name());
     }
 
+    public void printScores(final Player player1, final Player player2) {
+        System.out.println("게임 결과 ");
+        System.out.println(player1.name() + " : " + player1.score());
+        System.out.println(player2.name() + " : " + player2.score());
+        System.out.println();
+    }
+
     private List<ArrayList<String>> createDefaultBoard() {
         List<ArrayList<String>> result = Stream.generate(() -> new ArrayList<String>())
                 .limit(10)
@@ -59,7 +66,10 @@ public class OutputView {
 
     private void updateDefaultBoard(final Map<Player, Pieces> board, final List<ArrayList<String>> defaultBoard) {
         for (Player player : board.keySet()) {
-            TeamColor color = player.team().getColor();
+            String color = "\033[0;34m";
+            if (player.team() == Team.HAN) {
+                color = "\033[0;31m";
+            }
 
             List<Piece> pieces = board.get(player).pieces();
             updatePiecesToDefaultBoard(defaultBoard, pieces, color);
@@ -67,7 +77,7 @@ public class OutputView {
     }
 
     private void updatePiecesToDefaultBoard(final List<ArrayList<String>> defaultBoard, final List<Piece> pieces,
-                                            final TeamColor color) {
+                                            final String color) {
         for (Piece piece : pieces) {
             Position position = piece.getPosition();
 
@@ -75,7 +85,7 @@ public class OutputView {
             int column = position.getColumn() - 1;
 
             ArrayList<String> rows = defaultBoard.get(column);
-            rows.set(row, color.getColor() + piece.getName() + COLOR_RESET);
+            rows.set(row, color + piece.getName() + COLOR_RESET);
             defaultBoard.set(column, rows);
         }
     }

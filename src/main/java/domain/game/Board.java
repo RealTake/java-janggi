@@ -3,24 +3,28 @@ package domain.game;
 import domain.piece.Piece;
 import domain.piece.PieceType;
 import domain.piece.Pieces;
-import domain.piece.Position;
 import domain.player.Player;
+import domain.position.Position;
+import dto.MoveResultDto;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public record Board(
         Map<Player, Pieces> board
 ) {
 
-    public void move(final Player player, final Position startPosition, final Position targetPosition) {
+    public MoveResultDto move(final Player player, final Position startPosition, final Position targetPosition) {
         Pieces pieces = board.get(player);
         Piece piece = pieces.findByPosition(startPosition);
 
         validateTeamPieceInTargetPosition(targetPosition, pieces);
         validatePieceMovingPath(player, targetPosition, piece);
 
-        pieces.updatePosition(piece, targetPosition);
-        catchOppositePieceIfExistsTargetPosition(player, targetPosition);
+        Piece updatedPiece = pieces.updatePosition(piece, targetPosition);
+        Optional<Piece> catchResult = catchOppositePieceIfExistsTargetPosition(player, targetPosition);
+
+        return new MoveResultDto(updatedPiece, catchResult);
     }
 
     public boolean isFinish() {
@@ -45,6 +49,8 @@ public record Board(
     }
 
     private void validatePieceMovingPath(final Player player, final Position targetPosition, final Piece piece) {
+        piece.validateMovablePosition(targetPosition);
+
         List<Position> path = piece.getPath(targetPosition);
         if (piece.isEqualType(PieceType.CANNON)) {
             validateCannonMoving(player, targetPosition, path);
@@ -61,7 +67,7 @@ public record Board(
         if (count != 1) {
             throw new IllegalArgumentException("[ERROR] 포는 중간에 기물이 1개여야 합니다.");
         }
-        if (getOppositePieces(player).isCannonByPosition(targetPosition)) {
+        if (board.get(getOppositePlayer(player)).isCannonByPosition(targetPosition)) {
             throw new IllegalArgumentException("[ERROR] 포는 상대 포를 잡을 수 없습니다.");
         }
         if (path.stream().anyMatch(this::existsCannon)) {
@@ -85,20 +91,27 @@ public record Board(
                 .anyMatch(pieces -> pieces.isCannonByPosition(position));
     }
 
-    private void catchOppositePieceIfExistsTargetPosition(final Player player, final Position targetPosition) {
-        Pieces oppositePieces = getOppositePieces(player);
+    private Optional<Piece> catchOppositePieceIfExistsTargetPosition(final Player player,
+                                                                     final Position targetPosition) {
+        Player oppositePlayer = getOppositePlayer(player);
+        Pieces oppositePieces = board.get(oppositePlayer);
         if (oppositePieces.existByPosition(targetPosition)) {
-            oppositePieces.deleteByPosition(targetPosition);
+            return Optional.of(oppositePieces.deleteByPosition(targetPosition));
         }
+        return Optional.empty();
     }
 
-    private Pieces getOppositePieces(final Player player) {
-        Player oppositePlayer = board.keySet()
+    private Player getOppositePlayer(final Player player) {
+        return board.keySet()
                 .stream()
                 .filter(opposite -> !opposite.equals(player))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
+    }
 
-        return board.get(oppositePlayer);
+    public void calculateScores() {
+        for (Player player : board.keySet()) {
+            player.addScore(board.get(player).calculateTotalScore());
+        }
     }
 }

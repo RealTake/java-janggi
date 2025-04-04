@@ -2,8 +2,9 @@ package domain.direction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import domain.piece.Position;
+import domain.position.Position;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class DirectionsTest {
@@ -16,8 +17,8 @@ class DirectionsTest {
         List<Position> expected = List.of(Position.of(5, 4));
 
         List<Vector> vectors = List.of(Vector.UP, Vector.UP_RIGHT);
-        List<Direction> directionElements = List.of(new Direction(vectors, false));
-        Directions directions = new Directions(directionElements);
+        Set<Direction> directionElements = Set.of(new Direction(vectors));
+        Directions directions = new Directions(directionElements, false);
 
         // when
         List<Position> result = directions.getPath(start, target);
@@ -34,13 +35,41 @@ class DirectionsTest {
         List<Position> expected = List.of(Position.of(6, 5), Position.of(7, 5), Position.of(8, 5));
 
         List<Vector> vectors = List.of(Vector.RIGHT);
-        List<Direction> directionElements = List.of(new Direction(vectors, true));
-        Directions directions = new Directions(directionElements);
+        Set<Direction> directionElements = Set.of(new Direction(vectors));
+        Directions directions = new Directions(directionElements, true);
 
         // when
         List<Position> result = directions.getPath(start, target);
 
         // then
         assertThat(result).containsAll(expected);
+    }
+
+    @Test
+    void 현재_방향들에_새로운_방향을_추가한다() {
+        // given
+        List<Vector> vectors = List.of(Vector.RIGHT);
+        Set<Direction> directionElements = Set.of(new Direction(vectors));
+        Directions directions = new Directions(directionElements, true);
+        Set<Direction> targetDirections = Set.of(
+                new Direction(List.of(Vector.UP_RIGHT)),
+                new Direction(List.of(Vector.UP)),
+                new Direction(List.of(Vector.UP_LEFT))
+        );
+
+        Directions expect = new Directions(
+                Set.of(
+                        new Direction(List.of(Vector.UP_RIGHT)),
+                        new Direction(List.of(Vector.UP)),
+                        new Direction(List.of(Vector.UP_LEFT)),
+                        new Direction(List.of(Vector.RIGHT))
+                ), true
+        );
+
+        // when
+        Directions result = directions.addDirection(targetDirections);
+
+        // then
+        assertThat(result).isEqualTo(expect);
     }
 }

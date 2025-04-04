@@ -3,12 +3,7 @@ package domain.piece;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import domain.direction.Directions;
-import domain.direction.PieceDirections;
-import domain.piece.category.Cannon;
-import domain.piece.category.General;
-import domain.piece.category.Horse;
-import domain.piece.category.Soldier;
+import domain.position.Position;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -19,13 +14,12 @@ class PiecesTest {
     void 특정_위치에_있는_기물을_반환한다() {
         // given
         Position position = Position.of(1, 5);
-        Horse expected = new Horse(Position.of(1, 5), new Directions(List.of()));
+        Piece expected = new Piece(Position.of(1, 5), PieceType.HORSE, MovementRule.HORSE);
 
         Pieces pieces = new Pieces(List.of(
-                new General(Position.of(2, 5), new Directions(List.of())),
+                new Piece(Position.of(2, 5), PieceType.GENERAL, MovementRule.HAN_GENERAL),
                 expected,
-                new Soldier(Position.of(5, 7), new Directions(List.of()))
-        ));
+                new Piece(Position.of(5, 7), PieceType.ELEPHANT, MovementRule.ELEPHANT)));
 
         // when
         Piece result = pieces.findByPosition(position);
@@ -38,11 +32,11 @@ class PiecesTest {
     void 좌표_목록에_일치하는_기물_개수를_계산한다() {
         // given
         Pieces pieces = new Pieces(List.of(
-                new General(Position.of(2, 5), new Directions(List.of())),
-                new Horse(Position.of(1, 5), new Directions(List.of())),
-                new Soldier(Position.of(5, 7), new Directions(List.of())),
-                new Soldier(Position.of(8, 1), new Directions(List.of())),
-                new Soldier(Position.of(2, 4), new Directions(List.of()))
+                new Piece(Position.of(2, 5), PieceType.GENERAL, MovementRule.HAN_GENERAL),
+                new Piece(Position.of(1, 5), PieceType.HORSE, MovementRule.HORSE),
+                new Piece(Position.of(5, 7), PieceType.SOLDIER, MovementRule.HAN_SOLDIER),
+                new Piece(Position.of(8, 1), PieceType.SOLDIER, MovementRule.HAN_SOLDIER),
+                new Piece(Position.of(2, 4), PieceType.SOLDIER, MovementRule.HAN_SOLDIER)
         ));
 
         List<Position> positions = List.of(
@@ -61,12 +55,12 @@ class PiecesTest {
     @Test
     void 기물의_좌표를_변경한다() {
         // given
-        Piece piece = new General(Position.of(2, 5), new Directions(List.of()));
+        Piece piece = new Piece(Position.of(2, 5), PieceType.GENERAL, MovementRule.HAN_GENERAL);
         Position position = Position.of(3, 5);
 
         List<Piece> pieceElements = new ArrayList<>();
         pieceElements.add(piece);
-        pieceElements.add(new Horse(Position.of(1, 5), new Directions(List.of())));
+        pieceElements.add(new Piece(Position.of(1, 5), PieceType.HORSE, MovementRule.HORSE));
         Pieces pieces = new Pieces(pieceElements);
 
         // when
@@ -83,8 +77,8 @@ class PiecesTest {
         Position position = Position.of(3, 5);
 
         Pieces pieces = new Pieces(List.of(
-                new General(Position.of(2, 5), new Directions(List.of())),
-                new Horse(Position.of(3, 5), new Directions(List.of()))
+                new Piece(Position.of(2, 5), PieceType.GENERAL, MovementRule.HAN_GENERAL),
+                new Piece(Position.of(3, 5), PieceType.HORSE, MovementRule.HORSE)
         ));
 
         // when
@@ -98,12 +92,12 @@ class PiecesTest {
     @Test
     void 좌표의_기물을_삭제한다() {
         // given
-        Piece piece = new General(Position.of(2, 5), new Directions(List.of()));
+        Piece piece = new Piece(Position.of(2, 5), PieceType.GUARD, MovementRule.HAN_GUARD);
         Position position = Position.of(2, 5);
 
         List<Piece> pieceElements = new ArrayList<>();
         pieceElements.add(piece);
-        pieceElements.add(new Horse(Position.of(1, 5), new Directions(List.of())));
+        pieceElements.add(new Piece(Position.of(1, 5), PieceType.HORSE, MovementRule.HORSE));
         Pieces pieces = new Pieces(pieceElements);
 
         // when
@@ -117,7 +111,8 @@ class PiecesTest {
     void 왕이_존재하는지_판단하다() {
         // given
         Pieces pieces = new Pieces(new ArrayList<>());
-        Pieces piecesInKing = new Pieces(List.of(new General(Position.of(5, 2), PieceDirections.GENERAL.get())));
+        Pieces piecesInKing = new Pieces(
+                List.of(new Piece(Position.of(5, 2), PieceType.GENERAL, MovementRule.HAN_GENERAL)));
 
         // when & then
         assertThat(pieces.existGeneral()).isFalse();
@@ -130,7 +125,7 @@ class PiecesTest {
         Position position1 = Position.of(2, 3);
         Position position2 = Position.of(3, 3);
 
-        Pieces pieces = new Pieces(List.of(new Cannon(Position.of(2, 3), PieceDirections.CANNON.get())));
+        Pieces pieces = new Pieces(List.of(new Piece(Position.of(2, 3), PieceType.CANNON, MovementRule.CANNON)));
 
         // when & then
         pieces.isCannonByPosition(position1);
@@ -140,5 +135,21 @@ class PiecesTest {
                 () -> assertThat(pieces.isCannonByPosition(position1)).isTrue(),
                 () -> assertThat(pieces.isCannonByPosition(position2)).isFalse()
         );
+    }
+
+    @Test
+    void 기물들의_점수_총_합산을_계산한다() {
+        // given
+        Pieces pieces = new Pieces(List.of(
+                new Piece(Position.of(2, 4), PieceType.ELEPHANT, MovementRule.ELEPHANT),
+                new Piece(Position.of(2, 4), PieceType.GUARD, MovementRule.HAN_GUARD),
+                new Piece(Position.of(2, 4), PieceType.SOLDIER, MovementRule.HAN_SOLDIER)
+        ));
+
+        // when
+        int result = pieces.calculateTotalScore();
+
+        // then
+        assertThat(result).isEqualTo(8);
     }
 }

@@ -1,10 +1,9 @@
 package domain.game;
 
-import domain.direction.PieceDirections;
+import domain.piece.MovementRule;
 import domain.piece.Piece;
-import domain.piece.Position;
-import domain.piece.category.Elephant;
-import domain.piece.category.Horse;
+import domain.piece.PieceType;
+import domain.position.Position;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,16 +59,16 @@ public enum SetUp {
         throw new IllegalArgumentException("[ERROR] 잘못된 선택입니다.");
     }
 
-    public List<Piece> innerOuterPieces(Function<Position, Position> teamSide) {
+    private List<Piece> innerOuterPieces(Function<Position, Position> teamSide) {
         return getPieces(teamSide, hanHorsePosition.flipLeftRight(), hanElephantPosition.flipLeftRight());
     }
 
-    public List<Piece> rightElephant(Function<Position, Position> teamSide) {
+    private List<Piece> rightElephant(Function<Position, Position> teamSide) {
         return getPieces(teamSide, hanHorsePosition.flipLeftRight().moveRow(-1),
                 hanElephantPosition.flipLeftRight().moveRow(1));
     }
 
-    public List<Piece> leftElephant(Function<Position, Position> teamSide) {
+    private List<Piece> leftElephant(Function<Position, Position> teamSide) {
         return getPieces(teamSide, hanHorsePosition.flipLeftRight().moveRow(1),
                 hanElephantPosition.flipLeftRight().moveRow(-1));
     }
@@ -77,11 +76,10 @@ public enum SetUp {
     private List<Piece> getPieces(Function<Position, Position> teamSide, Position hanHorsePosition,
                                   Position hanElephantPosition) {
         List<Piece> pieces = new ArrayList<>();
-        pieces.add(new Horse(teamSide.apply(this.hanHorsePosition), PieceDirections.HORSE.get()));
-        pieces.add(new Horse(teamSide.apply(hanHorsePosition), PieceDirections.HORSE.get()));
-        pieces.add(new Elephant(teamSide.apply(this.hanElephantPosition), PieceDirections.ELEPHANT.get()));
-        pieces.add(new Elephant(teamSide.apply(hanElephantPosition),
-                PieceDirections.ELEPHANT.get()));
+        pieces.add(new Piece(teamSide.apply(this.hanHorsePosition), PieceType.HORSE, MovementRule.HORSE));
+        pieces.add(new Piece(teamSide.apply(hanHorsePosition), PieceType.HORSE, MovementRule.HORSE));
+        pieces.add(new Piece(teamSide.apply(this.hanElephantPosition), PieceType.ELEPHANT, MovementRule.ELEPHANT));
+        pieces.add(new Piece(teamSide.apply(hanElephantPosition), PieceType.ELEPHANT, MovementRule.ELEPHANT));
         return pieces;
     }
 }

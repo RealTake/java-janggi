@@ -1,5 +1,6 @@
 package domain.piece;
 
+import domain.position.Position;
 import java.util.List;
 
 public record Pieces(List<Piece> pieces) {
@@ -18,9 +19,11 @@ public record Pieces(List<Piece> pieces) {
                 .count();
     }
 
-    public void updatePosition(final Piece piece, final Position position) {
+    public Piece updatePosition(final Piece piece, final Position position) {
         pieces.remove(piece);
-        pieces.add(piece.updatePosition(position));
+        Piece updatedPiece = piece.updatePosition(position);
+        pieces.add(updatedPiece);
+        return updatedPiece;
     }
 
     public boolean existByPosition(final Position position) {
@@ -28,8 +31,10 @@ public record Pieces(List<Piece> pieces) {
                 .anyMatch(piece -> piece.isSamePosition(position));
     }
 
-    public void deleteByPosition(final Position position) {
-        pieces.remove(findByPosition(position));
+    public Piece deleteByPosition(final Position position) {
+        Piece catchedPiece = findByPosition(position);
+        pieces.remove(catchedPiece);
+        return catchedPiece;
     }
 
     public boolean existGeneral() {
@@ -41,5 +46,11 @@ public record Pieces(List<Piece> pieces) {
         return pieces.stream()
                 .filter(piece -> piece.isSamePosition(position))
                 .anyMatch(piece -> piece.isEqualType(PieceType.CANNON));
+    }
+
+    public int calculateTotalScore() {
+        return pieces.stream()
+                .mapToInt(Piece::getScore)
+                .sum();
     }
 }
