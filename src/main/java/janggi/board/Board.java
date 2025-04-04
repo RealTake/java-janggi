@@ -1,4 +1,4 @@
-package janggi.game;
+package janggi.board;
 
 import janggi.piece.Team;
 import janggi.piece.pieces.Piece;
@@ -6,12 +6,14 @@ import janggi.position.Position;
 import janggi.position.Route;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-public class Janggi {
+public class Board {
     private final Pieces pieces;
     private Team turn;
 
-    public Janggi(Pieces pieces, Team startTurn) {
+    public Board(Pieces pieces, Team startTurn) {
         this.pieces = pieces;
         this.turn = startTurn;
     }
@@ -24,7 +26,7 @@ public class Janggi {
     }
 
     public void changeTurn() {
-        turn = turn.getOppositie();
+        turn = turn.getOpposite();
     }
 
     public List<Route> searchAvailableRoutes(Position pickedPosition) {
@@ -41,14 +43,14 @@ public class Janggi {
     }
 
     private List<Route> applyCannonProperty(List<Route> totalRoutes, Position pick) {
-        totalRoutes = totalRoutes.stream().filter(route -> route.canBombJump(pieces)).toList();
+        totalRoutes = totalRoutes.stream().filter(route -> route.canCannonJump(pieces)).toList();
         return totalRoutes.stream()
                 .filter(route -> isAvailableEndPoint(route, pick))
                 .toList();
     }
 
-    public boolean isNoneEnemyUnit() {
-        return pieces.isNoneSameTeamUnit(turn);
+    public boolean isNoneEnemyGeneralUnit() {
+        return pieces.isNoneEnemyGeneralUnit(turn);
     }
 
     private List<Route> findAvailableRoute(List<Route> routes, Position startPoint) {
@@ -56,14 +58,6 @@ public class Janggi {
                 .filter(this::isAvailablePath)
                 .filter(route -> isAvailableEndPoint(route, startPoint))
                 .toList();
-    }
-
-    public boolean isAvailablePath(Route route) {
-        if (route.length() == 0) {
-            return false;
-        }
-        return route.getPointsExceptEndPoint().stream()
-                .allMatch(pieces::isEmptyPoint);
     }
 
     private boolean isAvailableEndPoint(Route route, Position startPoint) {
@@ -74,16 +68,52 @@ public class Janggi {
         return true;
     }
 
+    public boolean isAvailablePath(Route route) {
+        if (route.length() == 0) {
+            return false;
+        }
+        return route.getPointsExceptEndPoint().stream()
+                .allMatch(pieces::isEmptyPoint);
+    }
+
     public void moveAndCaptureIfEnemyExists(Route route, Position startPoint) {
         Position endPoint = route.searchEndPoint(startPoint);
         pieces.moveAndCaptureIfEnemyExists(startPoint, endPoint);
+    }
+
+    public Optional<Team> determineWinner() {
+        if (pieces.isNoneEnemyGeneralUnit(Team.HAN)) {
+            return Optional.of(Team.HAN);
+        }
+        if (pieces.isNoneEnemyGeneralUnit(Team.CHO)) {
+            return Optional.of(Team.CHO);
+        }
+
+        return compareScore();
+    }
+
+    private Optional<Team> compareScore() {
+        double hanScore = calculateScore(Team.HAN);
+        double choScore = calculateScore(Team.CHO);
+
+        if (hanScore < choScore) {
+            return Optional.of(Team.CHO);
+        }
+        if (hanScore > choScore) {
+            return Optional.of(Team.HAN);
+        }
+        return Optional.empty();
+    }
+
+    public double calculateScore(Team team) {
+        return pieces.calculatePieceScore(team);
     }
 
     public Team getTurn() {
         return turn;
     }
 
-    public HashMap<Position, Piece> getPieces() {
-        return pieces.getPieces();
+    public Map<Position, Piece> getPieces() {
+        return new HashMap<>(pieces.getPieces());
     }
 }

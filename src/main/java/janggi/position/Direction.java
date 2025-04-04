@@ -1,4 +1,4 @@
-package janggi.piece;
+package janggi.position;
 
 import java.util.List;
 
@@ -22,11 +22,16 @@ public enum Direction {
         this.y = y;
     }
 
-    public static List<Direction> getStraight(Team team) {
-        if (team == Team.CHO) {
-            return List.of(Direction.UNDER, Direction.LEFT, Direction.RIGHT);
-        }
-        return List.of(Direction.UPPER, Direction.LEFT, Direction.RIGHT);
+    public boolean isDiagonal() {
+        return this == UPPER_RIGHT || this == UNDER_RIGHT || this == UNDER_LEFT || this == UPPER_LEFT;
+    }
+
+    public static List<Direction> getAllDirection() {
+        return List.of(UPPER, UPPER_RIGHT, RIGHT, UNDER_RIGHT, UNDER, UNDER_LEFT, LEFT, UPPER_LEFT);
+    }
+
+    public static List<Direction> getDiagonal() {
+        return List.of(UPPER_RIGHT, UPPER_LEFT, UNDER_LEFT, UNDER_RIGHT);
     }
 
     public List<Direction> getNextWithDiagonal() {
@@ -48,12 +53,12 @@ public enum Direction {
         return List.of(this);
     }
 
-    public int moveColumn(int x) {
-        return this.x + x;
+    public static List<Direction> getFrontDirection() {
+        return List.of(Direction.UPPER, Direction.LEFT, Direction.RIGHT, UPPER_LEFT, UPPER_RIGHT);
     }
 
-    public int moveRow(int y) {
-        return this.y + y;
+    public static List<Direction> getBackDirection() {
+        return List.of(Direction.UNDER, Direction.LEFT, Direction.RIGHT, UNDER_LEFT, UNDER_RIGHT);
     }
 
     public int getX() {

@@ -1,8 +1,9 @@
-package janggi.game;
+package janggi.board;
 
+import janggi.piece.Team;
 import janggi.piece.pieces.Piece;
 import janggi.position.Position;
-import java.util.HashMap;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class PiecesTest {
         Pieces pieces = new Pieces();
 
         // when
-        HashMap<Position, Piece> piecesInPosition = pieces.getPieces();
+        Map<Position, Piece> piecesInPosition = pieces.getPieces();
 
         // then
         Assertions.assertThat(piecesInPosition).hasSize(DEFAULT_UNIT_SIZE);
@@ -53,10 +54,10 @@ class PiecesTest {
         Pieces pieces = new Pieces();
 
         // when
-        boolean bombPiece = pieces.isBombPiece(new Position(1, 2));
+        boolean cannonPiece = pieces.isCannonPiece(new Position(1, 2));
 
         // then
-        Assertions.assertThat(bombPiece).isTrue();
+        Assertions.assertThat(cannonPiece).isTrue();
     }
 
     @Test
@@ -89,5 +90,18 @@ class PiecesTest {
         // then
         Assertions.assertThat(pieces.isExistPiece(endPosition)).isTrue();
         Assertions.assertThat(pieces.getPieces()).hasSize(DEFAULT_UNIT_SIZE - 1);
+    }
+
+    @Test
+    @DisplayName("상대팀 궁 기물이 없는지 확인한다.")
+    void test6() {
+        // given
+        Pieces pieces = new Pieces();
+
+        // when
+        boolean noneTeamGeneralUnit = pieces.isNoneEnemyGeneralUnit(Team.CHO);
+
+        // then
+        Assertions.assertThat(noneTeamGeneralUnit).isFalse();
     }
 }

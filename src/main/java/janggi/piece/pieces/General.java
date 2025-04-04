@@ -3,28 +3,28 @@ package janggi.piece.pieces;
 import janggi.piece.PieceType;
 import janggi.piece.Team;
 import janggi.piece.pieces.moverule.MoveRule;
-import janggi.piece.pieces.moverule.VerticalHorizontalRule;
+import janggi.piece.pieces.moverule.PalaceRule;
 import janggi.position.Position;
 import janggi.position.Route;
 import java.util.List;
 
-public class Chariot implements Piece {
+public class General implements Piece {
     private final Team team;
     private final MoveRule moveRule;
 
-    public Chariot(Team team) {
+    public General(Team team) {
         this.team = team;
-        this.moveRule = new VerticalHorizontalRule();
+        this.moveRule = new PalaceRule();
     }
 
     @Override
-    public List<Route> calculateRoutes(Position start) {
-        return moveRule.moveAll(start);
+    public List<Route> calculateRoutes(Position position) {
+        return moveRule.moveAll(position);
     }
 
     @Override
     public PieceType getType() {
-        return PieceType.CHARIOT;
+        return PieceType.GENERAL;
     }
 
     @Override

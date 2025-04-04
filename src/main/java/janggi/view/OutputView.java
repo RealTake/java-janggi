@@ -1,19 +1,14 @@
 package janggi.view;
 
-import janggi.piece.PieceType;
 import janggi.piece.Team;
 import janggi.piece.pieces.Piece;
 import janggi.position.Position;
 import janggi.position.Route;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class OutputView {
-    private static final int MAX_ROW = 10;
-    private static final int MAX_COLUM = 9;
-
     public void printError(String message) {
         System.err.println("[ERROR] " + message);
     }
@@ -28,7 +23,7 @@ public class OutputView {
         }
     }
 
-    public void printPieces(HashMap<Position, Piece> pieces) {
+    public void printPieces(Map<Position, Piece> pieces) {
         String[][] board = initialBoard(pieces);
         String[][] teamInfo = initialTeamBoard(pieces);
 
@@ -38,64 +33,32 @@ public class OutputView {
     }
 
     private String[][] initialBoard(Map<Position, Piece> units) {
-        String[][] board = new String[MAX_ROW][MAX_COLUM];
+        String[][] board = new String[Position.ROW_MAX][Position.COLUMN_MAX];
 
-        for (int i = 0; i < MAX_ROW; i++) {
+        for (int i = 0; i < Position.ROW_MAX; i++) {
             Arrays.fill(board[i], ".");
         }
         units.forEach((position, piece) ->
-                board[position.getRow()][position.getColumn()] = typeToName(piece.getType()));
+                board[position.getRow()][position.getColumn()] = piece.getType().getName());
 
         return board;
-    }
-
-    private String typeToName(PieceType type) {
-        if (type == PieceType.KING) {
-            return "K";
-        }
-        if (type == PieceType.SCHOLAR) {
-            return "S";
-        }
-        if (type == PieceType.CHARIOT) {
-            return "C";
-        }
-        if (type == PieceType.HORSE) {
-            return "H";
-        }
-        if (type == PieceType.ELEPHANT) {
-            return "E";
-        }
-        if (type == PieceType.CANNON) {
-            return "B";
-        }
-        if (type == PieceType.SOLDIER) {
-            return "J";
-        }
-        return "N";
     }
 
     private String[][] initialTeamBoard(Map<Position, Piece> pieces) {
-        String[][] board = new String[MAX_ROW][MAX_COLUM];
+        String[][] board = new String[Position.ROW_MAX][Position.COLUMN_MAX];
 
-        for (int i = 0; i < MAX_ROW; i++) {
+        for (int i = 0; i < Position.ROW_MAX; i++) {
             Arrays.fill(board[i], ".");
         }
         pieces.forEach(
-                (position, piece) -> board[position.getRow()][position.getColumn()] = teamToName(piece.getTeam()));
+                (position, piece) -> board[position.getRow()][position.getColumn()] = piece.getTeam().getName());
         return board;
     }
 
-    private String teamToName(Team team) {
-        if (team == Team.HAN) {
-            return "한나라";
-        }
-        return "초나라";
-    }
-
     private void printBoard(String[][] board, String[][] teamInfo) {
-        for (int i = 0; i < MAX_ROW; i++) {
+        for (int i = 0; i < Position.ROW_MAX; i++) {
             System.out.printf("%2d | ", i);
-            for (int j = 0; j < MAX_COLUM; j++) {
+            for (int j = 0; j < Position.COLUMN_MAX; j++) {
                 String cell = board[i][j];
                 String team = teamInfo[i][j];
                 if (!cell.equals(".")) {
@@ -107,5 +70,26 @@ public class OutputView {
             }
             System.out.println();
         }
+    }
+
+    public void printWinner(Team team, double choScore, double hanScore) {
+        System.out.println(System.lineSeparator() + "게임 종료");
+        System.out.println("승자: " + team.getName());
+        printScore(choScore, hanScore);
+    }
+
+    public void printDraw(double choScore, double hanScore) {
+        System.out.println(System.lineSeparator() + "게임 종료");
+        System.out.println("무승부");
+        printScore(choScore, hanScore);
+    }
+
+    private void printScore(double choScore, double hanScore) {
+        System.out.println("한나라: " + hanScore);
+        System.out.println("초나라: " + choScore);
+    }
+
+    public void printSuccessSave() {
+        System.out.println("게임이 저장되었습니다." + System.lineSeparator());
     }
 }

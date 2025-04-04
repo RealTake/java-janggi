@@ -1,6 +1,6 @@
 package janggi.position;
 
-import janggi.game.Pieces;
+import janggi.board.Pieces;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +24,7 @@ class RouteTest {
         Pieces pieces = new Pieces();
 
         // when
-        boolean canCannonJump = route.canBombJump(pieces);
+        boolean canCannonJump = route.canCannonJump(pieces);
 
         // then
         Assertions.assertThat(canCannonJump).isFalse();
@@ -38,7 +38,7 @@ class RouteTest {
         Pieces pieces = new Pieces();
 
         // when
-        boolean canCannonJump = route.canBombJump(pieces);
+        boolean canCannonJump = route.canCannonJump(pieces);
 
         // then
         Assertions.assertThat(canCannonJump).isTrue();

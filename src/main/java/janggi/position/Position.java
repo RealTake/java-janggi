@@ -1,6 +1,5 @@
 package janggi.position;
 
-import janggi.piece.Direction;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -41,18 +40,14 @@ public class Position {
     }
 
     public boolean canMove(Direction direction) {
-        return isCanBePosition(direction.moveColumn(column), direction.moveRow(row));
-    }
-
-    public Position move(Direction direction) {
-        return new Position(direction.moveColumn(column), direction.moveRow(row));
+        return isCanBePosition(column + direction.getX(), row + direction.getY());
     }
 
     public boolean isParallel(Position end) {
         return this.row == end.row;
     }
 
-    public List<Position> creatParallelPosition(int startColumn, int endColumn) {
+    public List<Position> createParallelPosition(int startColumn, int endColumn) {
         int minColumn = Math.min(startColumn, endColumn);
         int maxColumn = Math.max(startColumn, endColumn);
 
@@ -70,6 +65,10 @@ public class Position {
                 .filter(row -> row != this.row)
                 .mapToObj(row -> new Position(this.column, row))
                 .toList();
+    }
+
+    public Position move(Direction direction) {
+        return new Position(this.column + direction.getX(), this.row + direction.getY());
     }
 
     public int getColumn() {

@@ -1,35 +1,30 @@
 package janggi.piece.pieces;
 
-import janggi.piece.Direction;
 import janggi.piece.PieceType;
 import janggi.piece.Team;
+import janggi.piece.pieces.moverule.MoveRule;
+import janggi.piece.pieces.moverule.StraightRule;
 import janggi.position.Position;
 import janggi.position.Route;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Soldier implements Piece {
     private final Team team;
+    private final MoveRule moveRule;
 
     public Soldier(Team team) {
         this.team = team;
+        this.moveRule = new StraightRule(team);
     }
 
     @Override
     public List<Route> calculateRoutes(Position start) {
-        List<Route> routes = new ArrayList<>();
-        List<Direction> directions = Direction.getStraight(team);
-
-        for (Direction direction : directions) {
-            addRouteIfCanBePosition(direction, start, routes);
-        }
-        return routes;
+        return moveRule.moveAll(start);
     }
 
-    private void addRouteIfCanBePosition(Direction direction, Position startPoint, List<Route> routes) {
-        if (startPoint.canMove(direction)) {
-            routes.add(Route.of(List.of(startPoint.move(direction))));
-        }
+    @Override
+    public boolean isCannon() {
+        return Piece.super.isCannon();
     }
 
     @Override
@@ -40,5 +35,10 @@ public class Soldier implements Piece {
     @Override
     public Team getTeam() {
         return team;
+    }
+
+    @Override
+    public double getScore() {
+        return this.getType().getScore();
     }
 }

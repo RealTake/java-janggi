@@ -6,13 +6,7 @@ import janggi.position.Position;
 import janggi.position.Route;
 import java.util.List;
 
-public class None implements Piece {
-    private final Team team;
-
-    public None(Team team) {
-        this.team = team;
-    }
-
+public record None(Team getTeam) implements Piece {
     @Override
     public List<Route> calculateRoutes(Position start) {
         return List.of();
@@ -24,7 +18,7 @@ public class None implements Piece {
     }
 
     @Override
-    public Team getTeam() {
-        return team;
+    public double getScore() {
+        return getType().getScore();
     }
 }

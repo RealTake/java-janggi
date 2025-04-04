@@ -1,20 +1,26 @@
-package janggi.game;
+package janggi.board;
 
+import janggi.piece.DefaultPosition;
+import janggi.piece.PieceType;
+import janggi.piece.Team;
 import janggi.piece.pieces.Piece;
 import janggi.position.Position;
-import janggi.piece.DefaultPosition;
-import janggi.piece.Team;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Pieces {
+    public static final double EXTRA_POINT = 1.5;
     private final Map<Position, Piece> pieces;
 
     public Pieces() {
         pieces = new HashMap<>();
         settingPieces(Team.HAN);
         settingPieces(Team.CHO);
+    }
+
+    public Pieces(Map<Position, Piece> pieces) {
+        this.pieces = pieces;
     }
 
     private void settingPieces(Team team) {
@@ -36,7 +42,7 @@ public class Pieces {
         return piece != null;
     }
 
-    public boolean isBombPiece(Position position) {
+    public boolean isCannonPiece(Position position) {
         Piece piece = pieces.getOrDefault(position, null);
         if (piece == null) {
             return false;
@@ -59,19 +65,34 @@ public class Pieces {
         return piece.getTeam();
     }
 
-    public boolean isNoneSameTeamUnit(Team turn) {
-        return pieces.values().stream().noneMatch(unit -> unit.getTeam() != turn);
+    public double calculatePieceScore(Team team) {
+        if (team == Team.HAN) {
+            return pieces.values().stream()
+                    .filter(piece -> piece.getTeam() == team)
+                    .mapToDouble(piece -> piece.getType().getScore() + EXTRA_POINT)
+                    .sum();
+        }
+        return pieces.values().stream()
+                .filter(piece -> piece.getTeam() == team)
+                .mapToDouble(piece -> piece.getType().getScore())
+                .sum();
+    }
+
+    public boolean isNoneEnemyGeneralUnit(Team turn) {
+        return pieces.values().stream()
+                .filter(piece -> piece.getTeam() != turn)
+                .noneMatch(piece -> piece.getType() == PieceType.GENERAL);
     }
 
     public boolean isEmptyPoint(Position pick) {
         return pieces.keySet().stream().noneMatch(position -> position.isSamePoint(pick));
     }
 
-    public boolean isExistBombInRoute(List<Position> route) {
-        return route.stream().anyMatch(this::isBombPiece);
+    public boolean isExistCannonInRoute(List<Position> route) {
+        return route.stream().anyMatch(this::isCannonPiece);
     }
 
-    public HashMap<Position, Piece> getPieces() {
+    public Map<Position, Piece> getPieces() {
         return new HashMap<>(pieces);
     }
 }
