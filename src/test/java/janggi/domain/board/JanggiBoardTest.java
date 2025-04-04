@@ -3,8 +3,6 @@ package janggi.domain.board;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import janggi.domain.Dynasty;
-import janggi.domain.piece.BoardPiece;
 import janggi.domain.piece.Cannon;
 import janggi.domain.piece.ChuSoldier;
 import janggi.domain.piece.General;
@@ -21,7 +19,7 @@ public class JanggiBoardTest {
     void isExistPiece_True() {
         //given
         JanggiBoard janggiBoard = new JanggiBoard(Map.of(
-                new Point(9, 5), new BoardPiece(new General(), Dynasty.CHU)
+                new Point(9, 5), new General(Dynasty.CHU)
         ));
 
         //when
@@ -52,7 +50,7 @@ public class JanggiBoardTest {
     void isExistCannon_True() {
         //given
         JanggiBoard janggiBoard = new JanggiBoard(Map.of(
-                new Point(9, 5), new BoardPiece(new Cannon(), Dynasty.CHU)
+                new Point(9, 5), new Cannon(Dynasty.CHU)
         ));
 
         //when
@@ -83,8 +81,8 @@ public class JanggiBoardTest {
     void move() {
         //given
         JanggiBoard janggiBoard = new JanggiBoard(Map.of(
-                new Point(3, 3), new BoardPiece(new HanSoldier(), Dynasty.HAN),
-                new Point(4, 3), new BoardPiece(new ChuSoldier(), Dynasty.CHU)
+                new Point(3, 3), new HanSoldier(Dynasty.HAN),
+                new Point(4, 3), new ChuSoldier(Dynasty.CHU)
         ));
 
         //when
@@ -92,7 +90,7 @@ public class JanggiBoardTest {
 
         //then
         assertThat(janggiBoard).isEqualTo(new JanggiBoard(Map.of(
-                new Point(4, 3), new BoardPiece(new HanSoldier(), Dynasty.HAN)
+                new Point(4, 3), new HanSoldier(Dynasty.HAN)
         )));
     }
 
@@ -113,7 +111,7 @@ public class JanggiBoardTest {
     void move_whenOtherDynastyPiece() {
         //given
         JanggiBoard janggiBoard = new JanggiBoard(Map.of(
-                new Point(4, 3), new BoardPiece(new ChuSoldier(), Dynasty.CHU)
+                new Point(4, 3), new ChuSoldier(Dynasty.CHU)
         ));
 
         //when
@@ -127,13 +125,13 @@ public class JanggiBoardTest {
     void move_whenEndIsSameDynasty() {
         //given
         JanggiBoard janggiBoard = new JanggiBoard(Map.of(
-                new Point(3, 4), new BoardPiece(new HanSoldier(), Dynasty.HAN),
-                new Point(4, 3), new BoardPiece(new HanSoldier(), Dynasty.HAN)
+                new Point(3, 4), new HanSoldier(Dynasty.HAN),
+                new Point(4, 3), new HanSoldier(Dynasty.CHU)
         ));
 
         //when
         assertThatThrownBy(() -> janggiBoard.move(Dynasty.HAN, new Point(3, 4), new Point(4, 3)))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 놓여져 있는 기물이 존재합니다.");
+                .hasMessage("해당 위치로 이동할 수 없습니다.");
     }
 }

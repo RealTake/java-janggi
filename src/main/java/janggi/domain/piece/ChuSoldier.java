@@ -1,8 +1,10 @@
 package janggi.domain.piece;
 
+import janggi.domain.board.Dynasty;
 import janggi.domain.board.Direction;
-import janggi.domain.piece.moveStrategy.FixedRangeMoveStrategy;
-import janggi.domain.piece.moveStrategy.MoveStrategy;
+import janggi.domain.piece.move.MoveStrategy;
+import janggi.domain.piece.move.Path;
+import janggi.domain.piece.move.strategy.NoObstacleStrategy;
 import java.util.List;
 import java.util.Set;
 
@@ -14,9 +16,10 @@ public class ChuSoldier extends Soldier {
             List.of(Direction.RIGHT)
     );
 
-    private static final MoveStrategy MOVE_STRATEGY = new FixedRangeMoveStrategy();
+    private static final MoveStrategy movestrategy = new NoObstacleStrategy(
+            ((start, end) -> Path.calculatePath(start, end, PATHS)));
 
-    public ChuSoldier() {
-        super(PATHS, MOVE_STRATEGY);
+    public ChuSoldier (Dynasty dynasty) {
+        super(PieceType.CHU_SOLIDER, dynasty, movestrategy);
     }
 }

@@ -1,24 +1,30 @@
 package janggi;
 
-import janggi.domain.Dynasty;
+import janggi.data.BoardDao;
+import janggi.domain.board.Dynasty;
 import janggi.domain.board.BoardSetUp;
+import janggi.domain.board.GameState;
 import janggi.domain.board.JanggiBoard;
 import janggi.domain.board.Point;
+import janggi.domain.piece.Piece;
 import janggi.domain.player.Player;
 import janggi.domain.player.Players;
 import janggi.view.InitializeView;
 import janggi.view.JanggiBoardView;
 import janggi.view.JanggiBoardView.Movement;
 import java.util.List;
+import java.util.Map;
 
 public class JanggiGame {
 
     private final InitializeView initializeView;
     private final JanggiBoardView janggiBoardView;
+    private final BoardDao boardDao;
 
-    public JanggiGame(InitializeView initializeView, JanggiBoardView janggiBoardView) {
+    public JanggiGame(InitializeView initializeView, JanggiBoardView janggiBoardView, BoardDao boardDao) {
         this.initializeView = initializeView;
         this.janggiBoardView = janggiBoardView;
+        this.boardDao = boardDao;
     }
 
     public void start() {
@@ -37,15 +43,17 @@ public class JanggiGame {
 
     private void playJanggi(Players players, JanggiBoard janggiBoard) {
         Dynasty currentTurnDynasty = Dynasty.CHU;
-        while (true) {
+        GameState gameState = GameState.RUN;
+        while (gameState.isRun()) {
             Player currentTurnPlayer = players.findDynastyPlayer(currentTurnDynasty);
             try {
                 Movement movement = janggiBoardView.readPlayerMove(currentTurnPlayer);
                 if (movement.isEnd()) {
-                    break;
+                    gameState = GameState.USER_END;
                 }
                 if (movement.isMove()) {
-                    janggiBoard.move(currentTurnDynasty, new Point(movement.startX(), movement.startY()),
+                    gameState = janggiBoard.move(currentTurnDynasty,
+                            new Point(movement.startX(), movement.startY()),
                             new Point(movement.endX(), movement.endY()));
                     janggiBoardView.printBoard(janggiBoard.getBoardPieces());
                     currentTurnDynasty = changePlayerTurn(currentTurnDynasty);
@@ -53,6 +61,17 @@ public class JanggiGame {
             } catch (RuntimeException e) {
                 janggiBoardView.printException(e.getMessage());
             }
+        }
+        boardDao.deleteAll();
+        if(gameState == GameState.USER_END) {
+            boardDao.updatePiecePoints(janggiBoard.getBoardPieces());
+        }
+        if(gameState == GameState.GAME_END) {
+            int hanScore = janggiBoard.calculateScore(Dynasty.HAN);
+            int chuScore = janggiBoard.calculateScore(Dynasty.CHU);
+            janggiBoardView.printScore(hanScore, chuScore);
+            janggiBoardView.printWinDynasty(janggiBoard.getWinnerDynasty());
+            boardDao.initializePiecePoints();
         }
     }
 
@@ -70,10 +89,11 @@ public class JanggiGame {
     }
 
     private JanggiBoard createJanggiBoard(Players players) {
+        Map<Point, Piece> pieces = boardDao.getPiecePoints();
         BoardSetUp chuPlayerBoardSetUp = initializeView.readBoardSetUp(players.findDynastyPlayer(Dynasty.CHU));
         BoardSetUp hanPlayerBoardSetUp = initializeView.readBoardSetUp(players.findDynastyPlayer(Dynasty.HAN));
         janggiBoardView.printGameStartMessage();
-        JanggiBoard janggiBoard = JanggiBoard.of(hanPlayerBoardSetUp, chuPlayerBoardSetUp);
+        JanggiBoard janggiBoard = JanggiBoard.of(pieces, hanPlayerBoardSetUp, chuPlayerBoardSetUp);
         janggiBoardView.printBoard(janggiBoard.getBoardPieces());
         return janggiBoard;
     }

@@ -1,20 +1,30 @@
 package janggi.domain.piece;
 
+import janggi.domain.board.Dynasty;
 import janggi.domain.board.Direction;
-import janggi.domain.piece.moveStrategy.LongRangeMoveStrategy;
-import janggi.domain.piece.moveStrategy.MoveStrategy;
+import janggi.domain.piece.move.MoveStrategy;
+import janggi.domain.piece.move.OrMoveStrategy;
+import janggi.domain.piece.move.Path;
+import janggi.domain.piece.move.strategy.NoObstacleStrategy;
+import janggi.domain.piece.move.strategy.PalaceAreaStrategy;
 import java.util.List;
-import java.util.Set;
 
-public class Chariot extends PieceAbstractInterface {
+public class Chariot extends Piece {
 
-    private static final Set<List<Direction>> PATHS = Set.of(
-            List.of(Direction.UP), List.of(Direction.DOWN), List.of(Direction.RIGHT), List.of(Direction.LEFT)
+    private static final List<Direction> DIRECTIONS = List.of(
+            Direction.UP, Direction.DOWN, Direction.RIGHT, Direction.LEFT
     );
 
-    private static final MoveStrategy MOVE_STRATEGY = new LongRangeMoveStrategy();
+    private static final List<Direction> PALACE_DIRECTIONS = List.of(
+            Direction.UP_RIGHT, Direction.UP_LEFT, Direction.DOWN_LEFT, Direction.DOWN_RIGHT
+    );
 
-    public Chariot() {
-        super(PATHS, MOVE_STRATEGY);
+    private static final MoveStrategy MOVE_STRATEGY = new OrMoveStrategy(
+            List.of(new NoObstacleStrategy((start, end) -> Path.calculatePath(start, end, DIRECTIONS)),
+                    new PalaceAreaStrategy(((start, end) -> Path.calculatePath(start, end, PALACE_DIRECTIONS)))
+        ));
+
+    public Chariot(Dynasty dynasty) {
+        super(PieceType.CHARIOT, dynasty, MOVE_STRATEGY);
     }
 }
