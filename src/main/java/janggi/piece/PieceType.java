@@ -1,37 +1,43 @@
 package janggi.piece;
 
-import java.util.List;
+import janggi.strategy.ByungStrategy;
+import janggi.strategy.ChaStrategy;
+import janggi.strategy.GungStrategy;
+import janggi.strategy.JolStrategy;
+import janggi.strategy.MaStrategy;
+import janggi.strategy.MoveStrategy;
+import janggi.strategy.PoStrategy;
+import janggi.strategy.SaStrategy;
+import janggi.strategy.SangStrategy;
 
 public enum PieceType {
-    GUNG("궁", 0, 1, List.of(4)),
-    SA("사", 3, 0, List.of(3, 5)),
-    CHA("차", 13, 0, List.of(0, 8)),
-    PO("포", 7, 2, List.of(1, 7)),
-    MA("마", 5, 0, List.of(1, 7)),
-    SANG("상", 3, 0, List.of(2, 6)),
-    JOL("졸", 2, 3, List.of(0, 2, 4, 6, 8)),
-    ;
+    GUNG("궁", 0, new GungStrategy()),
+    SA("사", 3, new SaStrategy()),
+    CHA("차", 13, new ChaStrategy()),
+    PO("포", 7, new PoStrategy()),
+    MA("마", 5, new MaStrategy()),
+    SANG("상", 3, new SangStrategy()),
+    JOL("졸", 2, new JolStrategy()),
+    BYUNG("병", 2, new ByungStrategy());
     private final String name;
     private final int score;
-    private final int height;
-    private final List<Integer> defaultXPositions;
+    private final MoveStrategy moveStrategy;
 
-    PieceType(final String name, final int score, final int height, List<Integer> defaultXPositions) {
+    PieceType(String name, int score, MoveStrategy moveStrategy) {
         this.name = name;
         this.score = score;
-        this.height = height;
-        this.defaultXPositions = defaultXPositions;
+        this.moveStrategy = moveStrategy;
     }
 
     public String getName() {
         return name;
     }
 
-    public int getHeight() {
-        return height;
+    public int getScore() {
+        return score;
     }
 
-    public List<Integer> getDefaultXPositions() {
-        return defaultXPositions;
+    public MoveStrategy getMoveStrategy() {
+        return moveStrategy;
     }
 }

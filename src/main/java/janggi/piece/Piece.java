@@ -1,39 +1,71 @@
 package janggi.piece;
 
+import janggi.strategy.MoveStrategy;
 import janggi.value.Position;
 import java.util.List;
+import java.util.Objects;
 
-public abstract class Piece {
+public final class Piece {
 
-    private final PieceType pieceType;
+    private final PieceType type;
     private final Position position;
 
-    protected Piece(final PieceType pieceType, final Position position) {
-        this.pieceType = pieceType;
+    public Piece(PieceType type, Position position) {
+        this.type = type;
         this.position = position;
     }
 
-    public final Piece move(final Position destination, List<Piece> enemy, List<Piece> allies) {
+    public Piece move(Position destination, List<Piece> enemy, List<Piece> allies) {
         boolean isAble = ableToMove(destination, enemy, allies);
         if (!isAble) {
             throw new IllegalArgumentException("[ERROR] 이동이 불가능합니다.");
         }
-        return makeMovedPiece(destination);
+        return new Piece(type, destination);
     }
 
-    abstract public boolean ableToMove(final Position destination, List<Piece> enemy, List<Piece> allies);
-
-    abstract protected Piece makeMovedPiece(Position position);
-
-    public final PieceType getPieceType() {
-        return pieceType;
+    private boolean ableToMove(Position destination, List<Piece> enemy, List<Piece> allies) {
+        MoveStrategy moveStrategy = type.getMoveStrategy();
+        return moveStrategy.ableToMove(position, destination, enemy, allies);
     }
 
-    public final boolean checkPieceType(PieceType pieceType) {
-        return this.pieceType == pieceType;
+    public PieceType getType() {
+        return type;
     }
 
-    public final Position getPosition() {
+    public Position getPosition() {
         return position;
+    }
+
+    public boolean checkPieceType(PieceType pieceType) {
+        return type == pieceType;
+    }
+
+    public int getScore() {
+        return type.getScore();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        Piece piece = (Piece) object;
+        return type == piece.type && Objects.equals(position, piece.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, position);
+    }
+
+    @Override
+    public String toString() {
+        return "Piece{" +
+                "type=" + type +
+                ", position=" + position +
+                '}';
     }
 }
