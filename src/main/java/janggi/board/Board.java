@@ -1,8 +1,10 @@
 package janggi.board;
 
 import janggi.GameState;
+import janggi.board.palace.Palace;
 import janggi.piece.Piece;
 import janggi.piece.PieceType;
+import janggi.piece.Team;
 import janggi.position.Position;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,8 +13,10 @@ import java.util.Map;
 public class Board {
 
     private final Map<Position, Piece> janggiBoard;
+    private final Palace palace;
 
     public Board() {
+        this.palace = Palace.AREA;
         this.janggiBoard = new HashMap<>();
     }
 
@@ -22,7 +26,7 @@ public class Board {
 
     public GameState pieceMove(final Position currentPosition, final Position targetPosition) {
         final Piece piece = janggiBoard.get(currentPosition);
-        piece.moveTo(currentPosition, targetPosition, janggiBoard);
+        piece.moveTo(currentPosition, targetPosition, janggiBoard, palace);
         return updatePiecePosition(currentPosition, targetPosition);
     }
 
@@ -31,6 +35,7 @@ public class Board {
         final Piece targetPiece = janggiBoard.get(targetPosition);
 
         if (isKingCapture(targetPiece)) {
+            janggiBoard.put(targetPosition, currentPiece);
             return GameState.END;
         }
 
@@ -40,6 +45,25 @@ public class Board {
 
     private boolean isKingCapture(final Piece piece) {
         return piece != null && PieceType.isKing(piece.getPieceType());
+    }
+
+    public double calculateTotalScore(final Team team) {
+        final double totalScore = calculateTotalScoreBy(team);
+        if (team == Team.HAN) {
+            return totalScore + 1.5;
+        }
+        return totalScore;
+    }
+
+    private double calculateTotalScoreBy(final Team team) {
+        double totalScore = 0;
+
+        for (final Piece piece : janggiBoard.values()) {
+            if (piece.getTeam() == team) {
+                totalScore = piece.sumScore(totalScore);
+            }
+        }
+        return totalScore;
     }
 
     public void validateEmptyPieceBy(final Position currentPosition) {

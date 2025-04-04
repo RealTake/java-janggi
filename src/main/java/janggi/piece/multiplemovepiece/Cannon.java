@@ -1,5 +1,7 @@
 package janggi.piece.multiplemovepiece;
 
+import janggi.board.palace.Palace;
+import janggi.piece.PalaceAwarePiece;
 import janggi.piece.Piece;
 import janggi.piece.PieceType;
 import janggi.piece.Team;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Cannon extends Piece {
+public class Cannon extends PalaceAwarePiece {
 
     public Cannon(final Team team) {
         super(PieceType.CANNON, team);
@@ -57,6 +59,7 @@ public class Cannon extends Piece {
 
         verticalRoute(dx, dy, route, currentRow, currentCol);
         horizontalRoute(dy, dx, route, currentRow, currentCol);
+        diagonalRoute(dx, dy, route, currentPosition, targetPosition);
         return route;
     }
 
@@ -111,12 +114,28 @@ public class Cannon extends Piece {
         }
     }
 
+    private void diagonalRoute(final int dx, final int dy, final List<Position> route, final Position currentPosition,
+                               final Position targetPosition) {
+        if (Math.abs(dx) >= 2 && Math.abs(dy) >= 2) {
+            final int row = (currentPosition.row() + targetPosition.row()) / 2;
+            final int col = (currentPosition.col() + targetPosition.col()) / 2;
+            insertRoute(route, row, col);
+        }
+    }
+
     private void insertRoute(final List<Position> route, final int currentRow, final int currentCol) {
         route.add(new Position(currentRow, currentCol));
     }
 
     @Override
-    public void canMoveBy(final Position currentPosition, final Position targetPosition) {
+    public void canMoveBy(final Position currentPosition, final Position targetPosition, final Palace palace) {
+        if (palace.isInPalace(currentPosition, targetPosition)) {
+            if (isNotMove(currentPosition, targetPosition) && !currentPosition.isDiagonal(targetPosition)) {
+                throw new IllegalArgumentException("[ERROR] 포가 움직일 수 없는 위치 입니다.");
+            }
+            return;
+        }
+
         if (isNotMove(currentPosition, targetPosition)) {
             throw new IllegalArgumentException("[ERROR] 포가 움직일 수 없는 위치입니다.");
         }
