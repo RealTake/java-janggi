@@ -3,6 +3,9 @@ package domain;
 import domain.direction.PieceDirection;
 import domain.piece.Piece;
 import domain.piece.Pieces;
+import domain.piece.Score;
+import domain.piece.category.King;
+import domain.piece.category.PieceCategory;
 import domain.piece.category.Soldier;
 import domain.spatial.Position;
 import domain.strategy.InnerElephantInitializer;
@@ -18,6 +21,20 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class BoardTest {
 
     @Test
+    void 플레이어가_2명이_아닌_경우_예외가_발생한다() {
+        // given
+        Player test = new Player(Team.HAN, new Score(0));
+
+        Map<Player, Pieces> boardElements = new HashMap<>();
+        boardElements.put(test, new Pieces(List.of()));
+
+        // when & then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new Board(boardElements))
+                .withMessage("게임 플레이어는 두 명이어야 합니다.");
+    }
+
+    @Test
     void 플레이어의_기물을_이동한다() {
         // given
         Position startPosition = new Position(1, 4);
@@ -25,8 +42,35 @@ class BoardTest {
 
         Piece expected = new Soldier(new Position(1, 5), PieceDirection.HAN_SOLDIER.get());
 
-        Player han = new Player(Team.HAN);
-        Player cho = new Player(Team.CHO);
+        Player han = new Player(Team.HAN, new Score(0));
+        Player cho = new Player(Team.CHO, new Score(0));
+
+        Pieces hanPieces = createPiecesByPlayer(han);
+        Pieces choPieces = createPiecesByPlayer(cho);
+
+        Map<Player, Pieces> boardElements = new HashMap<>();
+        boardElements.put(han, hanPieces);
+        boardElements.put(cho, choPieces);
+
+        Board board = new Board(boardElements);
+
+        // when
+        board.moveAndCapture(han, startPosition, targetPosition);
+
+        // then
+        assertThat(hanPieces.pieces()).contains(expected);
+    }
+
+    @Test
+    void 기물의_위치가_궁성_내부인_경우_대각선으로_이동한다() {
+        // given
+        Position startPosition = new Position(5, 2);
+        Position targetPosition = new Position(6, 3);
+
+        Piece expected = new King(new Position(6, 3), PieceDirection.KING.get());
+
+        Player han = new Player(Team.HAN, new Score(0));
+        Player cho = new Player(Team.CHO, new Score(0));
 
         Pieces hanPieces = createPiecesByPlayer(han);
         Pieces choPieces = createPiecesByPlayer(cho);
@@ -50,8 +94,8 @@ class BoardTest {
         Position startPosition = new Position(1, 1);
         Position targetPosition = new Position(1, 4);
 
-        Player han = new Player(Team.HAN);
-        Player cho = new Player(Team.CHO);
+        Player han = new Player(Team.HAN, new Score(0));
+        Player cho = new Player(Team.CHO, new Score(0));
 
         Pieces hanPieces = createPiecesByPlayer(han);
         Pieces choPieces = createPiecesByPlayer(cho);
@@ -75,8 +119,8 @@ class BoardTest {
         Position targetPosition1 = new Position(4, 3);
         Position targetPosition2 = new Position(7, 3);
 
-        Player han = new Player(Team.HAN);
-        Player cho = new Player(Team.CHO);
+        Player han = new Player(Team.HAN, new Score(0));
+        Player cho = new Player(Team.CHO, new Score(0));
 
         Pieces hanPieces = createPiecesByPlayer(han);
         Pieces choPieces = createPiecesByPlayer(cho);
@@ -94,10 +138,10 @@ class BoardTest {
         assertAll(
                 () -> assertThatIllegalArgumentException()
                         .isThrownBy(() -> board.moveAndCapture(han, startPosition, targetPosition1))
-                        .withMessage("포는 중간에 기물이 1개여야 합니다."),
+                        .withMessage("중간에 기물이 1개여야 합니다."),
                 () -> assertThatIllegalArgumentException()
                         .isThrownBy(() -> board.moveAndCapture(han, startPosition, targetPosition2))
-                        .withMessage("포는 중간에 기물이 1개여야 합니다.")
+                        .withMessage("중간에 기물이 1개여야 합니다.")
         );
     }
 
@@ -107,8 +151,8 @@ class BoardTest {
         Position startPosition = new Position(2, 3);
         Position targetPosition = new Position(2, 8);
 
-        Player han = new Player(Team.HAN);
-        Player cho = new Player(Team.CHO);
+        Player han = new Player(Team.HAN, new Score(0));
+        Player cho = new Player(Team.CHO, new Score(0));
 
         Pieces hanPieces = createPiecesByPlayer(han);
         Pieces choPieces = createPiecesByPlayer(cho);
@@ -132,8 +176,8 @@ class BoardTest {
         Position startPosition = new Position(2, 3);
         Position targetPosition = new Position(2, 9);
 
-        Player han = new Player(Team.HAN);
-        Player cho = new Player(Team.CHO);
+        Player han = new Player(Team.HAN, new Score(0));
+        Player cho = new Player(Team.CHO, new Score(0));
 
         Pieces hanPieces = createPiecesByPlayer(han);
         Pieces choPieces = createPiecesByPlayer(cho);
@@ -151,13 +195,12 @@ class BoardTest {
     }
 
     @Test
-    void 이동한_위치에_존재하는_상대_기물을_삭제한다() {
+    void 이동한_위치에_존재하는_상대_기물을_삭제하고_카테고리를_반환한다() {
         // given
-        Position startPosition = new Position(1, 1);
         Position targetPosition = new Position(1, 7);
 
-        Player han = new Player(Team.HAN);
-        Player cho = new Player(Team.CHO);
+        Player han = new Player(Team.HAN, new Score(0));
+        Player cho = new Player(Team.CHO, new Score(0));
 
         Pieces hanPieces = createPiecesByPlayer(han);
         Pieces choPieces = createPiecesByPlayer(cho);
@@ -171,21 +214,73 @@ class BoardTest {
         board.moveAndCapture(han, new Position(1, 4), new Position(2, 4));
 
         // when
-        board.moveAndCapture(han, startPosition, targetPosition);
+        PieceCategory removed = choPieces.removePieceIfExists(targetPosition);
 
         // then
         assertAll(() -> {
             assertThat(choPieces.pieces()).hasSize(15);
             assertThat(choPieces.pieces()).doesNotContain(
                     new Soldier(new Position(1, 7), PieceDirection.CHO_SOLDIER.get()));
+            assertThat(removed).isEqualTo(PieceCategory.SOLDIER);
         });
+    }
+
+    @Test
+    void 상대_기물을_잡은_경우_플레이어_점수가_증가한다() {
+        // given
+        Position startPosition = new Position(1, 1);
+        Position targetPosition = new Position(1, 7);
+
+        Player han = new Player(Team.HAN, new Score(0));
+        Player cho = new Player(Team.CHO, new Score(0));
+
+        Pieces hanPieces = createPiecesByPlayer(han);
+        Pieces choPieces = createPiecesByPlayer(cho);
+
+        Map<Player, Pieces> boardElements = new HashMap<>();
+        boardElements.put(han, hanPieces);
+        boardElements.put(cho, choPieces);
+
+        Board board = new Board(boardElements);
+        board.moveAndCapture(han, new Position(1, 4), new Position(2, 4));
+
+        // when
+        board.moveAndCapture(han, startPosition, targetPosition);
+
+        // then
+        assertThat(han.getScore().value()).isEqualTo(PieceCategory.SOLDIER.getScore().value());
+    }
+
+    @Test
+    void 상대_기물을_잡지_못한_경우_플레이어_점수가_증가하지_않는다() {
+        // given
+        Position startPosition = new Position(1, 1);
+        Position targetPosition = new Position(1, 2);
+
+        Player han = new Player(Team.HAN, new Score(0));
+        Player cho = new Player(Team.CHO, new Score(0));
+
+        Pieces hanPieces = createPiecesByPlayer(han);
+        Pieces choPieces = createPiecesByPlayer(cho);
+
+        Map<Player, Pieces> boardElements = new HashMap<>();
+        boardElements.put(han, hanPieces);
+        boardElements.put(cho, choPieces);
+
+        Board board = new Board(boardElements);
+
+        // when
+        board.moveAndCapture(han, startPosition, targetPosition);
+
+        // then
+        assertThat(han.getScore().value()).isEqualTo(0);
     }
 
     @Test
     void 게임_종료_여부를_판단한다() {
         // given
-        Player han = new Player(Team.HAN);
-        Player cho = new Player(Team.CHO);
+        Player han = new Player(Team.HAN, new Score(0));
+        Player cho = new Player(Team.CHO, new Score(0));
 
         Map<Player, Pieces> boardElements = new HashMap<>();
         boardElements.put(han, new Pieces(List.of()));
@@ -194,29 +289,10 @@ class BoardTest {
         Board board = new Board(boardElements);
 
         // when
-        boolean result = board.isFinish();
+        boolean result = board.isGameFinished();
 
         // then
         assertThat(result).isTrue();
-    }
-
-    @Test
-    void 우승자를_반환한다() {
-        // given
-        Player han = new Player(Team.HAN);
-        Player cho = new Player(Team.CHO);
-
-        Map<Player, Pieces> boardElements = new HashMap<>();
-        boardElements.put(han, createPiecesByPlayer(han));
-        boardElements.put(cho, new Pieces(List.of()));
-
-        Board board = new Board(boardElements);
-
-        // when
-        Player winner = board.getWinner();
-
-        // then
-        assertThat(winner).isEqualTo(han);
     }
 
     private Pieces createPiecesByPlayer(final Player player) {

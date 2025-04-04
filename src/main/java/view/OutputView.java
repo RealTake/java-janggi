@@ -1,13 +1,16 @@
 package view;
 
 import domain.Board;
+import domain.GameResult;
 import domain.Player;
+import domain.Result;
 import domain.piece.Piece;
 import domain.piece.Pieces;
 import domain.spatial.Position;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -30,24 +33,39 @@ public class OutputView {
                 """);
     }
 
+    public void printGameList(final List<String> gameNames) {
+        System.out.println("===== 진행중인 게임 목록 =====");
+        for (int i = 1; i <= gameNames.size(); i++) {
+            System.out.println(i + " : " + gameNames.get(i - 1));
+        }
+        System.out.println("===========================");
+    }
+
     public void printBoard(final Board board) {
         System.out.println();
         System.out.println("===== 장기판 상태 =====");
         System.out.println("   1 2 3 4 5 6 7 8 9");
         List<ArrayList<String>> defaultBoard = createDefaultBoard();
-        updateDefaultBoard(board.playerPiecesMap(), defaultBoard);
+        updateDefaultBoard(board.gamePlayers(), defaultBoard);
         printBoardDetails(defaultBoard);
         System.out.println("=====================");
         System.out.println();
+        printPlayerScores(board);
     }
 
-    public void printWinner(final Player winner) {
-        System.out.println(winner.team().getName() + "의 승리로 게임이 종료되었습니다.");
-        System.out.println("우승자 : " + winner.team().getName());
+    public void printGameResult(final Board board, final GameResult result) {
+        System.out.println("게임이 종료되었습니다.");
+        printPlayerScores(board);
+
+        System.out.println("===== 장기 게임 결과 =====");
+        Map<Player, Result> map = result.getResultMap();
+        for (Entry<Player, Result> entry : map.entrySet()) {
+            System.out.println(entry.getKey().getTeam().getName() + " : " + entry.getValue().getMessage());
+        }
     }
 
     public void printErrorMessage(final String message) {
-        System.out.println("[ERROR] : " + message);
+        System.out.println(System.lineSeparator() + "[ERROR] : " + message);
     }
 
     private List<ArrayList<String>> createDefaultBoard() {
@@ -62,7 +80,7 @@ public class OutputView {
 
     private void updateDefaultBoard(final Map<Player, Pieces> board, final List<ArrayList<String>> defaultBoard) {
         for (Player player : board.keySet()) {
-            String color = player.team().getColor();
+            String color = player.getTeam().getColor();
 
             List<Piece> pieces = board.get(player).pieces();
             updatePiecesToDefaultBoard(defaultBoard, pieces, color);
@@ -81,6 +99,16 @@ public class OutputView {
             rows.set(row, color + PieceView.findNameByClass(piece) + COLOR_RESET);
             defaultBoard.set(column, rows);
         }
+    }
+
+    private void printPlayerScores(final Board board) {
+        System.out.println("===== 장기 한/초 점수 =====");
+        Map<Player, Pieces> playerPiecesMap = board.gamePlayers();
+        for (Player player : playerPiecesMap.keySet()) {
+            System.out.println(player.getTeam().getName() + " : " + player.getScore().value() + "점");
+        }
+        System.out.println("========================");
+        System.out.println();
     }
 
     private void printBoardDetails(final List<ArrayList<String>> board) {

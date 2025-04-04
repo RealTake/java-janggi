@@ -1,7 +1,7 @@
 package domain.piece;
 
+import domain.MoveInfo;
 import domain.MoveInfos;
-import domain.direction.Direction;
 import domain.direction.Directions;
 import domain.piece.category.Cannon;
 import domain.piece.category.Chariot;
@@ -12,7 +12,6 @@ import domain.piece.category.King;
 import domain.piece.category.PieceCategory;
 import domain.piece.category.Soldier;
 import domain.spatial.Position;
-import domain.spatial.Vector;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -27,36 +26,17 @@ class PieceTest {
         final Position position = new Position(1, 2);
 
         // when
-        final TestPiece piece = new TestPiece(new Position(1, 2), new Directions(List.of()));
+        final TestPiece piece = new TestPiece(new Position(1, 2), new Directions(List.of(), false));
 
         // then
         assertThat(piece.getPosition()).isEqualTo(position);
     }
 
     @Test
-    void 기물이_타겟_위치까지_도달하는_이동_경로를_반환한다() {
-        // given
-        final Position targetPosition = new Position(5, 5);
-        List<Position> expected = List.of(new Position(4, 6));
-
-        List<Vector> vectors = List.of(new Vector(0, -1), new Vector(1, -1));
-        List<Direction> directionElements = List.of(new Direction(vectors, false));
-        Directions directions = new Directions(directionElements);
-
-        Piece piece = new TestPiece(new Position(4, 7), directions);
-
-        // when
-        List<Position> result = piece.getPaths(targetPosition);
-
-        // then
-        assertThat(result).containsAll(expected);
-    }
-
-    @Test
     void 위치가_같은지_판단한다() {
         // given
         final Position position = new Position(1, 2);
-        final Piece piece = new TestPiece(new Position(1, 2), new Directions(List.of()));
+        final Piece piece = new TestPiece(new Position(1, 2), new Directions(List.of(), false));
 
         // when
         boolean result = piece.isSamePosition(position);
@@ -68,28 +48,33 @@ class PieceTest {
     @Test
     void 위치를_변경한다() {
         // given
-        final Position position = new Position(2, 2);
-        final Piece piece = new TestPiece(new Position(1, 2), new Directions(List.of()));
+        final Position target = new Position(2, 2);
+        final Piece piece = new TestPiece(new Position(1, 2), new Directions(List.of(), false));
 
         // when
-        Piece result = piece.move(position, new MoveInfos(List.of()));
+        MoveInfos dummy = new MoveInfos(List.of(
+                new MoveInfo(new Position(1, 1), PieceCategory.NONE),
+                new MoveInfo(new Position(1, 2), PieceCategory.NONE))
+        );
+
+        Piece result = piece.move(target, dummy);
 
         // then
         assertThat(result.getPosition())
-                .isEqualTo(position);
+                .isEqualTo(target);
     }
 
     @Test
     void 왕인지_판단한다() {
         // given
-        final Piece king = new King(new Position(1, 2), new Directions(List.of()));
-        final Piece guard = new Guard(new Position(1, 2), new Directions(List.of()));
-        final Piece cannon = new Cannon(new Position(1, 2), new Directions(List.of()));
-        final Piece elephant = new Elephant(new Position(1, 2), new Directions(List.of()));
-        final Piece horse = new Horse(new Position(1, 2), new Directions(List.of()));
-        final Piece soldier = new Soldier(new Position(1, 2), new Directions(List.of()));
-        final Piece chariot = new Chariot(new Position(1, 2), new Directions(List.of()));
-        final Piece piece = new TestPiece(new Position(1, 2), new Directions(List.of()));
+        final Piece king = new King(new Position(1, 2), new Directions(List.of(), false));
+        final Piece guard = new Guard(new Position(1, 2), new Directions(List.of(), false));
+        final Piece cannon = new Cannon(new Position(1, 2), new Directions(List.of(), false));
+        final Piece elephant = new Elephant(new Position(1, 2), new Directions(List.of(), false));
+        final Piece horse = new Horse(new Position(1, 2), new Directions(List.of(), false));
+        final Piece soldier = new Soldier(new Position(1, 2), new Directions(List.of(), false));
+        final Piece chariot = new Chariot(new Position(1, 2), new Directions(List.of(), false));
+        final Piece piece = new TestPiece(new Position(1, 2), new Directions(List.of(), false));
 
         // when & then
         assertAll(
@@ -111,18 +96,18 @@ class PieceTest {
         }
 
         @Override
+        public List<Position> getPaths(final Position target) {
+            return List.of();
+        }
+
+        @Override
         public PieceCategory getCategory() {
             return PieceCategory.NONE;
         }
 
         @Override
-        public TestPiece move(final Position position, final MoveInfos moveInfos) {
-            return new TestPiece(position, directions);
-        }
-
-        @Override
-        public boolean isKing() {
-            return false;
+        public TestPiece move(final Position target, final MoveInfos moveInfos) {
+            return new TestPiece(target, directions);
         }
     }
 }

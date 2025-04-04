@@ -60,4 +60,54 @@ class PositionTest {
         // then
         assertThat(result).isEqualTo(expectedResult);
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "4, 1, true", "4, 2, true", "4, 3, true",
+            "5, 1, true", "5, 2, true", "5, 3, true",
+            "6, 1, true", "6, 2, true", "6, 3, true",
+            "4, 8, true", "4, 9, true", "4, 10, true",
+            "5, 8, true", "5, 9, true", "5, 10, true",
+            "6, 8, true", "6, 9, true", "6, 10, true",
+            "3, 1, false", "3, 2, false", "3, 3, false",
+            "4, 4, false", "5, 4, false", "6, 4, false",
+            "7, 1, false", "7, 2, false", "7, 3, false",
+            "3, 8, false", "3, 9, false", "3, 10, false",
+            "4, 7, false", "5, 7, false", "6, 7, false",
+            "7, 8, false", "7, 9, false", "7, 10, false",
+    })
+    void 궁성_좌표를_판단해_반환한다(int row, int column, boolean expected) {
+        // given
+        Position position = new Position(row, column);
+
+        // when
+        boolean result = position.isWithinPalace();
+
+        // then
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+            "6, 5, 1, 1",
+            "6, 4, 1, 0",
+            "5, 5, 0, 1",
+            "5, 4, 0, 0",
+            "4, 3, -1, -1",
+            "4, 4, -1, 0",
+            "5, 3, 0, -1",
+    })
+    void 이동_방향을_반환한다(int targetRow, int targetColumn, int moveRow, int moveColumn) {
+        // given
+        Position start = new Position(5, 4);
+        Position target = new Position(targetRow, targetColumn);
+
+        Vector expected = new Vector(moveRow, moveColumn);
+
+        // when
+        Vector result = start.calculateVector(target);
+
+        // then
+        assertThat(result).isEqualTo(expected);
+    }
 }
