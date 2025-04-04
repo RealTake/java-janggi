@@ -2,13 +2,13 @@ package janggi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import janggi.board.JanggiBoard;
+import janggi.domain.board.JanggiBoard;
 import janggi.fixture.PiecePositionFixture;
-import janggi.piece.Piece;
-import janggi.piece.PieceType;
-import janggi.setting.AssignType;
-import janggi.setting.CampType;
-import janggi.value.JanggiPosition;
+import janggi.domain.piece.Piece;
+import janggi.domain.piece.PieceType;
+import janggi.domain.setting.AssignType;
+import janggi.domain.setting.CampType;
+import janggi.domain.value.JanggiPosition;
 import java.util.List;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
@@ -193,4 +193,55 @@ public class JanggiBoardTest {
         Assertions.assertThat(gung.getPosition()).isEqualTo(destination);
     }
 
+    @DisplayName("최종 스코어 확인 - 초나라")
+    @Test
+    void test8() {
+        //given
+        JanggiBoard janggiBoard = new JanggiBoard(AssignType.IN_SANG, AssignType.IN_SANG);
+
+        //when
+        int choScore = janggiBoard.requestChoTotalScore();
+
+        //then
+        Assertions.assertThat(choScore).isEqualTo(72);
+    }
+
+    @DisplayName("최종 스코어 확인 - 한나라")
+    @Test
+    void test9() {
+        //given
+        JanggiBoard janggiBoard = new JanggiBoard(AssignType.IN_SANG, AssignType.IN_SANG);
+
+        //when
+        double hanScore = janggiBoard.requestHanTotalScore();
+
+        //then
+        Assertions.assertThat(hanScore).isEqualTo(73.5);
+    }
+
+    @DisplayName("초나라 왕 죽었는지 확인")
+    @Test
+    void test10() {
+        //given
+        JanggiBoard janggiBoard = new JanggiBoard(AssignType.IN_SANG, AssignType.IN_SANG);
+
+        //when
+        boolean isDeadChoGung = janggiBoard.isChoCampCollapse();
+
+        //then
+        Assertions.assertThat(isDeadChoGung).isFalse();
+    }
+
+    @DisplayName("한나라 왕 죽었는지 확인")
+    @Test
+    void test11() {
+        //given
+        JanggiBoard janggiBoard = new JanggiBoard(AssignType.IN_SANG, AssignType.IN_SANG);
+
+        //when
+        boolean isDeadHanGung = janggiBoard.isHanCampCollapse();
+
+        //then
+        Assertions.assertThat(isDeadHanGung).isFalse();
+    }
 }

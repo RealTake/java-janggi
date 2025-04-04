@@ -1,10 +1,9 @@
 package janggi.view;
 
-import janggi.piece.Piece;
-import janggi.setting.CampType;
-import janggi.value.JanggiPosition;
+import janggi.domain.piece.Piece;
+import janggi.domain.setting.CampType;
+import janggi.domain.value.JanggiPosition;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class OutputView {
@@ -18,8 +17,8 @@ public class OutputView {
         System.out.println("장기 게임을 시작하겠습니다!");
     }
 
-    public void writeChoStart() {
-        System.out.println("초나라 먼저 시작");
+    public void writeStart(String currentTurn) {
+        System.out.printf("%s나라 먼저 시작%n", currentTurn);
         System.out.println();
     }
 
@@ -70,7 +69,22 @@ public class OutputView {
         System.out.println();
     }
 
+    public void writeTotalScore(int choTotalScore, double hanTotalScore) {
+        System.out.println("초나라 점수 : " + choTotalScore);
+        System.out.println("한나라 점수 : " + hanTotalScore);
+        judgeWinner(choTotalScore, hanTotalScore);
+    }
+
+    private void judgeWinner(int choTotalScore, double hanTotalScore) {
+        if (choTotalScore > hanTotalScore) {
+            System.out.println("초나라 우승");
+            return;
+        }
+        System.out.println("한나라 우승");
+    }
+
     public void writeErrorMessage(String message) {
         System.out.println(message);
     }
+
 }
