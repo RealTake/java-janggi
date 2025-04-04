@@ -1,10 +1,12 @@
 package domain.position;
 
+import domain.movement.Direction;
+import domain.unit.Team;
 import java.util.Objects;
 
 public class Position {
 
-    public static final String INVALID_POSITION_EXCEPTION = "유효하지 않은 장기판 위치입니다.";
+    private static final String INVALID_POSITION_EXCEPTION = "유효하지 않은 장기판 위치입니다.";
     public static final int X_MAX = 8;
     public static final int Y_MAX = 9;
 
@@ -21,10 +23,6 @@ public class Position {
         return new Position(x, y);
     }
 
-    public static Position from(Point point) {
-        return new Position(point.getX(), point.getY());
-    }
-
     private void validate(int x, int y) {
         if (x < 0 || x > X_MAX) {
             throw new IllegalArgumentException(INVALID_POSITION_EXCEPTION);
@@ -34,11 +32,18 @@ public class Position {
         }
     }
 
-    public static boolean isCanBePosition(Point point) {
-        if (point.getX() < 0 || point.getX() > X_MAX) {
-            return false;
+    public int calculateMaxStep(Direction direction) {
+        int maxMovement = 0;
+        Position current = this;
+        while (current.canBePosition(direction)) {
+            current = current.calculatePositionWithDirection(direction);
+            maxMovement++;
         }
-        return !(point.getY() < 0 || point.getY() > Y_MAX);
+        return maxMovement;
+    }
+
+    public Position calculatePositionWithDirection(Direction direction) {
+        return Position.of(this.x + direction.getX(), this.y + direction.getY());
     }
 
     public double calculateDistance(Position other) {
@@ -47,8 +52,25 @@ public class Position {
         return Math.sqrt(Math.pow(xDifference, 2) + Math.pow(yDifference, 2));
     }
 
+    public boolean canBePosition(Direction direction) {
+        int nextX = this.x + direction.getX();
+        int nextY = this.y + direction.getY();
+        return nextX >= 0 && nextX <= X_MAX && nextY >= 0 && nextY <= Y_MAX;
+    }
+
+    public boolean isPalace() {
+        return (3 <= x && x <= 5) && ((0 <= y && y <= 2) || (7 <= y && y <= 9));
+    }
+
     public boolean isHorizontalOrVertical(Position opposite) {
         return (this.x == opposite.x || this.y == opposite.y);
+    }
+
+    public boolean isForwardOf(Position compare, Team team) {
+        if (team == Team.HAN) {
+            return this.y >= compare.y;
+        }
+        return this.y <= compare.y;
     }
 
     public int getX() {

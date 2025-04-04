@@ -2,7 +2,7 @@
 
 장기 미션 저장소
 
-## 기능 구현
+## 1단계 기능 구현
 
 ### 장기(장기판), Janggi
 
@@ -63,9 +63,47 @@
 - [x] `CannonUnitRule#calculateEndPoint()` 접근제한자 `private`으로 변경
 - [x] `OutputView`에서 if문에 도달하지 않는 경우 예외 발생시키기
 - [x] `Janggi` 외부에서 주입하기
-    - [ ] 주입하는 위치 고민
 - [x] `Janggi#changeTeam()`구현 로직 `Team` 객체에 메시지를 보내는 방향으로
 - [x] `Unit` -> 동등성 정의 로직 삭제
 - [x] `Unit` 객체 인스턴스 변수 3개를 2개로 줄이기
 - [x] 에외 메시지 작성
-- [ ] `DefaultUnitPosition`에서 기본 좌표 처리에 대한 고민
+
+### 추가 피드백
+
+- [X] 객체 간 소통 시 Unit#getTeam 호출 사용 과다 -> 메시지 던지는 방식으로 해결
+- [X] Janggi#isOneOfTeamNonExist에서 stream 사용 시 filter가 아닌 noneExist 또는 grouping 사용
+- [X] Janggi의 책임 분리 관련해 일급 컬랙션 도입
+- [X] HorseUnitRule, ElephantUnitRule에서 DFS 사용 제거하는 방향으로 수정
+- [X] Point 객체 제거
+- [x] Janggi의 캐논 메서드 책임 분리
+- [X] Janggi에서 Routes 필터링에 대한 고민
+
+## 2단계 기능 구현
+
+- [x] 궁, 사 움직임을 구현한다.
+    - [x] 궁성을 판단하는 로직을 구현한다
+    - [x] 궁성 안에서 대각선 이동을 구현한다
+- [X] 장기의 점수를 계산하여 승패와 관계 없이 모두 노출한다.
+    - [X] 장기 기획서에 맞게 장기의 점수를 계산한다
+    - [X] 궁이 잡히면 승/패를 계산한다
+    - [X] 게임이 끝나지 않을 경우 자동 종료시킨다.(궁성 밖으로 빠져나올 수 없는 장기말만 존재하는 경우)
+    - [X] 사용자가 직접 게임을 종료할 수 있도록 구현한다
+
+### 2단계 피드백
+
+- [x] Janggi Service에서 장기 기물들을 생성하는 부분 UnitType으로 이동
+- [x] Janggi 클래스의 상수 private로
+- [x] JanggiGameFlow에서 RoomId 파라미터로 전달하기
+- [x] PieceDao의 printStackTrace 제거
+- [x] Database connection을 얻지 못한 경우에 대해서 바로 예외를 던지기
+- [x] DAO의 주석 제거
+- [X] UnitType 책임 분리
+- [x] Piece 객체의 필요성 고민
+- [x] 인터페이스 및 공통 로직 분리
+
+> findBoardsByRoomId, findBoardByPosition 두 개의 메서드에서 resultSet을 통해서 Piece 객체를 생성하고있는데요.
+> 이를 메서드로 추출해서 재사용해보면 어떨까요? 😃
+> 또한 Dao 객체들은 대부분 ResultSet으로 Entity를 만들고있는 것 같은데요.
+> 그렇다면 Dao 객체들이 공통의 인터페이스를 구현하도록 만들어서 parsing 메서드를 정의해줄 수도 있지 않을까요? 🤔
+
+- [ ] 기존에 Entity에서 Janggi 객체를 만들어주는 생성 로직을 분리
