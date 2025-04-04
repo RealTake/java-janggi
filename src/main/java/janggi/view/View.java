@@ -1,29 +1,26 @@
 package janggi.view;
 
-import janggi.board.Point;
-import janggi.camp.Camp;
-import janggi.piece.Piece;
-import java.util.List;
-import java.util.Map;
+import janggi.dao.PieceDao;
+import janggi.domain.board.Point;
+import janggi.domain.camp.Camp;
+import janggi.domain.piece.Piece;
+import janggi.domain.piece.type.PieceType;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class View {
 
     private static final int ROW = 10;
     private static final int COLUMN = 9;
-    public static final int COORDINATES_COUNT = 2;
-    public static final int X_COORDINATE_INDEX = 0;
-    public static final int Y_COORDINATE_INDEX = 1;
-    public static final int FROM_POINT_INDEX = 0;
-    public static final int TO_POINT_INDEX = 1;
     private static final String EMPTY_SPACE = "ㅤ";
     private static final String BOARD_DELIMITER_LINE = " | ";
-    public static final String POINT_INPUT_DELIMITER = ",";
+    private static final String ERROR_MESSAGE_FORMAT = "%n[ERROR] %s%n";
 
     private final Scanner scanner = new Scanner(System.in);
 
     public void displayStartBanner() {
-        System.out.println("""
+        String firstTurnCampName = ColorFormatter.getColoredCampName(Camp.CHU);
+        System.out.printf("""
                 
                 ====================================
                     Welcome to the Janggi Game!
@@ -31,9 +28,9 @@ public class View {
                  {가로축 번호}{세로축 번호} 좌표를 사용합니다.
                     예) 41은 왼쪽에서 4번째 아래에서
                         첫번째 기물을 의미합니다.
-                      게임은 초나라부터 시작됩니다.
-                ====================================
-                """);
+                      게임은 %s나라부터 시작됩니다.
+                ====================================%n
+                """, firstTurnCampName);
     }
 
     public boolean readStartGame() {
@@ -52,59 +49,84 @@ public class View {
         throw new IllegalArgumentException("y 또는 n을 입력해야 합니다.");
     }
 
-    public List<List<Integer>> readMove(Camp camp) {
-        System.out.printf("%n%n[%s의 차례입니다.]%n", camp.getName());
-        System.out.println("이동시킬 기물의 좌표와 도착 지점의 좌표를 입력해 주세요. 예) 03,13");
-        String[] pointInput = scanner.nextLine()
-                .split(POINT_INPUT_DELIMITER, -1);
-        List<Integer> fromPoint = parseCoordinates(pointInput[FROM_POINT_INDEX]);
-        List<Integer> toPoint = parseCoordinates(pointInput[TO_POINT_INDEX]);
-        return List.of(fromPoint, toPoint);
+    public String readFromPoint() {
+        System.out.println("이동시킬 기물의 출발 좌표를 입력해 주세요. 예) 03");
+        String input = scanner.nextLine();
+        validateInput(input);
+        return input.trim();
     }
 
-    private List<Integer> parseCoordinates(String input) {
-        if (input.length() != COORDINATES_COUNT) {
-            throw new IllegalArgumentException("잘못된 좌표 입력입니다.");
-        }
-        try {
-            String[] split = input.split("", -1);
-            int x = Integer.parseInt(split[X_COORDINATE_INDEX]);
-            int y = Integer.parseInt(split[Y_COORDINATE_INDEX]);
-            return List.of(x, y);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("숫자만 입력 가능합니다.");
-        }
+    public String readToPoint() {
+        System.out.println("도착 좌표를 입력해 주세요. 예) 03");
+        String input = scanner.nextLine();
+        validateInput(input);
+        return input.trim();
     }
 
-    public void displayBoard(Map<Point, Piece> placedPieces) {
+    public void displayBoard(PieceDao pieceDao) {
         System.out.println();
         for (int i = ROW - 1; i >= 0; i--) {
-            displayRow(placedPieces, i);
+            displayRow(pieceDao, i);
         }
         System.out.print("  ");
         for (int i = 0; i < COLUMN; i++) {
             System.out.printf(EMPTY_SPACE + " %d ", i);
         }
+        System.out.println();
     }
 
-    private void displayRow(Map<Point, Piece> placedPieces, int i) {
+    private void displayRow(PieceDao pieceDao, int i) {
         System.out.print(i);
         for (int j = 0; j < COLUMN; j++) {
-            displayPiece(placedPieces, i, j);
+            displayPiece(pieceDao, i, j);
         }
         System.out.println(BOARD_DELIMITER_LINE);
     }
 
-    private void displayPiece(Map<Point, Piece> placedPieces, int i, int j) {
-        if (placedPieces.get(new Point(j, i)) == null) {
+    private void displayPiece(PieceDao pieceDao, int i, int j) {
+        Point point = new Point(j, i);
+        Optional<Piece> piece = pieceDao.findByPoint(point);
+
+        if (!piece.isPresent()) {
             System.out.print(BOARD_DELIMITER_LINE + EMPTY_SPACE);
             return;
         }
-        System.out.print(BOARD_DELIMITER_LINE + formatPiece(placedPieces.get(new Point(j, i))));
+        System.out.print(BOARD_DELIMITER_LINE + formatPiece(piece.get()));
     }
 
+
     private String formatPiece(Piece piece) {
-        PieceSymbol pieceSymbol = piece.getPieceSymbol();
-        return pieceSymbol.getDisplayAttributes(piece.getCamp());
+        PieceType pieceType = piece.getPieceType();
+        return ColorFormatter.getColoredPieceAttributes(piece.getCamp(), pieceType);
+    }
+
+    private void validateInput(String input) {
+        if (input.isBlank()) {
+            throw new IllegalArgumentException("입력값이 비어있습니다.");
+        }
+    }
+
+    public void displayErrorMessage(String errorMessage) {
+        System.out.printf(ERROR_MESSAGE_FORMAT, errorMessage);
+    }
+
+    public void displayEndingMessage(Camp camp) {
+        String winningCampName = ColorFormatter.getColoredCampName(camp);
+        String losingCampName = ColorFormatter.getColoredCampName(camp.reverse());
+        System.out.printf("%n%s의 장군이 쓰러졌습니다. %s의 승리입니다.%n", losingCampName, winningCampName);
+    }
+
+    public void displayScore(Camp camp, double score) {
+        System.out.printf("%s나라의 점수는 %.1f점 입니다.%n", ColorFormatter.getColoredCampName(camp), score);
+    }
+
+    public String readGameCommand(Camp camp) {
+        System.out.printf("%n[%s의 차례입니다.]%n", ColorFormatter.getColoredCampName(camp));
+        System.out.printf("%n기물을 이동하려면 move, 게임을 종료하려면 end를 입력해주세요.%n");
+        String input = scanner.nextLine();
+        if (!input.equals("move") && !input.equals("end")) {
+            throw new IllegalArgumentException("move 또는 end를 입력해야 합니다.");
+        }
+        return input;
     }
 }

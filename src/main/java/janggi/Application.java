@@ -1,67 +1,120 @@
 package janggi;
 
-import janggi.board.Board;
-import janggi.board.BoardGenerator;
-import janggi.board.Point;
-import janggi.camp.Camp;
-import janggi.piece.Piece;
+import janggi.dao.GameDao;
+import janggi.dao.PieceDao;
+import janggi.domain.board.Board;
+import janggi.domain.board.BoardGenerator;
+import janggi.domain.board.Point;
+import janggi.domain.camp.Camp;
+import janggi.domain.piece.Piece;
+import janggi.infra.DatabaseConfig;
+import janggi.infra.DatabaseConnector;
 import janggi.view.View;
-import java.util.List;
 
 public class Application {
 
-    private static final String ERROR_MESSAGE_FORMAT = "%n[ERROR] %s";
     private static final Camp FIRST_TURN_CAMP = Camp.CHU;
-    private static final int FROM_POINT_INDEX = 0;
-    private static final int TO_POINT_INDEX = 1;
-    public static final int X_COORDINATE = 0;
-    public static final int Y_COORDINATE = 1;
+    public static final int GENERAL_PIECE_COUNT = 2;
 
     public static void main(String[] args) {
         View view = new View();
+        DatabaseConfig DBConfig = new DatabaseConfig(
+                "localhost:13306", "janggi",
+                "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
+                "root", "root");
+        DatabaseConnector DBConnector = new DatabaseConnector(DBConfig);
+        GameDao gameDao = new GameDao(DBConnector);
+        PieceDao pieceDao = new PieceDao(DBConnector);
         view.displayStartBanner();
         boolean startGame = view.readStartGame();
         if (startGame) {
-            playGame(view);
+            playGame(view, gameDao, pieceDao);
         }
     }
 
-    private static void playGame(View view) {
-        Board board = BoardGenerator.generate();
-        Camp currentTurnCamp = FIRST_TURN_CAMP;
-        while (true) {
-            view.displayBoard(board.getPlacedPieces());
-            playTurnUntilSuccess(view, currentTurnCamp, board);
-            currentTurnCamp = currentTurnCamp.reverse();
-        }
-    }
-
-    private static void playTurnUntilSuccess(View view, Camp currentTurnCamp, Board board) {
-        while (true) {
-            try {
-                List<List<Integer>> moveInput = view.readMove(currentTurnCamp);
-                playTurn(moveInput, currentTurnCamp, board);
-                return;
-            } catch (IllegalArgumentException e) {
-                System.out.printf(ERROR_MESSAGE_FORMAT, e.getMessage());
+    private static void playGame(View view, GameDao gameDao, PieceDao pieceDao) {
+        Board board = initializeIfNewGame(gameDao);
+        Camp currentTurnCamp = gameDao.findLatestTurn();
+        while (!isGameOver(pieceDao)) {
+            view.displayBoard(pieceDao);
+            if (view.readGameCommand(currentTurnCamp).equals("end")) {
+                break;
             }
+            currentTurnCamp = handleTurn(view, gameDao, board, currentTurnCamp, pieceDao);
+        }
+        if (isGameOver(pieceDao)) {
+            endGame(view, board, gameDao, pieceDao);
         }
     }
 
-    private static void playTurn(List<List<Integer>> moveInputs, Camp baseCamp, Board board) {
-        Point from = createPointFromInput(moveInputs, FROM_POINT_INDEX);
-        Point to = createPointFromInput(moveInputs, TO_POINT_INDEX);
-        validateSelectedPiece(board, from, baseCamp);
+    private static Board initializeIfNewGame(GameDao gameDao) {
+        if (gameDao.isNewGame()) {
+            Board board = BoardGenerator.generate();
+            gameDao.initializeGame(FIRST_TURN_CAMP);
+            return board;
+        }
+        return new Board();
+    }
+
+    private static boolean isGameOver(PieceDao pieceDao) {
+        return pieceDao.getGeneralCount() != GENERAL_PIECE_COUNT;
+    }
+
+    private static Camp handleTurn(View view, GameDao gameDao, Board board, Camp currentTurnCamp, PieceDao pieceDao) {
+        boolean turnPlayed = tryPlayTurn(view, board, currentTurnCamp, pieceDao);
+        if (!turnPlayed) {
+            return currentTurnCamp;
+        }
+        Camp nextTurn = currentTurnCamp.reverse();
+        gameDao.updateTurn(nextTurn);
+        return nextTurn;
+    }
+
+    private static boolean tryPlayTurn(View view, Board board, Camp currentTurnCamp, PieceDao pieceDao) {
+        try {
+            String fromPointInput = view.readFromPoint();
+            String toPointInput = view.readToPoint();
+            executeTurn(fromPointInput, toPointInput, currentTurnCamp, board, pieceDao);
+            return true;
+        } catch (IllegalArgumentException e) {
+            view.displayErrorMessage(e.getMessage());
+            return false;
+        }
+    }
+
+    private static void executeTurn(String fromPointInput, String toPointInput, Camp baseCamp, Board board,
+                                    PieceDao pieceDao) {
+        Point from = new Point(fromPointInput);
+        Point to = new Point(toPointInput);
+        Piece movingPiece = pieceDao.findByPoint(from)
+                .orElseThrow(() -> new IllegalArgumentException("해당 위치에 기물이 없습니다."));
+        validateSelectedPiece(baseCamp, movingPiece);
         board.move(from, to);
+        pieceDao.deletePieceByPoint(from);
+        pieceDao.upsertPiece(to, movingPiece);
     }
 
-    private static Point createPointFromInput(List<List<Integer>> moveInputs, int index) {
-        List<Integer> coordinates = moveInputs.get(index);
-        return new Point(coordinates.get(X_COORDINATE), coordinates.get(Y_COORDINATE));
+
+    private static void validateSelectedPiece(Camp baseCamp, Piece movingPiece) {
+        movingPiece.validateSelect(baseCamp);
     }
 
-    private static void validateSelectedPiece(Board board, Point from, Camp baseCamp) {
-        Piece piece = board.peek(from);
-        piece.validateSelect(baseCamp);
+    private static void endGame(View view, Board board, GameDao gameDao, PieceDao pieceDao) {
+        displayEndingResult(view, board, pieceDao);
+        gameDao.endGame();
+        resetBoard(pieceDao);
+    }
+
+    private static void resetBoard(PieceDao pieceDao) {
+        pieceDao.clearTable();
+    }
+
+    private static void displayEndingResult(View view, Board board, PieceDao pieceDao) {
+        view.displayBoard(pieceDao);
+        Camp winningCamp = pieceDao.findWinningCamp()
+                .orElseThrow(() -> new IllegalStateException("승리한 캠프가 존재하지 않습니다."));
+        view.displayEndingMessage(winningCamp);
+        view.displayScore(Camp.CHU, board.calculateChuScore());
+        view.displayScore(Camp.HAN, board.calculateHanScore());
     }
 }
