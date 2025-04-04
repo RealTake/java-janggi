@@ -1,5 +1,7 @@
 package piece;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,10 +15,24 @@ public class Guard extends Piece {
     }
 
     @Override
-    protected Set<Position> getMovablePositions(final Position position, final Board board) {
-        return Direction.getStraightDirection().stream()
-                .map(position::moveByDirection)
-                .filter(movePosition -> isMovable(movePosition, board))
+    protected Set<Position> getMovablePositions(final Position startPosition, final Board board) {
+        if (!startPosition.isPalacePosition()) {
+            throw new IllegalStateException("사는 궁성 영역 밖에 존재할 수 없습니다.");
+        }
+        Set<Position> movablePositions = new HashSet<>();
+        if (startPosition.hasDiagonalDirectionInPosition()) {
+            movablePositions.addAll(findMovablePositions(Direction.getDiagonalDirection(), startPosition, board));
+        }
+        movablePositions.addAll(findMovablePositions(Direction.getStraightDirection(), startPosition, board));
+        return movablePositions;
+    }
+
+    private Set<Position> findMovablePositions(
+            final List<Direction> directions, final Position startPosition, final Board board
+    ) {
+        return directions.stream()
+                .map(startPosition::moveByDirection)
+                .filter(movedPosition -> isMovable(movedPosition, board))
                 .collect(Collectors.toSet());
     }
 
@@ -26,7 +42,7 @@ public class Guard extends Piece {
     }
 
     private boolean isMovable(final Position position, final Board board) {
-        return !board.isExists(position) || !board.isSameTeamPosition(this.team, position);
+        return position.isPalacePosition() && !board.isSameTeamPosition(this.team, position);
     }
 
 }

@@ -16,6 +16,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import game.Turn;
 import piece.Cannon;
 import piece.Chariot;
+import piece.Elephant;
+import piece.Guard;
+import piece.Horse;
+import piece.King;
 import piece.Piece;
 import piece.Soldier;
 import piece.Team;
@@ -135,7 +139,6 @@ class BoardTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-
     @MethodSource
     @ParameterizedTest
     void 위치가_포의_위치인지_알려준다(Piece piece, boolean expected) {
@@ -150,6 +153,82 @@ class BoardTest {
                 Arguments.of(new Cannon(Team.RED), true),
                 Arguments.of(new Chariot(Team.RED), false)
         );
+    }
+
+    @CsvSource(value = {
+            "BLUE,0", "RED,1.5"
+    })
+    @ParameterizedTest
+    void 후수인_한나라는_추가_점수가_존재한다(Team team, double bonusScore) {
+        Board board = new Board(Map.of());
+
+        assertThat(board.calculateTeamScore(team, bonusScore)).isEqualTo(bonusScore);
+    }
+
+    @MethodSource
+    @ParameterizedTest
+    void 현재_존재하는_기물에_따라_최종_점수를_계산한다(Map<Position, Piece> pieces, Team team, double bonusScore, double expected) {
+        Board board = new Board(pieces);
+
+        assertThat(board.calculateTeamScore(team, bonusScore)).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> 현재_존재하는_기물에_따라_최종_점수를_계산한다() {
+        Position redPosition = new Position(1, 5);
+        Position bluePosition = new Position(10, 5);
+        return Stream.of(
+                Arguments.of(Map.of(redPosition, new King(Team.RED)), Team.RED, 1.5, 1.5),
+                Arguments.of(Map.of(bluePosition, new King(Team.BLUE)), Team.BLUE, 0, 0),
+                Arguments.of(Map.of(redPosition, new Chariot(Team.RED)), Team.RED, 1.5, 14.5),
+                Arguments.of(Map.of(bluePosition, new Chariot(Team.BLUE)), Team.BLUE, 0, 13),
+                Arguments.of(Map.of(redPosition, new Cannon(Team.RED)), Team.RED, 1.5, 8.5),
+                Arguments.of(Map.of(bluePosition, new Cannon(Team.BLUE)), Team.BLUE, 0, 7),
+                Arguments.of(Map.of(redPosition, new Horse(Team.RED)), Team.RED, 1.5, 6.5),
+                Arguments.of(Map.of(bluePosition, new Horse(Team.BLUE)), Team.BLUE, 0, 5),
+                Arguments.of(Map.of(redPosition, new Elephant(Team.RED)), Team.RED, 1.5, 4.5),
+                Arguments.of(Map.of(bluePosition, new Elephant(Team.BLUE)), Team.BLUE, 0, 3),
+                Arguments.of(Map.of(redPosition, new Guard(Team.RED)), Team.RED, 1.5, 4.5),
+                Arguments.of(Map.of(bluePosition, new Guard(Team.BLUE)), Team.BLUE, 0, 3),
+                Arguments.of(Map.of(redPosition, new Soldier(Team.RED)), Team.RED, 1.5, 3.5),
+                Arguments.of(Map.of(bluePosition, new Soldier(Team.BLUE)), Team.BLUE, 0, 2)
+        );
+    }
+
+    @MethodSource
+    @ParameterizedTest
+    void 궁이_모두_생존해_있는지_알려준다(Map<Position, Piece> pieces, boolean expected) {
+        Board board = new Board(pieces);
+
+        assertThat(board.isAllKingAlive()).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> 궁이_모두_생존해_있는지_알려준다() {
+        return Stream.of(
+                Arguments.of(Map.of(
+                        new Position(9, 5), new King(Team.BLUE)), true
+                ),
+                Arguments.of(Map.of(
+                        new Position(2, 5), new King(Team.RED),
+                        new Position(9, 5), new King(Team.BLUE)), false
+                ));
+    }
+
+    @MethodSource
+    @ParameterizedTest
+    void 장기_게임의_승자를_알려준다(Map<Position, Piece> pieces, Team expected) {
+        Board board = new Board(pieces);
+
+        assertThat(board.findWinnerTeam()).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> 장기_게임의_승자를_알려준다() {
+        return Stream.of(
+                Arguments.of(Map.of(
+                        new Position(9, 5), new King(Team.BLUE)), Team.BLUE
+                ),
+                Arguments.of(Map.of(
+                        new Position(9, 5), new King(Team.RED)), Team.RED
+                ));
     }
 
 }

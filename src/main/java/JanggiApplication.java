@@ -1,8 +1,13 @@
-import java.util.function.Supplier;
+import java.sql.Connection;
 
-import board.Board;
-import board.BoardInitializer;
 import board.Position;
+import dao.DaoService;
+import dao.PieceDao;
+import dao.TurnConverter;
+import dao.TurnDao;
+import dao.connector.DBConnector;
+import dao.connector.MySQLDBConnector;
+import game.JanggiGame;
 import game.Turn;
 import view.InputView;
 import view.OutputView;
@@ -13,43 +18,37 @@ public class JanggiApplication {
     private static final OutputView outputView = new OutputView();
 
     public static void main(String[] args) {
-        BoardInitializer boardInitializer = new BoardInitializer();
-        Board board = new Board(boardInitializer.init());
-        Turn turn = new Turn();
-        outputView.printBoard(board.getPieces());
-        playGame(board, turn);
+        DBConnector dbConnector = new MySQLDBConnector();
+        Connection connection = dbConnector.getConnection();
+        DaoService daoService = new DaoService(new PieceDao(connection), new TurnDao(connection));
+        JanggiGame janggiGame = new JanggiGame(daoService.findBoard(), daoService.findTurn());
+
+        outputView.printBoard(janggiGame.getPieces());
+        outputView.printTeamScore(janggiGame.calculateTotalScore());
+        playGame(janggiGame, daoService);
     }
 
-    private static void playGame(final Board board, final Turn turn) {
-        Position startPosition = retry(() -> readStartPosition(board, turn));
-        retry(() -> movePosition(board, startPosition));
-        outputView.printBoard(board.getPieces());
-        turn.increaseRound();
-        if (inputView.inputExitGame()) {
+    private static void playGame(final JanggiGame janggiGame, final DaoService daoService) {
+        retry(() -> movePosition(janggiGame, daoService));
+        outputView.printBoard(janggiGame.getPieces());
+        outputView.printTeamScore(janggiGame.calculateTotalScore());
+        if (janggiGame.isFinish()) {
+            outputView.printWinner(janggiGame.findWinnerTeam());
+            daoService.removeAllGameData();
             return;
         }
-        playGame(board, turn);
+        playGame(janggiGame, daoService);
     }
 
-    private static Position readStartPosition(final Board board, final Turn turn) {
-        Position startPosition = inputView.readStartPosition();
-        board.isValidTurn(startPosition, turn);
-        return startPosition;
-    }
-
-    private static void movePosition(final Board board, final Position startPosition) {
+    private static void movePosition(final JanggiGame janggiGame, final DaoService daoService) {
+        Turn turn = janggiGame.getTurn();
+        Position startPosition = inputView.readStartPosition(turn);
         Position destinationPosition = inputView.readDestinationPosition();
-        board.move(startPosition, destinationPosition);
-    }
 
-    private static <T> T retry(final Supplier<T> supplier) {
-        while (true) {
-            try {
-                return supplier.get();
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
-        }
+        janggiGame.move(startPosition, destinationPosition);
+
+        daoService.removeAndUpdatePosition(startPosition, destinationPosition);
+        daoService.updateTurn(TurnConverter.toEntity(janggiGame.getTurn()));
     }
 
     private static void retry(final Runnable runnable) {
