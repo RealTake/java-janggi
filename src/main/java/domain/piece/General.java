@@ -22,15 +22,33 @@ public class General extends AbstractPiece {
     @Override
     public boolean isMovable(final Point fromPoint, final Point toPoint) {
         final Direction direction = fromPoint.generateDirection(toPoint);
-        return isHorizontalMovement(direction) || isVerticalMovement(direction);
+        if (!isInPalace(toPoint)) {
+            return false;
+        }
+
+        return isHorizontalMovement(direction)
+                || isVerticalMovement(direction)
+                || (isInDiagonalPalace(toPoint) && isDiagonalDirection(direction));
     }
 
-    private static boolean isVerticalMovement(final Direction direction) {
+    private boolean isInPalace(final Point toPoint) {
+        return toPoint.isPalace();
+    }
+
+    private boolean isInDiagonalPalace(final Point toPoint) {
+        return toPoint.isDiagonalPalace();
+    }
+
+    private boolean isHorizontalMovement(final Direction direction) {
+        return direction.horizontalDistance() == 1 && direction.verticalDistance() == 0;
+    }
+
+    private boolean isVerticalMovement(final Direction direction) {
         return direction.horizontalDistance() == 0 && direction.verticalDistance() == 1;
     }
 
-    private static boolean isHorizontalMovement(final Direction direction) {
-        return direction.horizontalDistance() == 1 && direction.verticalDistance() == 0;
+    private boolean isDiagonalDirection(final Direction direction) {
+        return direction.calculateDistance() == Point.DIAGONAL_UNIT;
     }
 
     @Override

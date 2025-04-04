@@ -5,8 +5,11 @@ import domain.position.Point;
 import domain.position.Position;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public final class Board {
+public class Board {
 
     private final List<Position> positions;
 
@@ -62,6 +65,7 @@ public final class Board {
     public void move(final Position prevPosition, final Point newPoint, final Runnable noticeRunner) {
         if (hasPieceAt(newPoint)) {
             moveAndCapture(newPoint, prevPosition, noticeRunner);
+            return;
         }
         movePiece(prevPosition, newPoint);
     }
@@ -112,5 +116,23 @@ public final class Board {
             return Team.GREEN;
         }
         return Team.RED;
+    }
+
+    public Map<PieceType, Integer> countPieces(final Team team) {
+        if (team.isGreenTeam()) {
+            return countPieceType(Position::isGreenTeam);
+        }
+        return countPieceType(position -> !position.isGreenTeam());
+    }
+
+    private Map<PieceType, Integer> countPieceType(final Function<Position, Boolean> positionPredicate) {
+        return positions.stream()
+                .filter(positionPredicate::apply)
+                .map(Position::getPieceType)
+                .collect(Collectors.toMap(
+                        pieceType -> pieceType,
+                        pieceType -> 1,
+                        Integer::sum
+                ));
     }
 }
