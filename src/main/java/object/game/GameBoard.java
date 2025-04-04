@@ -3,6 +3,8 @@ package object.game;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import object.coordinate.Position;
 import object.moverule.CannonRule;
@@ -18,12 +20,19 @@ import object.piece.Team;
 
 public class GameBoard {
 
+    private static final Map<PieceType, Integer> SCORE_BY_TYPE;
+
     private final List<Piece> pieces;
     private Team currentTurn;
 
     public GameBoard(List<Piece> pieces) {
         this.pieces = pieces;
         currentTurn = Team.BLUE;
+    }
+
+    public GameBoard(List<Piece> pieces, Team currentTurn) {
+        this.pieces = pieces;
+        this.currentTurn = currentTurn;
     }
 
     public static GameBoard generateToInitGameFormat() {
@@ -116,12 +125,25 @@ public class GameBoard {
         return generalPieceOfWinner.getTeam();
     }
 
+    public double getScore(Team team) {
+        // 후수의 경우 1.5점을 받고 시작함
+        double initialScore = team.equals(Team.BLUE) ? 0 : 1.5;
+        return initialScore + sumScoreOfPieces(team);
+    }
+
     public Team getCurrentTurn() {
         return currentTurn;
     }
 
     public List<Piece> getPieces() {
         return Collections.unmodifiableList(pieces);
+    }
+
+    private double sumScoreOfPieces(Team team) {
+        return pieces.stream()
+                .filter(piece -> piece.isSameTeam(team))
+                .mapToDouble(piece -> SCORE_BY_TYPE.getOrDefault(piece.getPieceType(), 0))
+                .sum();
     }
 
     private void killPieceBy(Piece killerPiece) {
@@ -141,5 +163,34 @@ public class GameBoard {
                 .filter(piece -> piece.isSamePosition(position))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당 위치에 기물이 없습니다."));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        GameBoard gameBoard = (GameBoard) o;
+        return Objects.equals(getPieces(), gameBoard.getPieces())
+                && getCurrentTurn() == gameBoard.getCurrentTurn();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPieces(), getCurrentTurn());
+    }
+
+    static {
+        SCORE_BY_TYPE = Map.ofEntries(
+                Map.entry(PieceType.CHARIOT, 13),
+                Map.entry(PieceType.CANNON, 7),
+                Map.entry(PieceType.HORSE, 5),
+                Map.entry(PieceType.ELEPHANT, 3),
+                Map.entry(PieceType.GUARD, 3),
+                Map.entry(PieceType.SOLDIER, 2)
+        );
     }
 }
