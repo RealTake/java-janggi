@@ -3,6 +3,7 @@ package domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import domain.piece.Position;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -224,5 +225,107 @@ class PositionTest {
         boolean actual = position.canApplyMove(Move.BACK);
         // then
         assertThat(actual).isFalse();
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, 4, true",
+            "8, 4, true",
+            "2, 4, false",
+            "1, 5, false",
+            "9, 4, false",
+            "7, 4, false",
+            "8, 3, false"
+    })
+    void 현재_위치가_궁성의_왼쪽_위인지_알_수_있다(int row, int column, boolean expected) {
+        // given
+        Position position = new Position(row, column);
+        // when
+        boolean actual = position.isPalaceTopLeft();
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, 6, true",
+            "8, 6, true",
+            "2, 6, false",
+            "1, 7, false",
+            "9, 6, false",
+            "7, 6, false",
+            "8, 7, false"
+    })
+    void 현재_위치가_궁성의_오른쪽_위인지_알_수_있다(int row, int column, boolean expected) {
+        // given
+        Position position = new Position(row, column);
+        // when
+        boolean actual = position.isPalaceTopRight();
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "3, 4, true",
+            "10, 4, true",
+            "4, 4, false",
+            "2, 4, false",
+            "3, 3, false",
+            "3, 5, false",
+            "9, 4, false",
+            "10, 5, false",
+            "10, 3, false"
+    })
+    void 현재_위치가_궁성의_왼쪽_아래인지_알_수_있다(int row, int column, boolean expected) {
+        // given
+        Position position = new Position(row, column);
+        // when
+        boolean actual = position.isPalaceBottomLeft();
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "3, 6, true",
+            "10, 6, true",
+            "4, 6, false",
+            "2, 6, false",
+            "3, 5, false",
+            "3, 7, false",
+            "9, 6, false",
+            "10, 5, false",
+            "10, 7, false"
+    })
+    void 현재_위치가_궁성의_오른쪽_아래인지_알_수_있다(int row, int column, boolean expected) {
+        // given
+        Position position = new Position(row, column);
+        // when
+        boolean actual = position.isPalaceBottomRight();
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2, 5, true",
+            "9, 5, true",
+            "1, 5, false",
+            "3, 5, false",
+            "2, 4, false",
+            "2, 6, false",
+            "8, 5, false",
+            "10, 5, false",
+            "9, 4, false",
+            "9, 6, false"
+    })
+    void 현재_위치가_궁성의_중심인지_알_수_있다(int row, int column, boolean expected) {
+        // given
+        Position position = new Position(row, column);
+        // when
+        boolean actual = position.isPalaceCenter();
+        // then
+        assertThat(actual).isEqualTo(expected);
     }
 }

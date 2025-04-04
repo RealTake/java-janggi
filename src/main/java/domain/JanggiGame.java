@@ -1,28 +1,47 @@
 package domain;
 
-import domain.boardgenerator.BoardGenerator;
 import domain.piece.Piece;
-import domain.player.Player;
-import domain.player.Players;
+import domain.piece.Position;
+import domain.piece.Team;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class JanggiGame {
 
-    private final JanggiBoard janggiBoard;
-    private final Players players;
+    public static final double HAN_TEAM_BONUS_SCORE = 1.5;
 
-    public JanggiGame(BoardGenerator boardGenerator, List<String> playerNames) {
-        this.janggiBoard = new JanggiBoard(boardGenerator);
-        this.players = Players.ofNames(playerNames.getFirst(), playerNames.getLast());
+    private final JanggiBoard janggiBoard;
+    private final Long gameId;
+    private Team turn = Team.CHO;
+
+    private JanggiGame(Long gameId, JanggiBoard board, Team turn) {
+        this.janggiBoard = board;
+        this.gameId = gameId;
+        this.turn = turn;
     }
+
+    public static JanggiGame init(Long gameId, JanggiBoard board) {
+        return new JanggiGame(gameId, board, Team.getFirstTeam());
+    }
+
+    public static JanggiGame create(Long gameId, JanggiBoard board, Team turn) {
+        return new JanggiGame(gameId, board, turn);
+    }
+
 
     public void move(List<Integer> startRowAndColumn, List<Integer> targetRowAndColumn) {
         Position startPosition = new Position(startRowAndColumn.getFirst(), startRowAndColumn.getLast());
         Position targetPosition = new Position(targetRowAndColumn.getFirst(), targetRowAndColumn.getLast());
         validateSelectedPiece(startPosition, targetPosition);
         janggiBoard.move(startPosition, targetPosition);
-        players.nextTurn();
+        nextTurn();
+    }
+
+    private void nextTurn() {
+        this.turn = turn.getEnemy();
     }
 
     public boolean isEnd() {
@@ -34,7 +53,7 @@ public class JanggiGame {
 
     private void validateSelectedPiece(Position startPosition, Position targetPosition) {
         Piece selectedPiece = janggiBoard.findSelectedPiece(startPosition);
-        if (!players.isSameTeamThisTurnPlayerAndPiece(selectedPiece)) {
+        if (!selectedPiece.isTeam(getThisTurnTeam())) {
             throw new IllegalArgumentException("자신의 말만 움직일 수 있습니다.");
         }
         if (startPosition.equals(targetPosition)) {
@@ -42,11 +61,44 @@ public class JanggiGame {
         }
     }
 
-    public Player getThisTurnPlayer() {
-        return players.getThisTurnPlayer();
+    public Team getThisTurnTeam() {
+        return turn;
     }
 
-    public Map<Position, Piece> getBoardState() {
-        return janggiBoard.getBoard();
+    public Map<Team, Double> calculateScore() {
+        Map<Team, Double> scores = Arrays.stream(Team.values())
+                .collect(Collectors.toMap(
+                        team -> team,
+                        team -> (double) janggiBoard.calculateTeamScore(team)
+                ));
+        scores.put(Team.HAN, scores.get(Team.HAN) + HAN_TEAM_BONUS_SCORE);
+
+        return scores;
+    }
+
+    public Long getGameId() {
+        return gameId;
+    }
+
+    public JanggiBoard getBoard() {
+        return janggiBoard;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        JanggiGame game = (JanggiGame) o;
+        return Objects.equals(janggiBoard, game.janggiBoard) && Objects.equals(gameId, game.gameId)
+                && turn == game.turn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(janggiBoard, gameId, turn);
     }
 }

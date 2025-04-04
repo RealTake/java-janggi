@@ -1,8 +1,6 @@
 package view;
 
-import domain.Team;
-import domain.player.Player;
-import java.util.Arrays;
+import domain.piece.Team;
 import java.util.List;
 import java.util.Scanner;
 
@@ -10,10 +8,19 @@ public class InputView {
 
     private final Scanner scanner = new Scanner(System.in);
 
-    public List<String> readPlayerNames() {
-        System.out.println("플레이어 두 명의 이름을 입력하시오. (플레이어1, 플레이어2)");
-        String input = scanner.nextLine();
-        return Arrays.asList(input.split(","));
+    public String readNewOrContinueGame() {
+        System.out.println("새로운 게임을 하려면 new, 이어서 하려면 continue를 입력하시오.");
+        return scanner.nextLine();
+    }
+
+    public String readNewRoomName() {
+        System.out.println("생성할 장기 게임방의 이름을 입력하시오.");
+        return scanner.nextLine();
+    }
+
+    public String readRoomName() {
+        System.out.println("입장할 장기 게임방의 이름을 입력하시오.");
+        return scanner.nextLine();
     }
 
     public List<Integer> readMovePiecePosition() {
@@ -34,8 +41,8 @@ public class InputView {
         return List.of(row, column);
     }
 
-    public String readCommand(Player player) {
-        System.out.printf("%s의 차례입니다. 게임을 계속하려면 y, 종료하려면 n을 입력하시오.%n", convertToCountry(player.getTeam()));
+    public String readCommand(Team team) {
+        System.out.printf("%s의 차례입니다. 게임을 계속하려면 go, 종료하려면 q, 점수를 확인하려면 s를 입력하시오.%n", convertToCountry(team));
         return scanner.nextLine();
     }
 

@@ -1,8 +1,10 @@
 package domain;
 
+import domain.piece.Position;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Moves {
 
@@ -35,11 +37,39 @@ public class Moves {
     public boolean isPossibleToArrive(Position startPosition, Position targetPosition) {
         Position positionInPath = startPosition;
         for (Move move : moves) {
-            if (!positionInPath.canApplyMove(move)) {
+            if (!positionInPath.hasLine(move)) {
                 return false;
             }
             positionInPath = positionInPath.movePosition(move);
         }
         return positionInPath.equals(targetPosition);
+    }
+
+    public boolean isPossibleInPalace(Position startPosition) {
+        Position positionInPath = startPosition;
+        for (Move move : moves) {
+            if (!positionInPath.canMoveInPalace(move)) {
+                return false;
+            }
+            positionInPath = positionInPath.movePosition(move);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Moves moves1 = (Moves) o;
+        return Objects.equals(moves, moves1.moves);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(moves);
     }
 }

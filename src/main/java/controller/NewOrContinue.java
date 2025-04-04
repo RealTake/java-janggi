@@ -2,19 +2,18 @@ package controller;
 
 import java.util.Arrays;
 
-public enum Command {
+public enum NewOrContinue {
 
-    GO("go"),
-    QUIT("q"),
-    SCORE("s");
+    NEW("new"),
+    CONTINUE("continue");
 
     private final String value;
 
-    Command(String value) {
+    NewOrContinue(String value) {
         this.value = value;
     }
 
-    public static Command find(String input) {
+    public static NewOrContinue find(String input) {
         return Arrays.stream(values())
                 .filter(command -> command.value.equals(input))
                 .findAny()
