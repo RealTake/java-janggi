@@ -28,10 +28,18 @@ public class Directions {
         List<ChessPosition> positions = new ArrayList<>();
         for (Direction direction : directions) {
             validatePosition(currentPosition, direction);
-            currentPosition = currentPosition.move(direction);
-            positions.add(currentPosition);
+            final ChessPosition newPosition = currentPosition.move(direction);
+            if (newPosition.isCastlePosition() && !currentPosition.canCastleMove(direction)) {
+                continue;
+            }
+            positions.add(newPosition);
+            currentPosition = newPosition;
         }
         return new Path(positions);
+    }
+
+    public Direction getFirstDirection() {
+        return directions.getFirst();
     }
 
     private void validatePosition(ChessPosition currentPosition, Direction direction) {

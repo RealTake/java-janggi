@@ -1,19 +1,27 @@
 package domain.position;
 
-import domain.chessPiece.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import domain.chesspiece.Cannon;
+import domain.chesspiece.Chariot;
+import domain.chesspiece.ChessPiece;
+import domain.chesspiece.Elephant;
+import domain.chesspiece.Guard;
+import domain.chesspiece.Horse;
+import domain.chesspiece.King;
+import domain.chesspiece.Pawn;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InitialChessPiecePositionsGenerator implements ChessPiecePositionsGenerator {
     @Override
-    public Map<ChessPosition, ChessPiece> generate() {
-        Map<ChessPosition, ChessPiece> chessPieces = new HashMap<>();
-        chessPieces.putAll(Cannon.initPieces());
-        chessPieces.putAll(Chariot.initPieces());
-        chessPieces.putAll(Elephant.initPieces());
-        chessPieces.putAll(Horse.initPieces());
-        chessPieces.putAll(Pawn.initPieces());
+    public List<ChessPiece> generate() {
+        final List<ChessPiece> chessPieces = new ArrayList<>();
+        chessPieces.addAll(Cannon.initPieces());
+        chessPieces.addAll(Chariot.initPieces());
+        chessPieces.addAll(Elephant.initPieces());
+        chessPieces.addAll(Horse.initPieces());
+        chessPieces.addAll(Pawn.initPieces());
+        chessPieces.addAll(King.initPieces());
+        chessPieces.addAll(Guard.initPieces());
         return chessPieces;
     }
 }
