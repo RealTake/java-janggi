@@ -18,7 +18,7 @@ class TurnTest {
         // given
 
         // when & then
-        assertThatCode(Turn::initialize)
+        assertThatCode(() -> Turn.initialize(BLUE))
                 .doesNotThrowAnyException();
     }
 
@@ -27,7 +27,7 @@ class TurnTest {
     void getCurrentTurnTest() {
 
         // given
-        Turn turn = Turn.initialize();
+        Turn turn = Turn.initialize(BLUE);
 
         // when & then
         assertThat(turn.getCurrentTurn()).isEqualTo(BLUE);
@@ -38,7 +38,7 @@ class TurnTest {
     void changeTurnTest() {
 
         // given
-        Turn turn = Turn.initialize();
+        Turn turn = Turn.initialize(BLUE);
 
         // when & then
         assertAll(() -> {
@@ -46,5 +46,20 @@ class TurnTest {
             turn.changeTurn();
             assertThat(turn.getCurrentTurn()).isEqualTo(RED);
         });
+    }
+
+    @DisplayName("30턴이 지나면 무승부가 된다.")
+    @Test
+    void isDrawTest() {
+        // given
+        Turn turn = Turn.initialize(BLUE);
+
+        // when
+        for (int i = 0; i < 30; i++) {
+            turn.changeTurn();
+        }
+
+        // then
+        assertThat(turn.isDraw()).isTrue();
     }
 }

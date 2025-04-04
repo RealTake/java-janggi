@@ -5,6 +5,7 @@ import janggi.domain.piece.Piece;
 import janggi.domain.piece.PieceType;
 import janggi.domain.position.Position;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class OutputView {
@@ -15,39 +16,49 @@ public class OutputView {
     private static final String HAN_DYNASTY = ANSI_RED + "한나라" + ANSI_RESET;
     private static final String CHU_DYNASTY = ANSI_BLUE + "초나라" + ANSI_RESET;
 
+    private static final Map<Team, String> TEAMS = Map.of(
+            Team.RED, HAN_DYNASTY,
+            Team.BLUE, CHU_DYNASTY
+    );
+
     public void printBoard(List<Piece> pieces) {
         int startX = 0;
         int startY = 9;
 
+        // 윗부분 인덱스 출력
         System.out.print("  ");
-
         for (int j = startX; j <= 8; j++) {
-            System.out.print(j + " ");
+            System.out.print(j + "＿");
         }
         System.out.println();
 
+        // 보드 출력
         for (int i = startY; i >= 0; i--) {
             System.out.print(i + " ");
 
             for (int j = startX; j <= 8; j++) {
-                boolean check = true;
+                boolean isEmpty = true;
+
                 for (Piece piece : pieces) {
                     if (piece.isSamePosition(new Position(j, i))) {
-                        System.out.print(colorPiece(piece));
-                        check = false;
+                        System.out.print(colorPiece(piece) + " ");
+                        isEmpty = false;
+                        break;
                     }
                 }
-                if (check) {
-                    System.out.print("．");
+
+                if (isEmpty) {
+                    System.out.print("＿ ");
                 }
             }
+
             System.out.println();
         }
 
+        // 아랫부분 인덱스 출력
         System.out.print("  ");
-
         for (int j = startX; j <= 8; j++) {
-            System.out.print(j + " ");
+            System.out.print(j + "＿");
         }
         System.out.println();
     }
@@ -105,4 +116,20 @@ public class OutputView {
         }
         return "졸";
     }
+
+    public void printTeamScore(final double hanScore, final double chuScore) {
+        System.out.printf(HAN_DYNASTY + " 점수: %.1f", hanScore);
+        System.out.print(System.lineSeparator());
+        System.out.printf(CHU_DYNASTY + " 점수: %.1f", chuScore);
+        System.out.print(System.lineSeparator());
+    }
+
+    public void printWinnerWithGameEnd(Team team) {
+        System.out.printf(TEAMS.get(team) + "의 승리입니다.");
+    }
+
+    public void printWinnerWithSurrender(Team currentTeam) {
+        System.out.println(TEAMS.get(currentTeam) + "가 기권했습니다.");
+    }
 }
+
