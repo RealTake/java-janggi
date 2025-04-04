@@ -9,22 +9,22 @@ import java.util.List;
 
 public class Soldier extends Piece {
 
-    private static final int ALLOWED_MOVE = 1;
-
     public Soldier(final Side side) {
-        super(side);
+        super(Symbol.SOLDIER, side);
     }
 
     @Override
-    public List<Route> computeCandidatePositions(final Position position) {
+    public List<Position> filterReachableDestinations(final Position selectedPosition, final JanggiBoard board) {
+        List<Position> positions = selectedPosition.moveToCandidate();
+        List<Route> candidateRoutes = Route.createRoutes(positions);
         if (isCho()) {
-            return computeAndExcludeInvalidRoute(position, Direction.DOWN);
+            candidateRoutes = excludeInvalidRoutes(candidateRoutes, selectedPosition, Direction.DOWN,
+                    Direction.DOWN_LEFT, Direction.DOWN_RIGHT);
         }
-        return computeAndExcludeInvalidRoute(position, Direction.UP);
-    }
-
-    @Override
-    public List<Position> filterReachableDestinations(final List<Route> candidateRoutes, final JanggiBoard board) {
+        if (isHan()) {
+            candidateRoutes = excludeInvalidRoutes(candidateRoutes, selectedPosition, Direction.UP, Direction.UP_LEFT,
+                    Direction.UP_RIGHT);
+        }
         List<Position> reachablePositions = new ArrayList<>();
         for (Route route : candidateRoutes) {
             Position destination = route.getDestination();
@@ -42,16 +42,11 @@ public class Soldier extends Piece {
         return reachablePositions;
     }
 
-    @Override
-    public String getSymbol() {
-        return "J";
-    }
-
-    private List<Route> computeAndExcludeInvalidRoute(final Position position, final Direction direction) {
-        List<Route> routes = computeStraightRoutes(position, ALLOWED_MOVE);
-        Position invalidPosition = position.move(direction);
+    private List<Route> excludeInvalidRoutes(final List<Route> routes, final Position position,
+                                             final Direction... directions) {
+        List<Position> invalidPositions = position.movesTo(directions);
         return routes.stream()
-                .filter(route -> !route.getDestination().equals(invalidPosition))
+                .filter(route -> !invalidPositions.contains(route.getDestination()))
                 .toList();
     }
 

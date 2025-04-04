@@ -4,43 +4,42 @@ import janggi.board.Direction;
 import janggi.board.JanggiBoard;
 import janggi.board.Position;
 import janggi.board.Route;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Piece {
 
     protected static final int MOVE_LIMIT = 10;
 
+    private final Symbol symbol;
     private final Side side;
 
-    protected Piece(final Side side) {
+    protected Piece(final Symbol symbol, final Side side) {
+        this.symbol = symbol;
         this.side = side;
     }
 
-    public abstract List<Route> computeCandidatePositions(final Position position);
-
-    public abstract List<Position> filterReachableDestinations(final List<Route> candidateRoutes, final JanggiBoard board);
-
-    public abstract String getSymbol();
+    public abstract List<Position> filterReachableDestinations(final Position selectedPosition,
+                                                               final JanggiBoard board);
 
     protected List<Route> computeStraightRoutes(final Position position, int distance) {
-        return List.of(
-                computeStraightLimitRoute(position, Direction.RIGHT, distance),
-                computeStraightLimitRoute(position, Direction.LEFT, distance),
-                computeStraightLimitRoute(position, Direction.UP, distance),
-                computeStraightLimitRoute(position, Direction.DOWN, distance)
-        );
+        List<Route> candidateRoutes = new ArrayList<>();
+        for (Direction direction : position.getCandidateDirections()) {
+            candidateRoutes.add(computeStraightLimitRoute(position, direction, distance));
+        }
+        return candidateRoutes;
     }
 
     protected List<Route> computeDiagonalRoutes(final Position position, int diagonalCount) {
         return List.of(
-                computeStraightAndDiagonal(position, Direction.RIGHT, Direction.RIGHT_DOWN, diagonalCount),
-                computeStraightAndDiagonal(position, Direction.RIGHT, Direction.RIGHT_UP, diagonalCount),
-                computeStraightAndDiagonal(position, Direction.LEFT, Direction.LEFT_DOWN, diagonalCount),
-                computeStraightAndDiagonal(position, Direction.LEFT, Direction.LEFT_UP, diagonalCount),
-                computeStraightAndDiagonal(position, Direction.DOWN, Direction.LEFT_DOWN, diagonalCount),
-                computeStraightAndDiagonal(position, Direction.DOWN, Direction.RIGHT_DOWN, diagonalCount),
-                computeStraightAndDiagonal(position, Direction.UP, Direction.LEFT_UP, diagonalCount),
-                computeStraightAndDiagonal(position, Direction.UP, Direction.RIGHT_UP, diagonalCount)
+                computeStraightAndDiagonal(position, Direction.RIGHT, Direction.DOWN_RIGHT, diagonalCount),
+                computeStraightAndDiagonal(position, Direction.RIGHT, Direction.UP_RIGHT, diagonalCount),
+                computeStraightAndDiagonal(position, Direction.LEFT, Direction.DOWN_LEFT, diagonalCount),
+                computeStraightAndDiagonal(position, Direction.LEFT, Direction.UP_LEFT, diagonalCount),
+                computeStraightAndDiagonal(position, Direction.DOWN, Direction.DOWN_LEFT, diagonalCount),
+                computeStraightAndDiagonal(position, Direction.DOWN, Direction.DOWN_RIGHT, diagonalCount),
+                computeStraightAndDiagonal(position, Direction.UP, Direction.UP_LEFT, diagonalCount),
+                computeStraightAndDiagonal(position, Direction.UP, Direction.UP_RIGHT, diagonalCount)
         );
     }
 
@@ -84,6 +83,34 @@ public abstract class Piece {
 
     public boolean isHan() {
         return side == Side.HAN;
+    }
+
+    public boolean isSameSide(final Side side) {
+        return this.side == side;
+    }
+
+    public boolean isKing() {
+        return symbol == Symbol.KING;
+    }
+
+    public boolean isCannon() {
+        return symbol == Symbol.CANNON;
+    }
+
+    public boolean isEmpty() {
+        return symbol == Symbol.EMPTY;
+    }
+
+    public Symbol getSymbol() {
+        return symbol;
+    }
+
+    public Side getSide() {
+        return side;
+    }
+
+    public int getScore() {
+        return symbol.getScore();
     }
 
 }

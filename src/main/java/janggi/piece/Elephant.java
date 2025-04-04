@@ -11,16 +11,12 @@ public class Elephant extends Piece {
     private static final int DIAGONAL_COUNT = 2;
 
     public Elephant(final Side side) {
-        super(side);
+        super(Symbol.ELEPHANT, side);
     }
 
     @Override
-    public List<Route> computeCandidatePositions(final Position position) {
-        return computeDiagonalRoutes(position, DIAGONAL_COUNT);
-    }
-
-    @Override
-    public List<Position> filterReachableDestinations(final List<Route> candidateRoutes, final JanggiBoard board) {
+    public List<Position> filterReachableDestinations(final Position selectedPosition, final JanggiBoard board) {
+        List<Route> candidateRoutes = computeDiagonalRoutes(selectedPosition, DIAGONAL_COUNT);
         List<Position> reachablePositions = new ArrayList<>();
         for (Route route : candidateRoutes) {
             Position destination = route.getDestination();
@@ -36,11 +32,6 @@ public class Elephant extends Piece {
             reachablePositions.add(destination);
         }
         return reachablePositions;
-    }
-
-    @Override
-    public String getSymbol() {
-        return "E";
     }
 
 }

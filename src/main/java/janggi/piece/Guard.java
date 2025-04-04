@@ -8,22 +8,20 @@ import java.util.List;
 
 public class Guard extends Piece {
 
-    private static final int ALLOWED_MOVE = 1;
-
     public Guard(final Side side) {
-        super(side);
+        super(Symbol.GUARD, side);
     }
 
     @Override
-    public List<Route> computeCandidatePositions(final Position position) {
-        return computeStraightRoutes(position, ALLOWED_MOVE);
-    }
-
-    @Override
-    public List<Position> filterReachableDestinations(final List<Route> candidateRoutes, final JanggiBoard board) {
+    public List<Position> filterReachableDestinations(final Position selectedPosition, final JanggiBoard board) {
+        List<Position> positions = selectedPosition.moveToCandidate();
+        List<Route> candidateRoutes = Route.createRoutes(positions);
         List<Position> reachablePositions = new ArrayList<>();
         for (Route route : candidateRoutes) {
             Position destination = route.getDestination();
+            if (destination.isNotPalace()) {
+                continue;
+            }
             if (board.isOutOfRange(destination)) {
                 continue;
             }
@@ -36,11 +34,6 @@ public class Guard extends Piece {
             reachablePositions.add(destination);
         }
         return reachablePositions;
-    }
-
-    @Override
-    public String getSymbol() {
-        return "S";
     }
 
 }

@@ -9,44 +9,51 @@ import java.util.List;
 public class Cannon extends Piece {
 
     public Cannon(final Side side) {
-        super(side);
+        super(Symbol.CANNON, side);
     }
 
     @Override
-    public List<Route> computeCandidatePositions(final Position position) {
-        return computeStraightRoutes(position, MOVE_LIMIT);
-    }
-
-    @Override
-    public List<Position> filterReachableDestinations(final List<Route> candidateRoutes, final JanggiBoard board) {
+    public List<Position> filterReachableDestinations(final Position selectedPosition, final JanggiBoard board) {
+        List<Route> candidateRoutes = computeStraightRoutes(selectedPosition, MOVE_LIMIT);
         List<Position> reachablePositions = new ArrayList<>();
         for (Route route : candidateRoutes) {
-            List<Position> positions = route.getPositions();
-            boolean hasJumped = false;
-            for (Position position : positions) {
-                if (board.isOutOfRange(position) || board.isPositionCannon(position)) break;
-                if (!hasJumped && board.isPositionHasPiece(position)) {
-                    hasJumped = true;
-                    continue;
-                }
-
-                if (hasJumped) {
-                    if (board.isPositionHasPiece(position)) {
-                        if (isEnemyWith(board.findPieceBy(position))) {
-                            reachablePositions.add(position);
-                        }
-                        break;
-                    }
-                    reachablePositions.add(position);
-                }
-            }
+            computeReachablePositions(board, route, reachablePositions);
         }
         return reachablePositions;
     }
 
-    @Override
-    public String getSymbol() {
-        return "P";
+    private void computeReachablePositions(final JanggiBoard board, final Route route,
+                                           final List<Position> reachablePositions) {
+        boolean hasJumped = false;
+        for (Position position : route.getPositions()) {
+            if (wouldStop(board, position)) {
+                break;
+            }
+            if (reachMovableCondition(board, position, hasJumped)) {
+                hasJumped = true;
+                continue;
+            }
+
+            if (hasJumped) {
+                if (couldCatchEnemyPiece(board, position)) {
+                    reachablePositions.add(position);
+                    break;
+                }
+                reachablePositions.add(position);
+            }
+        }
+    }
+
+    private boolean wouldStop(final JanggiBoard board, final Position position) {
+        return board.isOutOfRange(position) || board.isPositionCannon(position);
+    }
+
+    private boolean reachMovableCondition(final JanggiBoard board, final Position position, final boolean hasJumped) {
+        return !hasJumped && board.isPositionHasPiece(position);
+    }
+
+    private boolean couldCatchEnemyPiece(final JanggiBoard board, final Position position) {
+        return board.isPositionHasPiece(position) && isEnemyWith(board.findPieceBy(position));
     }
 
 }

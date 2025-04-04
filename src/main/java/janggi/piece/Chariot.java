@@ -9,36 +9,39 @@ import java.util.List;
 public class Chariot extends Piece {
 
     public Chariot(final Side side) {
-        super(side);
+        super(Symbol.CHARIOT, side);
     }
 
     @Override
-    public List<Route> computeCandidatePositions(final Position position) {
-        return computeStraightRoutes(position, MOVE_LIMIT);
-    }
-
-    @Override
-    public List<Position> filterReachableDestinations(final List<Route> candidateRoutes, final JanggiBoard board) {
+    public List<Position> filterReachableDestinations(final Position selectedPosition, final JanggiBoard board) {
+        List<Route> candidateRoutes = computeStraightRoutes(selectedPosition, MOVE_LIMIT);
         List<Position> reachablePositions = new ArrayList<>();
         for (Route route : candidateRoutes) {
-            List<Position> positions = route.getPositions();
-            for (Position position : positions) {
-                if (board.isOutOfRange(position) || isAllyWith(board.findPieceBy(position))) {
-                    break;
-                }
-                if (board.isPositionHasPiece(position) && isEnemyWith(board.findPieceBy(position))) {
-                    reachablePositions.add(position);
-                    break;
-                }
-                reachablePositions.add(position);
-            }
+            computeReachablePositions(board, route, reachablePositions);
         }
         return reachablePositions;
     }
 
-    @Override
-    public String getSymbol() {
-        return "C";
+    private void computeReachablePositions(final JanggiBoard board, final Route route,
+                                           final List<Position> reachablePositions) {
+        for (Position position : route.getPositions()) {
+            if (wouldStop(board, position)) {
+                break;
+            }
+            if (couldCatchEnemyPiece(board, position)) {
+                reachablePositions.add(position);
+                break;
+            }
+            reachablePositions.add(position);
+        }
+    }
+
+    private boolean wouldStop(final JanggiBoard board, final Position position) {
+        return board.isOutOfRange(position) || isAllyWith(board.findPieceBy(position));
+    }
+
+    private boolean couldCatchEnemyPiece(final JanggiBoard board, final Position position) {
+        return board.isPositionHasPiece(position) && isEnemyWith(board.findPieceBy(position));
     }
 
 }
