@@ -13,7 +13,7 @@ public class HorseTest {
 
     @BeforeEach
     void init() {
-        horse = new Horse(new Position(5, 5));
+        horse = new Piece(PieceProfile.generateFromPieceType(PieceType.HORSE), new Position(5, 5));
     }
 
     @Test

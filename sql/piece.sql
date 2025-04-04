@@ -1,0 +1,7 @@
+CREATE TABLE piece (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	type VARCHAR(10) NOT NULL,
+	team VARCHAR(5) NOT NULL,
+	rowPosition INT NOT NULL,
+	columnPosition INT NOT NULL
+);

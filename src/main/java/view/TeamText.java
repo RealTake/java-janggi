@@ -5,6 +5,7 @@ import model.player.Team;
 import java.util.Arrays;
 
 public enum TeamText {
+
     RED(Team.RED, "한 나라"),
     GREEN(Team.GREEN, "초 나라");
 

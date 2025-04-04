@@ -13,7 +13,7 @@ public class ElephantTest {
 
     @BeforeEach
     void init() {
-        elephant = new Elephant(new Position(5, 5));
+        elephant = new Piece(PieceProfile.generateFromPieceType(PieceType.ELEPHANT), new Position(5, 5));
     }
 
     @Test

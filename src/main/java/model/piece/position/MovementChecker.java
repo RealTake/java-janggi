@@ -48,6 +48,30 @@ public class MovementChecker {
                 && columnStep == RIGHT;
     }
 
+    public static boolean isUpLeftStraight(final int rowStep, final int columnStep) {
+        return rowStep <= UP
+                && columnStep <= LEFT
+                && Math.abs(rowStep) == Math.abs(columnStep);
+    }
+
+    public static boolean isUpRightStraight(final int rowStep, final int columnStep) {
+        return rowStep <= UP
+                && columnStep >= RIGHT
+                && Math.abs(rowStep) == Math.abs(columnStep);
+    }
+
+    public static boolean isDownLeftStraight(final int rowStep, final int columnStep) {
+        return rowStep >= DOWN
+                && columnStep <= LEFT
+                && Math.abs(rowStep) == Math.abs(columnStep);
+    }
+
+    public static boolean isDownRightStraight(final int rowStep, final int columnStep) {
+        return rowStep >= DOWN
+                && columnStep >= RIGHT
+                && Math.abs(rowStep) == Math.abs(columnStep);
+    }
+
     public static boolean isUpStraight(final int rowStep, final int columnStep) {
         return rowStep <= UP
                 && columnStep == NO_MOVE;

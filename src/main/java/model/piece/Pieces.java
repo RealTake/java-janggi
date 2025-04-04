@@ -1,6 +1,5 @@
 package model.piece;
 
-import model.piece.position.DefaultPiecePositions;
 import model.piece.position.Position;
 
 import java.util.ArrayList;
@@ -8,52 +7,22 @@ import java.util.List;
 
 public class Pieces {
 
-    public final List<Piece> pieces;
+    private final List<Piece> pieces;
 
     private Pieces(final List<Piece> pieces) {
         this.pieces = new ArrayList<>(pieces);
     }
 
-    public static Pieces initializerRedTeamPieces() {
-        return new Pieces(List.of(
-                new General(DefaultPiecePositions.GENERAL_RED.getPosition()),
-                new Guard(DefaultPiecePositions.GUARD_LEFT_RED.getPosition()),
-                new Guard(DefaultPiecePositions.GUARD_RIGHT_RED.getPosition()),
-                new Elephant(DefaultPiecePositions.ELEPHANT_LEFT_RED.getPosition()),
-                new Elephant(DefaultPiecePositions.ELEPHANT_RIGHT_RED.getPosition()),
-                new Horse(DefaultPiecePositions.HORSE_LEFT_RED.getPosition()),
-                new Horse(DefaultPiecePositions.HORSE_RIGHT_RED.getPosition()),
-                new Chariot(DefaultPiecePositions.CHARIOT_LEFT_RED.getPosition()),
-                new Chariot(DefaultPiecePositions.CHARIOT_RIGHT_RED.getPosition()),
-                new Cannon(DefaultPiecePositions.CANNON_LEFT_RED.getPosition()),
-                new Cannon(DefaultPiecePositions.CANNON_RIGHT_RED.getPosition()),
-                new Byeong(DefaultPiecePositions.BYEONG_FIRST_RED.getPosition()),
-                new Byeong(DefaultPiecePositions.BYEONG_SECOND_RED.getPosition()),
-                new Byeong(DefaultPiecePositions.BYEONG_THIRD_RED.getPosition()),
-                new Byeong(DefaultPiecePositions.BYEONG_FOURTH_RED.getPosition()),
-                new Byeong(DefaultPiecePositions.BYEONG_FIFTH_RED.getPosition())
-        ));
+    public static Pieces initializeRedTeamPieces() {
+        return new Pieces(TeamPiecesGenerator.generateRedTeamPieces());
     }
 
-    public static Pieces initializerGreenTeamPieces() {
-        return new Pieces(List.of(
-                new General(DefaultPiecePositions.GENERAL_GREEN.getPosition()),
-                new Guard(DefaultPiecePositions.GUARD_LEFT_GREEN.getPosition()),
-                new Guard(DefaultPiecePositions.GUARD_RIGHT_GREEN.getPosition()),
-                new Elephant(DefaultPiecePositions.ELEPHANT_LEFT_GREEN.getPosition()),
-                new Elephant(DefaultPiecePositions.ELEPHANT_RIGHT_GREEN.getPosition()),
-                new Horse(DefaultPiecePositions.HORSE_LEFT_GREEN.getPosition()),
-                new Horse(DefaultPiecePositions.HORSE_RIGHT_GREEN.getPosition()),
-                new Chariot(DefaultPiecePositions.CHARIOT_LEFT_GREEN.getPosition()),
-                new Chariot(DefaultPiecePositions.CHARIOT_RIGHT_GREEN.getPosition()),
-                new Cannon(DefaultPiecePositions.CANNON_LEFT_GREEN.getPosition()),
-                new Cannon(DefaultPiecePositions.CANNON_RIGHT_GREEN.getPosition()),
-                new Jol(DefaultPiecePositions.JOL_FIRST_GREEN.getPosition()),
-                new Jol(DefaultPiecePositions.JOL_SECOND_GREEN.getPosition()),
-                new Jol(DefaultPiecePositions.JOL_THIRD_GREEN.getPosition()),
-                new Jol(DefaultPiecePositions.JOL_FOURTH_GREEN.getPosition()),
-                new Jol(DefaultPiecePositions.JOL_FIFTH_GREEN.getPosition())
-        ));
+    public static Pieces initializeGreenTeamPieces() {
+        return new Pieces(TeamPiecesGenerator.generateGreenTeamPieces());
+    }
+
+    public static Pieces continuePiecesFrom(final List<Piece> pieces) {
+        return new Pieces(pieces);
     }
 
     public Piece findPieceAt(final Position position) {
@@ -70,7 +39,7 @@ public class Pieces {
 
     public boolean isPieceTypeExistAt(final Position position, final PieceType pieceType) {
         if (isPieceExistAt(position)) {
-            return findPieceAt(position).getPieceType() == pieceType;
+            return findPieceAt(position).isPieceTypeOf(pieceType);
         }
         return false;
     }
@@ -88,7 +57,7 @@ public class Pieces {
 
     public boolean isCannonExistAtRoute(final List<Position> route) {
         return pieces.stream()
-                .anyMatch(piece -> piece.getPieceType() == PieceType.CANNON && route.contains(piece.getPosition()));
+                .anyMatch(piece -> piece.isPieceTypeOf(PieceType.CANNON) && route.contains(piece.getPosition()));
     }
 
     public void removePieceAt(final Position position) {
@@ -96,6 +65,12 @@ public class Pieces {
             Piece piece = findPieceAt(position);
             pieces.remove(piece);
         }
+    }
+
+    public int calculatePoints() {
+        return pieces.stream()
+                .mapToInt(Piece::getPoint)
+                .sum();
     }
 
     public List<Piece> getPieces() {

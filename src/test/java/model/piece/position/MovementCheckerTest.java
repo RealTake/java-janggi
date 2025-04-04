@@ -86,6 +86,78 @@ public class MovementCheckerTest {
     }
 
     @CsvSource({
+            "-1, -1, true",
+            "-2, -2, true",
+            "-3, -3, true",
+            "-4, -4, true",
+            "-5, -5, true",
+            "-6, -6, true",
+            "1, 0, false",
+            "0, -1, false",
+            "0, 1, false"
+    })
+    @ParameterizedTest
+    void 주어진_이동이_위쪽과_왼쪽으로_쭉_향하는_방향인지_검사한다(int rowStep, int columnStep, boolean expected) {
+        // Given
+        // When & Then
+        assertThat(MovementChecker.isUpLeftStraight(rowStep, columnStep)).isEqualTo(expected);
+    }
+
+    @CsvSource({
+            "-1, 1, true",
+            "-2, 2, true",
+            "-3, 3, true",
+            "-4, 4, true",
+            "-5, 5, true",
+            "-6, 6, true",
+            "1, 0, false",
+            "0, -1, false",
+            "0, 1, false"
+    })
+    @ParameterizedTest
+    void 주어진_이동이_위쪽과_오른쪽으로_쭉_향하는_방향인지_검사한다(int rowStep, int columnStep, boolean expected) {
+        // Given
+        // When & Then
+        assertThat(MovementChecker.isUpRightStraight(rowStep, columnStep)).isEqualTo(expected);
+    }
+
+    @CsvSource({
+            "1, -1, true",
+            "2, -2, true",
+            "3, -3, true",
+            "4, -4, true",
+            "5, -5, true",
+            "6, -6, true",
+            "1, 0, false",
+            "0, -1, false",
+            "0, 1, false"
+    })
+    @ParameterizedTest
+    void 주어진_이동이_아래쪽과_왼쪽으로_쭉_향하는_방향인지_검사한다(int rowStep, int columnStep, boolean expected) {
+        // Given
+        // When & Then
+        assertThat(MovementChecker.isDownLeftStraight(rowStep, columnStep)).isEqualTo(expected);
+    }
+
+    @CsvSource({
+            "1, 1, true",
+            "2, 2, true",
+            "3, 3, true",
+            "4, 4, true",
+            "5, 5, true",
+            "6, 6, true",
+            "1, 0, false",
+            "0, -1, false",
+            "0, 1, false"
+    })
+    @ParameterizedTest
+    void 주어진_이동이_아래쪽과_오른쪽으로_쭉_향하는_방향인지_검사한다(int rowStep, int columnStep, boolean expected) {
+        // Given
+        // When & Then
+        assertThat(MovementChecker.isDownRightStraight(rowStep, columnStep)).isEqualTo(expected);
+    }
+
+    @CsvSource({
             "-1, 0, true",
             "-2, 0, true",
             "-3, 0, true",

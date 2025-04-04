@@ -11,10 +11,12 @@ public class Player {
 
     private final Pieces pieces;
     private final Team team;
+    private boolean isAlive;
 
     public Player(final Pieces pieces, final Team team) {
         this.pieces = pieces;
         this.team = team;
+        this.isAlive = true;
     }
 
     public Piece findPieceAt(final Position position) {
@@ -47,6 +49,18 @@ public class Player {
 
     public void removePieceAt(final Position position) {
         pieces.removePieceAt(position);
+    }
+
+    public int calculatePoints() {
+        return pieces.calculatePoints();
+    }
+
+    public void makeDead() {
+        isAlive = false;
+    }
+
+    public boolean isAlive() {
+        return isAlive;
     }
 
     public Pieces getPieces() {

@@ -13,7 +13,7 @@ public class ByeongTest {
 
     @BeforeEach
     void init() {
-        byeong = new Byeong(new Position(5, 5));
+        byeong = new Piece(PieceProfile.generateFromPieceType(PieceType.BYEONG), new Position(5, 5));
     }
 
     @Test

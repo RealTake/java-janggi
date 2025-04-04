@@ -13,7 +13,7 @@ public class GeneralTest {
 
     @BeforeEach
     void init() {
-        general = new General(new Position(5, 5));
+        general = new Piece(PieceProfile.generateFromPieceType(PieceType.GENERAL), new Position(1, 4));
     }
 
     @Test
@@ -26,52 +26,53 @@ public class GeneralTest {
     @Test
     void 궁_기물이_수평_방향으로_움직일_수_있는_위치로_가는_경로를_계산한다() {
         // Given
-        Position destination = new Position(5, 4);
-        Position destination2 = new Position(5, 6);
+        Position destination = new Position(1, 3);
+        Position destination2 = new Position(1, 5);
 
         // When & Then
         assertThat(general.calculateRouteToDestination(destination))
-                .containsExactlyInAnyOrder(new Position(5, 4));
+                .containsExactlyInAnyOrder(new Position(1, 3));
         assertThat(general.calculateRouteToDestination(destination2))
-                .containsExactlyInAnyOrder(new Position(5, 6));
+                .containsExactlyInAnyOrder(new Position(1, 5));
     }
 
     @Test
     void 궁_기물이_대각선_방향으로_움직일_수_있는_위치로_가는_경로를_계산한다() {
         // Given
-        Position destination = new Position(4, 4);
-        Position destination2 = new Position(4, 6);
-        Position destination3 = new Position(6, 4);
-        Position destination4 = new Position(6, 6);
+        Position destination = new Position(0, 3);
+        Position destination2 = new Position(0, 5);
+        Position destination3 = new Position(1, 3);
+        Position destination4 = new Position(1, 5);
 
         // When & Then
         assertThat(general.calculateRouteToDestination(destination))
-                .containsExactlyInAnyOrder(new Position(4, 4));
+                .containsExactlyInAnyOrder(new Position(0, 3));
         assertThat(general.calculateRouteToDestination(destination2))
-                .containsExactlyInAnyOrder(new Position(4, 6));
+                .containsExactlyInAnyOrder(new Position(0, 5));
         assertThat(general.calculateRouteToDestination(destination3))
-                .containsExactlyInAnyOrder(new Position(6, 4));
+                .containsExactlyInAnyOrder(new Position(1, 3));
         assertThat(general.calculateRouteToDestination(destination4))
-                .containsExactlyInAnyOrder(new Position(6, 6));
+                .containsExactlyInAnyOrder(new Position(1, 5));
     }
 
     @Test
     void 궁_기물이_수직_방향으로_움직일_수_있는_위치로_가는_경로를_계산한다() {
         // Given
-        Position destination = new Position(4, 5);
-        Position destination2 = new Position(6, 5);
+        Position destination = new Position(0, 4);
+        Position destination2 = new Position(2, 4);
 
         // When & Then
         assertThat(general.calculateRouteToDestination(destination))
-                .containsExactlyInAnyOrder(new Position(4, 5));
+                .containsExactlyInAnyOrder(new Position(0, 4));
         assertThat(general.calculateRouteToDestination(destination2))
-                .containsExactlyInAnyOrder(new Position(6, 5));
+                .containsExactlyInAnyOrder(new Position(2, 4));
     }
 
     @Test
     void 궁_기물이_이동할_수_없는_위치로는_경로를_계산할_수_없다() {
         // Given
-        Position invalidDestination = new Position(7, 7);
+        Piece general = new Piece(PieceProfile.generateFromPieceType(PieceType.GENERAL), new Position(2, 5));
+        Position invalidDestination = new Position(3, 5);
 
         // When & Then
         assertThatThrownBy(() -> general.calculateRouteToDestination(invalidDestination))

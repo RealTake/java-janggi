@@ -1,37 +1,31 @@
 package model;
 
 import model.piece.Piece;
-import model.piece.PieceType;
 import model.piece.position.Position;
 import model.player.Player;
 import model.player.Players;
 import model.player.Team;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class JanggiProcess {
 
     public static final int COUNT_OF_JANGGI_PLAYER = 2;
     private final Players players;
-    private Team currentTurn;
+    private Turn turn;
 
-    private JanggiProcess(final Players players) {
+    private JanggiProcess(final Players players, final Team firstTurnTeam) {
         this.players = players;
-        currentTurn = Team.GREEN;
+        this.turn = new Turn(firstTurnTeam);
     }
 
-    public static JanggiProcess initializeWithGreenAndRedPlayers(final Player greenPlayer, final Player redPlayer) {
+    public static JanggiProcess initializeJanggi(final Player greenPlayer, final Player redPlayer, final Team firstTurnTeam) {
         Players players = new Players(List.of(greenPlayer, redPlayer));
-        return new JanggiProcess(players);
+        return new JanggiProcess(players, firstTurnTeam);
     }
 
-    public boolean isTwoPlayersAlive() {
-        return players.getPlayerCount() == COUNT_OF_JANGGI_PLAYER;
-    }
-
-    public Team getCurrentTurnPlayerTeam() {
-        return currentTurn;
+    public boolean isAllPlayersAlive() {
+        return players.countAlivePlayers() == COUNT_OF_JANGGI_PLAYER;
     }
 
     public Piece findCurrentTurnPlayerPieceAt(final Position position) {
@@ -39,95 +33,33 @@ public class JanggiProcess {
     }
 
     private Player getCurrentTurnPlayer() {
-        return players.findPlayerInTeam(currentTurn);
+        return players.getPlayerByTeam(turn.getCurrentTurnTeam());
     }
 
-    public void processCurrentTurnPieceMove(final Piece currentPlayerPiece, final Position destination) {
-        validateDestination(currentPlayerPiece, destination);
-        validateMiddleRoute(currentPlayerPiece, destination);
-        removeOtherPlayerPieceAt(destination);
-        currentPlayerPiece.changePosition(destination);
-        currentTurn = currentTurn.getOtherTeam();
+    public void movePiece(final Position startPosition, final Position destination) {
+        players.movePiece(startPosition, destination, turn.getCurrentTurnTeam());
     }
 
-    private Player getNotCurrentTurnPlayer() {
-        Team otherTeam = currentTurn.getOtherTeam();
-        return players.findPlayerInTeam(otherTeam);
+    public void changeTurn() {
+        turn.changeTurn();
     }
 
-    private void validateDestination(final Piece piece, final Position destination) {
-        if (piece.getPieceType() == PieceType.CANNON) {
-            validateDestinationOfCannon(destination);
-            return;
-        }
-        validateDestinationExcludeCannon(destination);
-    }
-
-    private void validateDestinationOfCannon(final Position destination) {
-        Player currentPlayer = getCurrentTurnPlayer();
-        Player otherPlayer = getNotCurrentTurnPlayer();
-        if (currentPlayer.isPieceExistAt(destination) || otherPlayer.isCannonExistAt(destination)) {
-            throw new IllegalArgumentException("해당 위치로 움직일 수 없는 상태입니다.");
-        }
-    }
-
-    private void validateDestinationExcludeCannon(final Position destination) {
-        Player currentPlayer = getCurrentTurnPlayer();
-        if (currentPlayer.isPieceExistAt(destination)) {
-            throw new IllegalArgumentException("해당 위치로 움직일 수 없는 상태입니다.");
-        }
-    }
-
-    private void validateMiddleRoute(final Piece piece, final Position destination) {
-        List<Position> routeToDestinationExcludeDestination = calculateRouteExcludeDestination(piece, destination);
-        if (piece.getPieceType() == PieceType.CANNON) {
-            validateMiddleRouteOfCannon(routeToDestinationExcludeDestination);
-            return;
-        }
-        validateMiddleRouteExcludeCannon(routeToDestinationExcludeDestination);
-    }
-
-    private void validateMiddleRouteOfCannon(final List<Position> routeToDestinationExcludeDestination) {
-        Player currentPlayer = getCurrentTurnPlayer();
-        Player otherPlayer = getNotCurrentTurnPlayer();
-        int countOfPiecesAtRouteExcludeDestination = currentPlayer.countPiecesAtRoute(routeToDestinationExcludeDestination)
-                + otherPlayer.countPiecesAtRoute(routeToDestinationExcludeDestination);
-        if (countOfPiecesAtRouteExcludeDestination != 1
-                || currentPlayer.isCannonExistAtRoute(routeToDestinationExcludeDestination) || otherPlayer.isCannonExistAtRoute(routeToDestinationExcludeDestination)) {
-            throw new IllegalArgumentException("해당 위치로 움직일 수 없는 상태입니다.");
-        }
-    }
-
-    private void validateMiddleRouteExcludeCannon(final List<Position> routeToDestinationExcludeDestination) {
-        Player currentPlayer = getCurrentTurnPlayer();
-        Player otherPlayer = getNotCurrentTurnPlayer();
-        if (currentPlayer.isPieceExistAtRoute(routeToDestinationExcludeDestination) || otherPlayer.isPieceExistAtRoute(routeToDestinationExcludeDestination)) {
-            throw new IllegalArgumentException("해당 위치로 움직일 수 없는 상태입니다.");
-        }
-    }
-
-    private List<Position> calculateRouteExcludeDestination(final Piece piece, final Position destination) {
-        List<Position> routeToDestination = new ArrayList<>(piece.calculateRouteToDestination(destination));
-        routeToDestination.removeFirst();
-        return routeToDestination;
-    }
-
-    private void removeOtherPlayerPieceAt(final Position position) {
-        Player otherPlayer = getNotCurrentTurnPlayer();
-        makeOtherPlayerGameOverIfGeneralBeKilled(otherPlayer, position);
-        otherPlayer.removePieceAt(position);
-    }
-
-    private void makeOtherPlayerGameOverIfGeneralBeKilled(final Player otherPlayer, final Position destination) {
-        if (otherPlayer.isGeneralExistAt(destination)) {
-            players.remove(otherPlayer);
-        }
+    public Team getCurrentTurnTeam() {
+        return turn.getCurrentTurnTeam();
     }
 
     public Player getWinner() {
-        if (players.getPlayerCount() == COUNT_OF_JANGGI_PLAYER) {
+        if (isAllPlayersAlive()) {
             throw new IllegalArgumentException("아직 승자가 결정되지 않았습니다.");
         }
-        return players.removeFirst();
+        return players.getFirstAlivePlayers();
+    }
+
+    public int calculateTeamPoints(final Team team) {
+        return players.calculateTeamPoints(team);
+    }
+
+    public Player getPlayerByTeam(final Team team) {
+        return players.getPlayerByTeam(team);
     }
 }

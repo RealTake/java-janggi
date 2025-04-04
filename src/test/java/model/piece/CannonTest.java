@@ -15,7 +15,7 @@ public class CannonTest {
 
     @BeforeEach
     void init() {
-        cannon = new Cannon(new Position(5, 5));
+        cannon = new Piece(PieceProfile.generateFromPieceType(PieceType.CANNON), new Position(5, 5));
     }
 
     @Test
