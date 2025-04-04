@@ -5,6 +5,10 @@ public enum Movement {
     RIGHT(1, 0),
     UP(0, -1),
     DOWN(0, 1),
+    LEFT_UP(-1, -1),
+    LEFT_DOWN(-1, 1),
+    RIGHT_UP(1, -1),
+    RIGHT_DOWN(1, 1),
     UP_UP_LEFT(-1, -2),
     UP_UP_RIGHT(1, -2),
     RIGHT_RIGHT_UP(2, -1),
@@ -47,7 +51,23 @@ public enum Movement {
             return UP;
         }
 
-        return DOWN;
+        if (DOWN.column == columnDirection && DOWN.row == rowDirection) {
+            return DOWN;
+        }
+
+        if (LEFT_UP.column == columnDirection && LEFT_UP.row == rowDirection) {
+            return LEFT_UP;
+        }
+
+        if (LEFT_DOWN.column == columnDirection && LEFT_DOWN.row == rowDirection) {
+            return LEFT_DOWN;
+        }
+
+        if (RIGHT_UP.column == columnDirection && RIGHT_UP.row == rowDirection) {
+            return RIGHT_UP;
+        }
+
+        return RIGHT_DOWN;
     }
 
     public int getColumn() {
@@ -56,5 +76,9 @@ public enum Movement {
 
     public int getRow() {
         return row;
+    }
+
+    public boolean isDiagonalMove() {
+        return this.equals(LEFT_UP) || this.equals(LEFT_DOWN) || this.equals(RIGHT_UP) || this.equals(RIGHT_DOWN);
     }
 }

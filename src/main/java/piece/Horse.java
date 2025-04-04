@@ -4,6 +4,7 @@ import direction.Movement;
 import direction.Point;
 import java.util.List;
 import java.util.Map;
+import team.Team;
 
 public class Horse extends Piece {
 
@@ -18,24 +19,29 @@ public class Horse extends Piece {
             Movement.LEFT_LEFT_DOWN, List.of(Movement.LEFT)
     );
 
-    public Horse(String nickname, Point current) {
-        super(nickname, current);
+    public Horse(Team team, Point current) {
+        super(PieceType.HORSE, team, current);
     }
 
     @Override
-    public void move(final Pieces pieces, final Point destination) {
+    public void move(final Pieces allPieces, final Point destination) {
         Movement destinationMovement = getDestinationMovement(destination);
         List<Movement> movements = MOVEMENT_PATH.get(destinationMovement);
 
         for (Movement pathMovement : movements) {
             Point nextPoint = current.move(pathMovement);
-            validateIsExistPieceInPoint(pieces, nextPoint);
+            validateIsExistPieceInPoint(allPieces, nextPoint);
         }
 
         current = current.move(destinationMovement);
     }
 
-    private Movement getDestinationMovement(Point destination) {
+    @Override
+    public int score() {
+        return 5;
+    }
+
+    private Movement getDestinationMovement(final Point destination) {
         for (Movement destinationMovement : MOVEMENT_PATH.keySet()) {
             Point predictDestination = current.move(destinationMovement);
             if (predictDestination.equals(destination)) {
@@ -46,8 +52,8 @@ public class Horse extends Piece {
         throw new IllegalArgumentException("[ERROR] 선택할 수 없는 목적지입니다.");
     }
 
-    private static void validateIsExistPieceInPoint(Pieces pieces, Point nextPoint) {
-        if (pieces.isExistPieceIn(nextPoint)) {
+    private void validateIsExistPieceInPoint(final Pieces pieces, final Point nextPoint) {
+        if (pieces.isExistPieceInPoint(nextPoint)) {
             throw new IllegalArgumentException("[ERROR] 경로에 기물이 존재합니다.");
         }
     }

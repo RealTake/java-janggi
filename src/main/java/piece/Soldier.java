@@ -7,27 +7,47 @@ import team.Team;
 
 public class Soldier extends Piece {
 
-    private static final List<Movement> PATH = List.of(Movement.LEFT, Movement.RIGHT, Movement.UP);
+    private static final List<Movement> PATH = List.of(Movement.LEFT, Movement.RIGHT, Movement.UP,
+        Movement.LEFT_UP, Movement.RIGHT_UP);
 
-    private final Team team;
-
-    public Soldier(String nickname, Point current, Team team) {
-        super(nickname, current);
-        this.team = team;
+    public Soldier(Team team, Point current) {
+        super(PieceType.SOLDIER, team, current);
     }
 
     @Override
-    public void move(Pieces pieces, Point destination) {
+    public void move(final Pieces allPieces, final Point destination) {
         Movement destinationMovement = getDestinationMovement(destination);
-        validateIsExistPieceInPoint(pieces, current.move(destinationMovement));
+
+        if (destinationMovement.isDiagonalMove()) {
+            validatePossibleDiagonalMovePoint();
+        }
 
         current = current.move(destinationMovement);
     }
 
-    private Movement getDestinationMovement(Point destination) {
+    private void validatePossibleDiagonalMovePoint() {
+        if ((!current.isPalaceCenter() && !current.isPalaceCorner())) {
+            throw new IllegalArgumentException("[ERROR] 선택할 수 없는 목적지입니다.");
+        }
+    }
+
+    @Override
+    public int score() {
+        return 2;
+    }
+
+    private Movement getDestinationMovement(final Point destination) {
         for (Movement destinationMovement : PATH) {
             if (destinationMovement.equals(Movement.UP) && team.equals(Team.HAN)) {
                 destinationMovement = Movement.DOWN;
+            }
+
+            if (destinationMovement.equals(Movement.LEFT_UP) && team.equals(Team.HAN)) {
+                destinationMovement = Movement.LEFT_DOWN;
+            }
+
+            if (destinationMovement.equals(Movement.RIGHT_UP) && team.equals(Team.HAN)) {
+                destinationMovement = Movement.RIGHT_DOWN;
             }
 
             Point predictDestination = current.move(destinationMovement);
@@ -37,11 +57,5 @@ public class Soldier extends Piece {
         }
 
         throw new IllegalArgumentException("[ERROR] 선택할 수 없는 목적지입니다.");
-    }
-
-    private static void validateIsExistPieceInPoint(Pieces pieces, Point nextPoint) {
-        if (pieces.isExistPieceIn(nextPoint)) {
-            throw new IllegalArgumentException("[ERROR] 경로에 기물이 존재합니다.");
-        }
     }
 }

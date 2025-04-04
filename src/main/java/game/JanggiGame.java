@@ -3,7 +3,7 @@ package game;
 import board.GameBoard;
 import direction.Point;
 import java.util.Objects;
-import team.Player;
+import piece.Pieces;
 import team.Team;
 import view.InputView;
 import view.OutputView;
@@ -15,6 +15,8 @@ public class JanggiGame {
     private static final int VERTICAL_END = 10;
 
     private final GameBoard gameBoard;
+    private Pieces pieces;
+    private Team currentTurn;
 
     public JanggiGame(final GameBoard gameBoard) {
         if (Objects.isNull(gameBoard)) {
@@ -23,32 +25,47 @@ public class JanggiGame {
         this.gameBoard = gameBoard;
     }
 
+    public void initialize() {
+        if (gameBoard.isGameExist()) {
+            pieces = gameBoard.loadPieces();
+            currentTurn = gameBoard.loadCurrentTurn();
+            return;
+        }
+
+        Team firstTurnTeam = Team.getFirstTurnTeam();
+        pieces = gameBoard.startNewGame(firstTurnTeam);
+        currentTurn = firstTurnTeam;
+    }
+
     public void run() {
-        Team currentTeam = Team.getFirstTurnTeam();
-        while (true) {
-            OutputView.printBoard(gameBoard);
-            Player player = gameBoard.findPlayer(currentTeam);
+        while (!isGameOver()) {
+            OutputView.printBoard(pieces);
             try {
-                Point start = requestMoveStartPosition(player);
+                OutputView.printNowTurn(currentTurn);
+                Point start = requestMoveStartPosition(currentTurn);
                 Point end = requestMoveEndPosition(start);
 
-                player.move(gameBoard.findAllPieces(), start, end);
-                currentTeam = currentTeam.oppsite();
+                pieces.killableMove(currentTurn, start, end);
+                currentTurn = currentTurn.oppsite();
+                gameBoard.saveGame(pieces, currentTurn);
             } catch (IllegalArgumentException e) {
                 System.err.println(e.getMessage());
             }
         }
+
+        gameBoard.resetGame();
     }
 
-    private Point requestMoveStartPosition(Player player) {
-        Point start = InputView.requestMoveStartPosition();
-        validateBoardRange(start);
+    private boolean isGameOver() {
+        return pieces.isKingDead(Team.HAN) || pieces.isKingDead(Team.CHO);
+    }
 
-        while (!player.isContainPiece(start)) {
-            OutputView.displayWrongPoint();
+    private Point requestMoveStartPosition(Team team) {
+        Point start;
+        do {
             start = InputView.requestMoveStartPosition();
             validateBoardRange(start);
-        }
+        } while (!pieces.isExistPieceInPointWithTeam(start, team));
 
         return start;
     }

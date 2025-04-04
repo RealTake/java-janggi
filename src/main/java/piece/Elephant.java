@@ -4,6 +4,7 @@ import direction.Movement;
 import direction.Point;
 import java.util.List;
 import java.util.Map;
+import team.Team;
 
 public class Elephant extends Piece {
 
@@ -18,24 +19,29 @@ public class Elephant extends Piece {
             Movement.UP_UP_UP_RIGHT_RIGHT, List.of(Movement.UP, Movement.UP_UP_RIGHT)
     );
 
-    public Elephant(String nickname, Point current) {
-        super(nickname, current);
+    public Elephant(Team team, Point current) {
+        super(PieceType.ELEPHANT, team, current);
     }
 
     @Override
-    public void move(Pieces pieces, Point destination) {
+    public void move(final Pieces allPieces, final Point destination) {
         Movement destinationMovement = getDestinationMovement(destination);
         List<Movement> movements = MOVEMENT_PATH.get(destinationMovement);
 
         for (Movement pathMovement : movements) {
             Point nextPoint = current.move(pathMovement);
-            validateIsExistPieceInPoint(pieces, nextPoint);
+            validateIsExistPieceInPoint(allPieces, nextPoint);
         }
 
         current = current.move(destinationMovement);
     }
 
-    private Movement getDestinationMovement(Point destination) {
+    @Override
+    public int score() {
+        return 3;
+    }
+
+    private Movement getDestinationMovement(final Point destination) {
         for (Movement destinationMovement : MOVEMENT_PATH.keySet()) {
             Point predictDestination = current.move(destinationMovement);
             if (predictDestination.equals(destination)) {
@@ -46,8 +52,8 @@ public class Elephant extends Piece {
         throw new IllegalArgumentException("[ERROR] 선택할 수 없는 목적지입니다.");
     }
 
-    private static void validateIsExistPieceInPoint(Pieces pieces, Point nextPoint) {
-        if (pieces.isExistPieceIn(nextPoint)) {
+    private void validateIsExistPieceInPoint(final Pieces pieces, Point nextPoint) {
+        if (pieces.isExistPieceInPoint(nextPoint)) {
             throw new IllegalArgumentException("[ERROR] 경로에 기물이 존재합니다.");
         }
     }
