@@ -1,9 +1,9 @@
 package domain.pattern;
 
-import static domain.Fixtures._FIVE_ONE;
-import static domain.Fixtures._NINE_TWO;
-import static domain.Fixtures._ZERO_NINE;
-import static domain.Fixtures._ZERO_ONE;
+import static domain.Fixtures.NINE_ZERO;
+import static domain.Fixtures.ONE_FIVE;
+import static domain.Fixtures.ONE_ZERO;
+import static domain.Fixtures.TWO_NINE;
 
 import domain.JanggiPosition;
 import domain.piece.Chariot;
@@ -21,25 +21,25 @@ public class ChariotPathTest {
     Piece piece = new Chariot(Side.CHO);
 
     @ParameterizedTest
-    @MethodSource("provide차Path")
+    @MethodSource("provideChariotPath")
     void 차의_이동_전_후_위치를_입력받으면_알맞은_경로를_찾을_수_있다(JanggiPosition afterPosition, List<Pattern> path) {
         // when
-        List<Pattern> chariotPath = piece.findMovablePath(_ZERO_ONE, afterPosition);
+        List<Pattern> chariotPath = piece.findMovablePath(ONE_ZERO, afterPosition);
 
-        // when & then
+        // then
         Assertions.assertThat(chariotPath).containsAll(path);
     }
 
-    static Stream<Arguments> provide차Path() {
-        Path pathOfChariot = new ChariotPath();
+    static Stream<Arguments> provideChariotPath() {
+        Path pathOfChariot = new Path(Direction.createChariotOrCannonPatternMap());
         return Stream.of(
-                Arguments.of(_FIVE_ONE,
+                Arguments.of(ONE_FIVE,
                         List.of(pathOfChariot.getPatterns(Direction.UP).getFirst(),
                                 pathOfChariot.getPatterns(Direction.UP).getFirst(),
                                 pathOfChariot.getPatterns(Direction.UP).getFirst(),
                                 pathOfChariot.getPatterns(Direction.UP).getFirst(),
                                 pathOfChariot.getPatterns(Direction.UP).getFirst())),
-                Arguments.of(_ZERO_NINE,
+                Arguments.of(NINE_ZERO,
                         List.of(pathOfChariot.getPatterns(Direction.RIGHT).getFirst(),
                                 pathOfChariot.getPatterns(Direction.RIGHT).getFirst(),
                                 pathOfChariot.getPatterns(Direction.RIGHT).getFirst(),
@@ -54,7 +54,7 @@ public class ChariotPathTest {
     @Test
     void 차의_이동_전_후_위치가_알맞지_않으면_예외를_발생시킨다() {
         // when & then
-        Assertions.assertThatThrownBy(() -> piece.findMovablePath(_ZERO_ONE, _NINE_TWO))
+        Assertions.assertThatThrownBy(() -> piece.findMovablePath(ONE_ZERO, TWO_NINE))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

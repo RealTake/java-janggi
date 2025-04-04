@@ -7,13 +7,15 @@ import java.util.Map;
 public interface GameState {
     GameState start();
 
-    GameState move(JanggiPosition beforePosition, JanggiPosition afterPosition);
+    GameState playSingleTurn(JanggiPosition beforePosition, JanggiPosition afterPosition);
 
-    GameState end();
-
-    Boolean isEnd();
+    boolean isEnd();
 
     Map<JanggiPosition, Piece> getBoard();
 
     Player getCurrentPlayer();
+
+    int getChoScore();
+
+    int getHanScore();
 }

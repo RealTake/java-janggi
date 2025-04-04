@@ -6,8 +6,8 @@ import domain.piece.Side;
 public class Player {
     private Side side;
 
-    public Player() {
-        this.side = Side.CHO;
+    public Player(Side side) {
+        this.side = side;
     }
 
     public Side getSide() {
@@ -19,7 +19,9 @@ public class Player {
             this.side = Side.HAN;
             return;
         }
-        this.side = Side.CHO;
+        if (this.side == Side.HAN) {
+            this.side = Side.CHO;
+        }
     }
 
     public boolean isMyPiece(Piece piece) {

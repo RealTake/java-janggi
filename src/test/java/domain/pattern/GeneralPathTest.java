@@ -1,11 +1,10 @@
 package domain.pattern;
 
-import static domain.Fixtures._EIGHT_FIVE;
-import static domain.Fixtures._EIGHT_FOUR;
-import static domain.Fixtures._NINE_FIVE;
-import static domain.Fixtures._NINE_FOUR;
-import static domain.Fixtures._NINE_SIX;
-import static domain.Fixtures._ZERO_FIVE;
+import static domain.Fixtures.FIVE_EIGHT;
+import static domain.Fixtures.FIVE_NINE;
+import static domain.Fixtures.FIVE_ZERO;
+import static domain.Fixtures.FOUR_NINE;
+import static domain.Fixtures.SIX_NINE;
 
 import domain.JanggiPosition;
 import domain.piece.General;
@@ -24,29 +23,29 @@ public class GeneralPathTest {
 
     @ParameterizedTest
     @MethodSource("provideGeneralPath")
-    void General의_이동_전_후_위치를_입력받으면_알맞은_경로를_찾을_수_있다(JanggiPosition afterPostion, List<Pattern> path) {
+    void General의_이동_전_후_위치를_입력받으면_알맞은_경로를_찾을_수_있다(JanggiPosition afterPosition, List<Pattern> path) {
         // when
-        List<Pattern> Generalpath = piece.findMovablePath(_NINE_FIVE, afterPostion);
+        List<Pattern> generalPath = piece.findMovablePath(FIVE_NINE, afterPosition);
 
-        // when & then
-        Assertions.assertThat(Generalpath)
+        // then
+        Assertions.assertThat(generalPath)
                 .isEqualTo(path);
     }
 
     static Stream<Arguments> provideGeneralPath() {
-        Path pathOfGeneral = new GeneralPath();
+        Path pathOfGeneral = new Path(Direction.createGeneralOrGuardPatternMap());
         return Stream.of(
-                Arguments.of(_EIGHT_FIVE, pathOfGeneral.getPatterns(Direction.UP)),
-                Arguments.of(_NINE_FOUR, pathOfGeneral.getPatterns(Direction.LEFT)),
-                Arguments.of(_NINE_SIX, pathOfGeneral.getPatterns(Direction.RIGHT)),
-                Arguments.of(_ZERO_FIVE, pathOfGeneral.getPatterns(Direction.DOWN)));
+                Arguments.of(FIVE_EIGHT, pathOfGeneral.getPatterns(Direction.UP)),
+                Arguments.of(FOUR_NINE, pathOfGeneral.getPatterns(Direction.LEFT)),
+                Arguments.of(SIX_NINE, pathOfGeneral.getPatterns(Direction.RIGHT)),
+                Arguments.of(FIVE_ZERO, pathOfGeneral.getPatterns(Direction.DOWN)));
     }
 
     @Test
     void General의_이동_전_후_위치가_알맞지_않으면_예외를_발생시킨다() {
         // when & then
         Assertions.assertThatThrownBy(
-                        () -> piece.findMovablePath(_NINE_FIVE, _EIGHT_FOUR))
+                        () -> piece.findMovablePath(FIVE_EIGHT, SIX_NINE))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

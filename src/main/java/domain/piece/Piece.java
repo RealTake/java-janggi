@@ -12,6 +12,7 @@ public abstract class Piece {
     protected final Side side;
     protected Path path;
     protected PieceState state;
+    private Piece targetPiece;
 
     public Piece(int score, Side side, Path path, PieceState state) {
         this.score = score;
@@ -19,6 +20,8 @@ public abstract class Piece {
         this.path = path;
         this.state = state;
     }
+
+    public abstract PieceSymbol getPieceSymbol();
 
     public List<Pattern> findMovablePath(JanggiPosition beforePosition, JanggiPosition afterPosition) {
         return state.findMovablePath(path, beforePosition, afterPosition);
@@ -32,11 +35,22 @@ public abstract class Piece {
         return this.side == otherSide;
     }
 
-    public void captureIfNotMySide(Piece piece) {
-        if (piece.side == this.side) {
-            return;
+    public void capture(Piece targetPiece) {
+        if (canCapture(targetPiece)) {
+            targetPiece.beCaptured();
         }
+    }
+
+    public boolean canCapture(Piece targetPiece) {
+        return !targetPiece.isEmpty();
+    }
+
+    public void beCaptured() {
         this.state = state.captured();
+    }
+
+    public boolean isGeneral() {
+        return false;
     }
 
     public Side getSide() {
@@ -71,5 +85,9 @@ public abstract class Piece {
 
     public void validateMove(List<Piece> hurdlePieces) {
         state.validateMove(hurdlePieces);
+    }
+
+    public int getScore() {
+        return score;
     }
 }

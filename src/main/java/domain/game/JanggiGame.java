@@ -3,9 +3,16 @@ package domain.game;
 import domain.JanggiPosition;
 import domain.piece.Piece;
 import java.util.Map;
+import service.JanggiService;
 
 public class JanggiGame {
-    private GameState state = new Start();
+    private final JanggiService janggiService;
+    private GameState state;
+
+    public JanggiGame(JanggiService janggiService) {
+        this.janggiService = janggiService;
+        state = new Start(janggiService);
+    }
 
     public Map<JanggiPosition, Piece> start() {
         state = state.start();
@@ -13,14 +20,9 @@ public class JanggiGame {
     }
 
     public Map<JanggiPosition, Piece> move(JanggiPosition beforePosition, JanggiPosition afterPosition) {
-        state = state.move(beforePosition, afterPosition);
+        state = state.playSingleTurn(beforePosition, afterPosition);
         return state.getBoard();
     }
-
-//    public Map<JanggiPosition, Piece> end() {
-//        state = state.end();
-//        return state.getBoard();
-//    }
 
     public boolean isEnd() {
         return state.isEnd();
@@ -28,5 +30,13 @@ public class JanggiGame {
 
     public Player getPlayer() {
         return state.getCurrentPlayer();
+    }
+
+    public int getChoScore() {
+        return state.getChoScore();
+    }
+
+    public int getHanScore() {
+        return state.getHanScore();
     }
 }

@@ -13,11 +13,12 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class ContinuousPiece extends Moved {
+    @Override
     public List<Pattern> findMovablePath(Path path, JanggiPosition beforePosition, JanggiPosition afterPosition) {
-        if (afterPosition.file() == beforePosition.file()) {
+        if (afterPosition.isSameFileWith(beforePosition)) {
             return setNewPathAndGetAdditionalSizeAboutLeftOrRight(path, beforePosition, afterPosition);
         }
-        if (afterPosition.rank() == beforePosition.rank()) {
+        if (afterPosition.isSameRankWith(beforePosition)) {
             return setNewPathAndGetAdditionalSizeAboutUpOrDown(path, beforePosition, afterPosition);
         }
         throw new IllegalArgumentException("해당 경로로 이동할 수 없습니다.");
@@ -27,12 +28,12 @@ public abstract class ContinuousPiece extends Moved {
                                                                          JanggiPosition afterPosition) {
         Direction newPath;
         int additionalSize;
-        if (afterPosition.isBiggerYThan(beforePosition)) {
+        if (afterPosition.isBiggerRankThan(beforePosition)) {
             newPath = RIGHT;
-            additionalSize = afterPosition.getYGap(beforePosition);
+            additionalSize = afterPosition.getRankGap(beforePosition);
         } else {
             newPath = LEFT;
-            additionalSize = afterPosition.getYGap(beforePosition);
+            additionalSize = afterPosition.getRankGap(beforePosition);
         }
         return createPattern(path, newPath, additionalSize);
     }
@@ -41,12 +42,12 @@ public abstract class ContinuousPiece extends Moved {
                                                                       JanggiPosition afterPosition) {
         Direction newPath;
         int additionalSize;
-        if (afterPosition.isBiggerXThan(beforePosition)) {
+        if (afterPosition.isBiggerFileThan(beforePosition)) {
             newPath = DOWN;
-            additionalSize = afterPosition.getXGap(beforePosition);
+            additionalSize = afterPosition.getFileGap(beforePosition);
         } else {
             newPath = UP;
-            additionalSize = afterPosition.getXGap(beforePosition);
+            additionalSize = afterPosition.getFileGap(beforePosition);
         }
         return createPattern(path, newPath, additionalSize);
     }

@@ -2,17 +2,18 @@ package domain;
 
 import domain.piece.Empty;
 import domain.piece.Piece;
-import domain.piece.state.PieceState;
-import java.util.ArrayList;
+import domain.piece.Side;
 import java.util.List;
 import java.util.Map;
 
 public class JanggiBoard {
 
     private final Map<JanggiPosition, Piece> janggiBoard;
+    private int choScore = 0;
+    private int hanScore = 0;
 
-    public JanggiBoard() {
-        this.janggiBoard = JanggiBoardFactory.createJanggiBoard();
+    public JanggiBoard(Map<JanggiPosition, Piece> janggiBoard) {
+        this.janggiBoard = janggiBoard;
     }
 
     public Map<JanggiPosition, Piece> getJanggiBoard() {
@@ -20,21 +21,16 @@ public class JanggiBoard {
     }
 
     public void move(JanggiPosition beforePosition, JanggiPosition afterPosition) {
+        afterPosition.validateBound();
+
         Piece piece = getPieceFrom(beforePosition);
         Piece targetPiece = getPieceFrom(afterPosition);
 
-        validateEmptyPiece(piece);
         validateDestinationPiece(piece, targetPiece);
         validateMovePattern(piece, beforePosition, afterPosition);
 
         changeState(piece, targetPiece);
         changePosition(beforePosition, afterPosition);
-    }
-
-    private void validateEmptyPiece(Piece piece) {
-        if (piece.isEmpty()) {
-            throw new IllegalArgumentException("기물이 없어서 이동할 수 없습니다.");
-        }
     }
 
     private void validateDestinationPiece(Piece piece, Piece targetPiece) {
@@ -50,44 +46,47 @@ public class JanggiBoard {
     }
 
     private List<Piece> getPiecesFrom(List<JanggiPosition> positions) {
-        List<Piece> pieces = new ArrayList<>();
-        for (JanggiPosition position : positions) {
-            Piece piece = getPieceFrom(position);
-            if (!piece.isEmpty()) {
-                pieces.add(piece);
-            }
-        }
-        return pieces;
+        return positions.stream()
+                .map(this::getPieceFrom)
+                .filter(p -> !p.isEmpty())
+                .toList();
     }
 
     public Piece getPieceFrom(JanggiPosition position) {
-        Piece piece = janggiBoard.get(position);
-        if (piece == null) {
-            return new Empty();
-        }
-        return piece;
+        return janggiBoard.get(position);
     }
 
     private void changeState(Piece piece, Piece targetPiece) {
         piece.updateState();
-
-        if (!targetPiece.isEmpty()) {
-            targetPiece.captureIfNotMySide(piece);
-        }
+        piece.capture(targetPiece);
+        updateScore(piece, targetPiece);
     }
 
     private void changePosition(JanggiPosition beforePosition, JanggiPosition afterPosition) {
         Piece piece = getPieceFrom(beforePosition);
-        afterPosition.validateBound();
 
         janggiBoard.put(beforePosition, new Empty());
         janggiBoard.put(afterPosition, piece);
     }
 
-    public boolean isGeneralDead(PieceState targetPiece) {
-        if (targetPiece == null) {
-            return false;
-        }
+    public boolean isGeneralDead(Piece targetPiece) {
         return targetPiece.isGeneral();
+    }
+
+    private void updateScore(Piece piece, Piece targetPiece) {
+        if (piece.getSide().equals(Side.CHO)) {
+            choScore = choScore + targetPiece.getScore();
+        }
+        if (piece.getSide().equals(Side.HAN)) {
+            hanScore = hanScore + targetPiece.getScore();
+        }
+    }
+
+    public int getChoScore() {
+        return choScore;
+    }
+
+    public int getHanScore() {
+        return hanScore;
     }
 }

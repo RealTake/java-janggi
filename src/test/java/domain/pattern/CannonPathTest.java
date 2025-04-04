@@ -1,9 +1,9 @@
 package domain.pattern;
 
-import static domain.Fixtures._FIVE_ONE;
-import static domain.Fixtures._NINE_TWO;
-import static domain.Fixtures._ONE_NINE;
-import static domain.Fixtures._ZERO_ONE;
+import static domain.Fixtures.NINE_ZERO;
+import static domain.Fixtures.ONE_FIVE;
+import static domain.Fixtures.ONE_ZERO;
+import static domain.Fixtures.TWO_NINE;
 
 import domain.JanggiPosition;
 import domain.piece.Cannon;
@@ -21,35 +21,34 @@ public class CannonPathTest {
     Piece piece = new Cannon(Side.CHO);
 
     @ParameterizedTest
-    @MethodSource("provide포Path")
+    @MethodSource("provideCannonPath")
     void 포의_이동_전_후_위치를_입력받으면_알맞은_경로를_찾을_수_있다(JanggiPosition afterPosition, List<Pattern> path) {
         // when
-        List<Pattern> cannonPath = piece.findMovablePath(_ZERO_ONE, afterPosition);
+        List<Pattern> cannonPath = piece.findMovablePath(ONE_ZERO, afterPosition);
 
-        // when & then
-        Assertions.assertThat(cannonPath).containsAll(path);
+        // then
+        Assertions.assertThat(cannonPath).isEqualTo(path);
     }
 
-    static Stream<Arguments> provide포Path() {
-        Path pathOfCannon = new CannonPath();
+    static Stream<Arguments> provideCannonPath() {
+        Path pathOfCannon = new Path(Direction.createChariotOrCannonPatternMap());
         return Stream.of(
-                Arguments.of(_FIVE_ONE,
+                Arguments.of(ONE_FIVE,
                         List.of(pathOfCannon.getPatterns(Direction.UP).getFirst(),
                                 pathOfCannon.getPatterns(Direction.UP).getFirst(),
                                 pathOfCannon.getPatterns(Direction.UP).getFirst(),
                                 pathOfCannon.getPatterns(Direction.UP).getFirst(),
                                 pathOfCannon.getPatterns(Direction.UP).getFirst()
-                        ),
-                        Arguments.of(_ONE_NINE,
-                                List.of(pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
-                                        pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
-                                        pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
-                                        pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
-                                        pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
-                                        pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
-                                        pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
-                                        pathOfCannon.getPatterns(Direction.RIGHT).getFirst()
-                                )
+                        )),
+                Arguments.of(NINE_ZERO,
+                        List.of(pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
+                                pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
+                                pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
+                                pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
+                                pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
+                                pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
+                                pathOfCannon.getPatterns(Direction.RIGHT).getFirst(),
+                                pathOfCannon.getPatterns(Direction.RIGHT).getFirst()
                         )
                 ));
     }
@@ -57,7 +56,7 @@ public class CannonPathTest {
     @Test
     void 포의_이동_전_후_위치가_알맞지_않으면_예외를_발생시킨다() {
         // when & then
-        Assertions.assertThatThrownBy(() -> piece.findMovablePath(_ZERO_ONE, _NINE_TWO))
+        Assertions.assertThatThrownBy(() -> piece.findMovablePath(ONE_ZERO, TWO_NINE))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
