@@ -1,30 +1,13 @@
-import board.Board;
-import board.BoardFactory;
-import position.Position;
-import piece.Country;
-import position.LineDirection;
-import view.InputView;
-import view.OutputView;
+// TODO 2025. 4. 4. 00:23: 도커 사용법, README에 작성하기
 
-import java.util.List;
+import controller.JanggiController;
+import database.MysqlConnectionManager;
 
 public class Application {
 
-    private static final int MAX_TRY_COUNT = 150;
-
     public static void main(String[] args) {
-        OutputView.printIntroduce();
 
-        final BoardFactory boardFactory = new BoardFactory(Country.HAN, LineDirection.UP);
-        final Board board = boardFactory.generateBoard();
-        Country type = Country.getDefaultTeam();
-
-        int count = 0;
-        while (++count < MAX_TRY_COUNT) {
-            type = type.opposite();
-            OutputView.printBoard(board, type);
-            final List<Position> positions = InputView.readPositions();
-            board.updatePosition(positions.get(0), positions.get(1), type);
-        }
+        JanggiController controller = new JanggiController(new MysqlConnectionManager());
+        controller.run();
     }
 }

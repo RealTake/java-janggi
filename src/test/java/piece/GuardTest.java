@@ -1,11 +1,14 @@
 package piece;
 
-import board.Board;
-import org.assertj.core.api.Assertions;
+import domain.board.Board;
+import domain.board.Palace;
+import domain.piece.Country;
+import domain.piece.Guard;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import position.LineDirection;
-import position.Position;
+import domain.position.LineDirection;
+import domain.position.Position;
+import domain.position.PositionFactory;
 
 import java.util.Map;
 
@@ -14,38 +17,95 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 class GuardTest {
 
-    @DisplayName("출발지에서 도착지까지의 거리는 1이여야 한다.")
+    @DisplayName("인접 노드 한칸을 움직인다.")
     @Test
-    void distance() {
+    void adjacentPosition() {
         // given
+        PositionFactory positionFactory = new PositionFactory();
+        positionFactory.basicSettingGraph();
+
         Country dumyCountry = Country.HAN;
         Country.assignDirection(dumyCountry, LineDirection.UP);
-        Position dumyPosition = new Position(2, 3);
-        final Guard guard = new Guard(dumyPosition, dumyCountry);
-        double expected = 1.0;
 
-        // when
-        double actual = guard.getExpectedDistance();
-        // then
-        Assertions.assertThat(actual).isEqualTo(expected);
-    }
-
-    @DisplayName("Guard은 주변 한칸으로 이동할 수 있다.")
-    @Test
-    void validateMove() {
-        // given
-        final Position src = new Position(1, 1);
-        final Piece guard = new Guard(src, Country.HAN);
-        final Board board = new Board(Map.of(src, guard));
+        Position dumyPosition = new Position(5, 2);
+        Position src = dumyPosition;
+        final Guard guard = new Guard(src, dumyCountry);
+        Board board = new Board(Map.of(
+                src, guard
+        ));
 
         // when & then : 1 : success
-        final Position validDest = new Position(1, 2);
-        assertThatCode(() -> guard.validateMove(src, validDest, board))
-                .doesNotThrowAnyException();
+        Position canReachDestPosition = new Position(4, 2);
+        assertThatCode(
+                () -> guard.validateMove(src, canReachDestPosition, board)
+        ).doesNotThrowAnyException();
 
         // when & then : 2 : failure
-        final Position invalidDest = new Position(1, 3);
-        assertThatThrownBy(() -> guard.validateMove(src, invalidDest, board))
-                .isInstanceOf(IllegalArgumentException.class);
+        Position canNotReachDestPosition = new Position(5, 5);
+        assertThatThrownBy(
+                () -> guard.validateMove(src, canNotReachDestPosition, board)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("인접 노드 한칸을 움직인다. : 대각선")
+    @Test
+    void adjacentPositionWithDiagonalSetting() {
+        // given
+        PositionFactory positionFactory = new PositionFactory();
+        positionFactory.basicSettingGraph();
+        positionFactory.diagonalSettingGraph(Palace.getAllPositions());
+
+        Country dumyCountry = Country.HAN;
+        Country.assignDirection(dumyCountry, LineDirection.UP);
+
+        Position dumyPosition = new Position(4, 3);
+        Position src = dumyPosition;
+        final Guard guard = new Guard(src, dumyCountry);
+        Board board = new Board(Map.of(
+                src, guard
+        ));
+
+        // when & then : 1 : success
+        Position canReachDestPosition = new Position(5, 2);
+        assertThatCode(
+                () -> guard.validateMove(src, canReachDestPosition, board)
+        ).doesNotThrowAnyException();
+
+        // when & then : 2 : failure
+        Position canNotReachDestPosition = new Position(5, 4);
+        assertThatThrownBy(
+                () -> guard.validateMove(src, canNotReachDestPosition, board)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("궁성 밖을 빠져나갈 수 없다.")
+    @Test
+    void validateMoveByPalaceBound() {
+        // given
+        PositionFactory positionFactory = new PositionFactory();
+        positionFactory.basicSettingGraph();
+        positionFactory.diagonalSettingGraph(Palace.getAllPositions());
+
+        Country dumyCountry = Country.HAN;
+        Country.assignDirection(dumyCountry, LineDirection.UP);
+
+        Position dumyPosition = new Position(4, 3);
+        Position src = dumyPosition;
+        final Guard guard = new Guard(src, dumyCountry);
+        Board board = new Board(Map.of(
+                src, guard
+        ));
+
+        // when & then : 1 : success
+        Position canReachDestPosition = new Position(5, 3);
+        assertThatCode(
+                () -> guard.validateMove(src, canReachDestPosition, board)
+        ).doesNotThrowAnyException();
+
+        // when & then : 2 : failure
+        Position canNotReachDestPosition = new Position(4, 4);
+        assertThatThrownBy(
+                () -> guard.validateMove(src, canNotReachDestPosition, board)
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 }

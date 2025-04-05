@@ -1,14 +1,15 @@
 package board;
 
+import domain.board.Board;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import piece.Cannon;
-import piece.Country;
-import piece.General;
-import piece.Piece;
-import position.Position;
+import domain.piece.Cannon;
+import domain.piece.Country;
+import domain.piece.General;
+import domain.piece.Piece;
+import domain.position.Position;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class BoardTest {
             final var board = new Board(new HashMap<>());
 
             // then
-            assertThat(board.getPieces()).isNotNull();
+            assertThat(board.getPieceMap()).isNotNull();
         }
     }
 
@@ -110,7 +111,7 @@ public class BoardTest {
 
 
             // when & then
-            Assertions.assertThatThrownBy(() -> board.updatePosition(src, dest, country))
+            Assertions.assertThatThrownBy(() -> board.updatePosition(src, dest, country.opposite()))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }

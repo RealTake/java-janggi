@@ -1,11 +1,13 @@
 package board;
 
+import domain.board.Board;
+import domain.board.BoardFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import piece.Country;
-import position.LineDirection;
+import domain.piece.Country;
+import domain.position.LineDirection;
 
 public class BoardFactoryTest {
 
@@ -24,7 +26,7 @@ public class BoardFactoryTest {
             final Board board = factory.generateBoard();
 
             // then
-            Assertions.assertThat(board.getPieces()).hasSize(expected);
+            Assertions.assertThat(board.getPieceMap()).hasSize(expected);
         }
     }
 }
