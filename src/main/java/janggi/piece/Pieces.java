@@ -112,25 +112,41 @@ public class Pieces {
         return Collections.unmodifiableMap(pieces);
     }
 
-    public boolean isEachCannonPiece(final Position start, final Position end) {
-        if (!pieces.containsKey(start) || !pieces.containsKey(end)) {
-            return false;
-        }
-        Piece startPiece = pieces.get(start);
-        Piece endPiece = pieces.get(end);
-        return startPiece.isCannon() && endPiece.isCannon();
-    }
-
     public long countPieceOnPath(final List<Position> path) {
         return path.stream()
                 .filter(pieces::containsKey)
                 .count();
     }
 
-    public boolean isCannonPieceOnPath(final List<Position> path) {
-        return path.stream()
-                .anyMatch(position -> pieces.containsKey(position) &&
-                        pieces.get(position).isCannon());
+    public int calculatePieceScore(final Color color) {
+        return pieces.values()
+                .stream()
+                .filter(piece -> piece.getSide() == color)
+                .mapToInt(Piece::getScore)
+                .sum();
     }
 
+    public boolean isSamePieceType(final Position start, final Position end) {
+        if (!pieces.containsKey(start) || !pieces.containsKey(end)) {
+            return false;
+        }
+        final Piece startPiece = pieces.get(start);
+        final Piece endPiece = pieces.get(end);
+        return startPiece.isSamePieceType(endPiece);
+    }
+    
+    public boolean isSamePieceTypeOnPath(final List<Position> path, final Piece piece) {
+        return path.stream()
+                .anyMatch(position -> pieces.containsKey(position) &&
+                        pieces.get(position)
+                                .isSamePieceType(piece));
+    }
+
+    public boolean isMoveable(final Position start, final Position end) {
+        if (!pieces.containsKey(start)) {
+            return false;
+        }
+        final Piece startPositionPiece = pieces.get(start);
+        return startPositionPiece.isMoveable(start, end, this);
+    }
 }
