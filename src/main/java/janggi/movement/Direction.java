@@ -1,8 +1,8 @@
-package janggi.piece;
+package janggi.movement;
 
 import janggi.position.Position;
 
-public enum Movement {
+public enum Direction {
     UP(-1, 0),
     DOWN(1, 0),
     RIGHT(0, 1),
@@ -15,7 +15,7 @@ public enum Movement {
     private final int row;
     private final int column;
 
-    Movement(int row, int column) {
+    Direction(int row, int column) {
         this.row = row;
         this.column = column;
     }

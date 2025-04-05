@@ -1,24 +1,24 @@
 package janggi.piece;
 
+import janggi.movement.Movement;
 import janggi.position.Position;
 import janggi.team.Team;
 
 import java.util.List;
 
 public interface Piece {
-    void move(Position arrivedPosition, List<Piece> positioningPiece);
+    Position move(Position startPosition, Position arrivedPosition);
+
+    Movement findAvailableMovementByArrivedPosition(Position startPosition, Position arrivedPosition);
+
+    List<Position> extractPathPositions(Position startPosition, Position arrivedPosition);
 
     boolean isSameTeam(Team team);
 
-    boolean matchesPosition(Position position);
-
-    boolean isObstacle(List<Position> pathPositions);
-
-    boolean canNotJumpOver();
-
-    Position getPosition();
+    boolean isJumpable();
 
     Team getTeam();
 
-    PieceType getpieceType();
+    PieceType getPieceType();
+
 }
