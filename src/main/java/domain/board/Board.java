@@ -2,6 +2,7 @@ package domain.board;
 
 import domain.piece.Piece;
 import domain.piece.PieceType;
+import domain.piece.Score;
 import domain.piece.Team;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,14 +87,14 @@ public class Board {
         final BoardPosition destinationBoardPosition
     ) {
         final Piece selectedPiece = pieces.get(selectBoardPosition);
-        final List<Offset> movementRule = selectedPiece.findMovementRule(selectBoardPosition,
-            destinationBoardPosition);
+        final Movement movement = new Movement(selectBoardPosition, destinationBoardPosition);
+        final List<Offset> movementRule = selectedPiece.findMovementRule(movement);
 
         final List<Piece> obstacles = calculateObstacles(selectBoardPosition,
             destinationBoardPosition, movementRule);
         final Piece destinationPiece = pieces.get(destinationBoardPosition);
 
-        selectedPiece.validateMoveRule(obstacles, destinationPiece);
+        selectedPiece.validateMovementConditions(obstacles, destinationPiece);
     }
 
     private List<Piece> calculateObstacles(
@@ -140,6 +141,24 @@ public class Board {
 
         pieces.remove(selectBoardPosition);
         pieces.put(destinationBoardPosition, selectedPiece);
+    }
+
+    public Score calculateScore(final Team team) {
+        final List<Piece> teamPieces = pieces.values()
+            .stream()
+            .filter(piece -> piece.isSameTeam(team))
+            .toList();
+
+        return calculatePiecesScore(teamPieces);
+    }
+
+    private Score calculatePiecesScore(final List<Piece> pieces) {
+        Score totalScore = new Score(0);
+        for (final Piece piece : pieces) {
+            totalScore = totalScore.add(piece.getScore());
+        }
+
+        return totalScore;
     }
 
     public boolean isOnlyOneKingLeft() {

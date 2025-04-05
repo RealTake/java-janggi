@@ -1,8 +1,9 @@
 package domain.piece;
 
-import domain.board.BoardPosition;
+import domain.board.Movement;
 import domain.board.Offset;
 import java.util.List;
+import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class Piece {
@@ -28,18 +29,15 @@ public abstract class Piece {
         }
     }
 
-    public abstract List<Offset> findMovementRule(
-        final BoardPosition selectedPosition,
-        final BoardPosition destinationBoardPosition
-    );
+    public abstract List<Offset> findMovementRule(final Movement movement);
 
-    public void validateMoveRule(
+    public void validateMovementConditions(
         final List<Piece> obstacles,
         @Nullable
         final Piece destinationPiece
     ) {
         if (!obstacles.isEmpty()) {
-            throw new IllegalArgumentException("해당 말은 장애물을 넘을 수 앖습니다.");
+            throw new IllegalArgumentException("해당 말은 장애물을 넘을 수 없습니다.");
         }
     }
 
@@ -57,5 +55,22 @@ public abstract class Piece {
 
     public Team getTeam() {
         return team;
+    }
+
+    public abstract Score getScore();
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final Piece piece = (Piece) o;
+        return pieceType == piece.pieceType && team == piece.team;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceType, team);
     }
 }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import domain.board.BoardPosition;
+import domain.board.Movement;
 import domain.board.Offset;
 import java.util.List;
 import java.util.stream.Stream;
@@ -22,14 +23,15 @@ class CannonTest {
 
         @DisplayName("포는 직선 경로로 이동할 수 있다.")
         @Test
-        void findMovementRule() {
+        void findMovementRule_outPalace() {
             // given
             Cannon cannon = new Cannon(Team.RED);
             BoardPosition from = new BoardPosition(0, 0);
             BoardPosition to = new BoardPosition(0, 4);
+            Movement movement = new Movement(from, to);
 
             // when
-            List<Offset> result = cannon.findMovementRule(from, to);
+            List<Offset> result = cannon.findMovementRule(movement);
 
             // then
             assertThat(result).isEqualTo(List.of(
@@ -40,16 +42,35 @@ class CannonTest {
             ));
         }
 
+        @DisplayName("포는 궁성 내부에서 대각선으로 이동할 수 있다.")
+        @Test
+        void findMovementRule_inPalace() {
+            // given
+            Cannon cannon = new Cannon(Team.GREEN);
+            BoardPosition from = BoardPosition.GREEN_PALACE_SOUTH_WEST;
+            BoardPosition to = BoardPosition.GREEN_PALACE_NORTH_EAST;
+            Movement movement = new Movement(from, to);
+
+            // when
+            List<Offset> result = cannon.findMovementRule(movement);
+
+            // then
+            assertThat(result).isEqualTo(List.of(
+                new Offset(1, 1),
+                new Offset(1, 1)
+            ));
+        }
+
         @DisplayName("포는 장애물을 하나 넘어 이동할 수 있다.")
         @Test
-        void validateMoveRule() {
+        void validateMovementConditions() {
             // given
             Cannon cannon = new Cannon(Team.RED);
             List<Piece> obstacles = List.of(new Jju(Team.GREEN));
             Piece destination = new Jju(Team.GREEN);
 
             // when & then
-            assertThatCode(() -> cannon.validateMoveRule(obstacles, destination))
+            assertThatCode(() -> cannon.validateMovementConditions(obstacles, destination))
                 .doesNotThrowAnyException();
         }
 
@@ -130,49 +151,52 @@ class CannonTest {
             Cannon cannon = new Cannon(Team.RED);
             BoardPosition from = new BoardPosition(0, 0);
             BoardPosition to = new BoardPosition(2, 2);
+            Movement movement = new Movement(from, to);
 
             // when & then
-            assertThatThrownBy(() -> cannon.findMovementRule(from, to))
+            assertThatThrownBy(() -> cannon.findMovementRule(movement))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 말은 이동할 수 없습니다.");
         }
 
         @DisplayName("포는 장애물이 하나가 아니라면 넘을 수 없다.")
         @Test
-        void validateMoveRule_manyObstacles() {
+        void validateMovementConditions_manyObstacles() {
             // given
             Cannon cannon = new Cannon(Team.RED);
             List<Piece> obstacles = List.of(new Jju(Team.RED), new Jju(Team.GREEN));
 
             // when & then
-            assertThatThrownBy(() -> cannon.validateMoveRule(obstacles, new Jju(Team.GREEN)))
+            assertThatThrownBy(
+                () -> cannon.validateMovementConditions(obstacles, new Jju(Team.GREEN)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("포는 장애물을 정확히 하나 넘어야 합니다.");
         }
 
         @DisplayName("포는 포를 넘을 수 없다.")
         @Test
-        void validateMoveRule_overCannon() {
+        void validateMovementConditions_overCannon() {
             // given
             Cannon cannon = new Cannon(Team.RED);
             List<Piece> obstacles = List.of(new Cannon(Team.GREEN));
 
             // when & then
-            assertThatThrownBy(() -> cannon.validateMoveRule(obstacles, new Jju(Team.GREEN)))
+            assertThatThrownBy(
+                () -> cannon.validateMovementConditions(obstacles, new Jju(Team.GREEN)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("포는 포를 넘을 수 없습니다.");
         }
 
         @DisplayName("포는 포를 잡을 수 없다.")
         @Test
-        void validateMoveRule_captureCannon() {
+        void validateMovementConditions_captureCannon() {
             // given
             Cannon cannon = new Cannon(Team.RED);
             List<Piece> obstacles = List.of(new Jju(Team.GREEN));
             Piece destination = new Cannon(Team.GREEN);
 
             // when & then
-            assertThatThrownBy(() -> cannon.validateMoveRule(obstacles, destination))
+            assertThatThrownBy(() -> cannon.validateMovementConditions(obstacles, destination))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("포는 포를 잡을 수 없습니다.");
         }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import domain.board.BoardPosition;
+import domain.board.Movement;
 import domain.board.Offset;
 import java.util.List;
 import java.util.stream.Stream;
@@ -27,9 +28,10 @@ class HorseTest {
             Horse horse = new Horse(Team.RED);
             BoardPosition from = new BoardPosition(4, 4);
             BoardPosition to = new BoardPosition(6, 5);
+            Movement movement = new Movement(from, to);
 
             // when
-            List<Offset> result = horse.findMovementRule(from, to);
+            List<Offset> result = horse.findMovementRule(movement);
 
             // then
             assertThat(result).isEqualTo(List.of(
@@ -40,14 +42,14 @@ class HorseTest {
 
         @DisplayName("마는 장애물이 없으면 이동할 수 있다.")
         @Test
-        void validateMoveRule() {
+        void validateMovementConditions() {
             // given
             Horse horse = new Horse(Team.RED);
             List<Piece> obstacles = List.of();
             Piece destination = new Jju(Team.GREEN);
 
             // when & then
-            assertThatCode(() -> horse.validateMoveRule(obstacles, destination))
+            assertThatCode(() -> horse.validateMovementConditions(obstacles, destination))
                 .doesNotThrowAnyException();
         }
 
@@ -128,25 +130,26 @@ class HorseTest {
             Horse horse = new Horse(Team.RED);
             BoardPosition from = new BoardPosition(0, 0);
             BoardPosition to = new BoardPosition(1, 1);
+            Movement movement = new Movement(from, to);
 
             // when & then
-            assertThatThrownBy(() -> horse.findMovementRule(from, to))
+            assertThatThrownBy(() -> horse.findMovementRule(movement))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 말은 이동할 수 없습니다.");
         }
 
         @DisplayName("마는 장애물을 넘을 수 없다.")
         @Test
-        void validateMoveRule() {
+        void validateMovementConditions() {
             // given
             Horse horse = new Horse(Team.RED);
             List<Piece> obstacles = List.of(new Jju(Team.GREEN));
             Piece destination = new Jju(Team.GREEN);
 
             // when & then
-            assertThatThrownBy(() -> horse.validateMoveRule(obstacles, destination))
+            assertThatThrownBy(() -> horse.validateMovementConditions(obstacles, destination))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 말은 장애물을 넘을 수 앖습니다.");
+                .hasMessage("해당 말은 장애물을 넘을 수 없습니다.");
         }
     }
 }
