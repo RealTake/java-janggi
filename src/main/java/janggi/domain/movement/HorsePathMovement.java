@@ -1,9 +1,9 @@
-package janggi.domain.piece.movement;
+package janggi.domain.movement;
 
-import static janggi.domain.piece.movement.Movement.DOWN;
-import static janggi.domain.piece.movement.Movement.LEFT;
-import static janggi.domain.piece.movement.Movement.RIGHT;
-import static janggi.domain.piece.movement.Movement.UP;
+import static janggi.domain.movement.Movement.DOWN;
+import static janggi.domain.movement.Movement.LEFT;
+import static janggi.domain.movement.Movement.RIGHT;
+import static janggi.domain.movement.Movement.UP;
 
 import janggi.domain.piece.Position;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public enum HorsePathMovement {
     }
 
     public static List<Movement> findPathMovements(final Position beforePosition, final Position afterPosition) {
-        Movement movement = afterPosition.subtract(beforePosition);
+        Movement movement = afterPosition.getMovementTo(beforePosition);
         return find(movement.x(), movement.y()).pathMovements;
     }
 
