@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import domain.board.Column;
+import domain.board.MovePath;
 import domain.board.Position;
 import domain.board.Row;
 import java.util.ArrayList;
@@ -16,8 +17,9 @@ class CannonTest {
         Cannon cannon = new Cannon(PieceColor.RED);
         Position source = new Position(Row.ONE, Column.ONE);
         Position destination = new Position(Row.ONE, Column.FIVE);
+        MovePath movePath = new MovePath(source, destination);
 
-        List<Position> allRoute = cannon.findAllRoute(source, destination);
+        List<Position> allRoute = cannon.findAllRoute(movePath);
 
         assertAll(
                 () -> assertThat(allRoute).hasSize(3),
@@ -26,7 +28,6 @@ class CannonTest {
                 () -> assertThat(allRoute.get(2)).isEqualTo(new Position(Row.ONE, Column.FOUR))
         );
     }
-
 
     @Test
     void 포의_목적지에_같은팀이_있으면_이동불가() {
@@ -88,6 +89,30 @@ class CannonTest {
         List<Piece> piecesOnRoute = List.of(new Elephant(PieceColor.BLUE));
 
         boolean canMove = piece.canMove(cannon, piecesOnRoute);
+        assertThat(canMove).isFalse();
+    }
+
+    @Test
+    void 포는_궁성_내부에서_대각으로_이동가능() {
+        Piece piece = new Cannon(PieceColor.RED);
+        Position source = new Position(Row.ONE, Column.FOUR);
+        Position destination = new Position(Row.THREE, Column.SIX);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = piece.isValidMovement(movePath);
+
+        assertThat(canMove).isTrue();
+    }
+
+    @Test
+    void 포는_궁성_외부에서_대각으로_이동불가능() {
+        Piece piece = new Cannon(PieceColor.RED);
+        Position source = new Position(Row.ONE, Column.ONE);
+        Position destination = new Position(Row.THREE, Column.THREE);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = piece.isValidMovement(movePath);
+
         assertThat(canMove).isFalse();
     }
 }

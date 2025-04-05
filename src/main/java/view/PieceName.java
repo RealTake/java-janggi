@@ -5,6 +5,7 @@ import domain.piece.PieceType;
 import java.util.Arrays;
 
 public enum PieceName {
+
     CANNON(PieceType.CANNON, "포"),
     CHARIOT(PieceType.CHARIOT, "차"),
     ELEPHANT(PieceType.ELEPHANT, "상"),
@@ -27,7 +28,7 @@ public enum PieceName {
                 .filter(pieceName -> piece.isSamePieceType(pieceName.pieceType))
                 .map(pieceName -> pieceName.name)
                 .findAny()
-                .orElse("");
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 기물의 이름이 정의되지 않았습니다."));
     }
 
     public static PieceType getPieceTypeFromName(String name) {

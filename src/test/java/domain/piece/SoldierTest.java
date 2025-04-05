@@ -3,6 +3,7 @@ package domain.piece;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import domain.board.Column;
+import domain.board.MovePath;
 import domain.board.Position;
 import domain.board.Row;
 import java.util.ArrayList;
@@ -19,7 +20,8 @@ class SoldierTest {
 
         Position source = new Position(Row.FOUR, Column.ONE);
         Position destination = new Position(Row.FIVE, Column.ONE);
-        boolean canMove = soldier.isValidMovement(source, destination);
+        MovePath movePath = new MovePath(source, destination);
+        boolean canMove = soldier.isValidMovement(movePath);
 
         assertThat(canMove).isTrue();
     }
@@ -29,8 +31,9 @@ class SoldierTest {
         Soldier soldier = new Soldier(PieceColor.RED);
         Position source = new Position(Row.FOUR, Column.ONE);
         Position destination = new Position(Row.FOUR, Column.TWO);
+        MovePath movePath = new MovePath(source, destination);
 
-        boolean canMove = soldier.isValidMovement(source, destination);
+        boolean canMove = soldier.isValidMovement(movePath);
 
         assertThat(canMove).isTrue();
     }
@@ -40,8 +43,9 @@ class SoldierTest {
         Soldier soldier = new Soldier(PieceColor.RED);
         Position source = new Position(Row.FOUR, Column.ONE);
         Position destination = new Position(Row.THREE, Column.ONE);
+        MovePath movePath = new MovePath(source, destination);
 
-        boolean canMove = soldier.isValidMovement(source, destination);
+        boolean canMove = soldier.isValidMovement(movePath);
 
         assertThat(canMove).isFalse();
     }
@@ -79,4 +83,40 @@ class SoldierTest {
         assertThat(canMove).isTrue();
     }
 
+    @Test
+    void 졸병은_궁성_안에서_대각선_한칸_이동가능() {
+        Piece piece = new Soldier(PieceColor.RED);
+        Position source = new Position(Row.EIGHT, Column.FOUR);
+        Position destination = new Position(Row.NINE, Column.FIVE);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = piece.isValidMovement(movePath);
+
+        assertThat(canMove).isTrue();
+    }
+
+
+    @Test
+    void 졸병은_한나라팀이면_윗방향_이동불가능() {
+        Piece piece = new Soldier(PieceColor.RED);
+        Position source = new Position(Row.ZERO, Column.FOUR);
+        Position destination = new Position(Row.NINE, Column.FIVE);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = piece.isValidMovement(movePath);
+
+        assertThat(canMove).isFalse();
+    }
+
+    @Test
+    void 졸병은_궁성_밖에서_대각선_이동_불가능() {
+        Piece piece = new Soldier(PieceColor.RED);
+        Position source = new Position(Row.SEVEN, Column.FOUR);
+        Position destination = new Position(Row.SIX, Column.FIVE);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = piece.isValidMovement(movePath);
+
+        assertThat(canMove).isFalse();
+    }
 }

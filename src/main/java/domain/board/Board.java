@@ -2,6 +2,7 @@ package domain.board;
 
 import domain.piece.Empty;
 import domain.piece.Piece;
+import domain.piece.PieceColor;
 import domain.piece.PieceType;
 import java.util.List;
 import java.util.Map;
@@ -16,23 +17,35 @@ public class Board {
 
     public void movePiece(PieceType pieceType, Position source, Position destination) {
         validateMove(source, destination);
-        Piece piece = getPieceBy(source);
+        Piece piece = getPieceByPosition(source);
         validateIsMyPieceType(piece, pieceType);
 
         board.remove(source);
         board.put(destination, piece);
     }
 
-    public Piece getPieceBy(Position position) {
+    public Piece getPieceByPosition(Position position) {
         return board.getOrDefault(position, Empty.getInstance());
     }
 
-    private void validateMove(Position source, Position destination) {
-        Piece sourcePiece = getPieceBy(source);
-        Piece destinationPiece = getPieceBy(destination);
-        boolean isValidDestination = sourcePiece.isValidMovement(source, destination);
+    public List<Piece> getPieceByColor(PieceColor color) {
+        return board.values().stream().
+                filter(piece -> piece.getColor() == color).
+                toList();
+    }
 
-        List<Position> route = sourcePiece.findAllRoute(source, destination);
+    public boolean isGeneralKilledByColor(PieceColor color) {
+        return board.values().stream()
+                .noneMatch(piece -> piece.getColor() == color);
+    }
+
+    private void validateMove(Position source, Position destination) {
+        Piece sourcePiece = getPieceByPosition(source);
+        Piece destinationPiece = getPieceByPosition(destination);
+        MovePath movePath = new MovePath(source, destination);
+        boolean isValidDestination = sourcePiece.isValidMovement(movePath);
+
+        List<Position> route = sourcePiece.findAllRoute(movePath);
         List<Piece> piecesOnRoute = getPiecesOnRoute(route);
         boolean canMove = sourcePiece.canMove(destinationPiece, piecesOnRoute);
 
@@ -49,7 +62,11 @@ public class Board {
 
     private List<Piece> getPiecesOnRoute(List<Position> positions) {
         return positions.stream()
-                .map(this::getPieceBy)
+                .map(this::getPieceByPosition)
                 .toList();
+    }
+
+    public Map<Position, Piece> getBoard() {
+        return board;
     }
 }

@@ -1,5 +1,6 @@
 package domain.piece;
 
+import domain.board.MovePath;
 import domain.board.Position;
 import domain.rule.MoveRule;
 import java.util.List;
@@ -8,9 +9,9 @@ public abstract class Piece {
 
     public static final int NO_MOVE = 0;
 
-    final PieceType type;
-    final PieceColor color;
-    final MoveRule moveRule;
+    protected final PieceType type;
+    protected final PieceColor color;
+    protected final MoveRule moveRule;
 
     protected Piece(PieceType type, PieceColor color, MoveRule moveRule) {
         this.type = type;
@@ -49,11 +50,19 @@ public abstract class Piece {
         return this.color != color;
     }
 
+    public PieceType getType() {
+        return type;
+    }
+
     public PieceColor getColor() {
         return color;
     }
 
-    public abstract boolean isValidMovement(Position source, Position destination);
+    public double getPieceScore() {
+        return type.getPieceScore();
+    }
 
-    public abstract List<Position> findAllRoute(Position source, Position destination);
+    public abstract boolean isValidMovement(MovePath movePath);
+
+    public abstract List<Position> findAllRoute(MovePath movePath);
 }

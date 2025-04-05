@@ -1,5 +1,6 @@
 package domain.piece;
 
+import domain.board.MovePath;
 import domain.board.Position;
 import domain.rule.CannonMoveRule;
 import java.util.List;
@@ -11,15 +12,12 @@ public class Cannon extends Piece {
     }
 
     @Override
-    public boolean isValidMovement(Position source, Position destination) {
-        int rowDifference = source.rowDifference(destination);
-        int columnDifference = source.columnDifference(destination);
-
-        return rowDifference == NO_MOVE || columnDifference == NO_MOVE;
+    public boolean isValidMovement(MovePath movePath) {
+        return movePath.isStraight() || movePath.isDiagonalMoveBy(2);
     }
 
     @Override
-    public List<Position> findAllRoute(Position source, Position destination) {
-        return source.getBetweenPositions(destination);
+    public List<Position> findAllRoute(MovePath movePath) {
+        return movePath.getBetweenPositions();
     }
 }

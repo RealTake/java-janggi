@@ -20,7 +20,7 @@ public class OutputView {
             System.out.print(YELLOW_COLOR + row.getValue() % 10 + " " + WHITE_COLOR);
             for (Column column : Column.values()) {
                 Position position = new Position(row, column);
-                Piece piece = board.getPieceBy(position);
+                Piece piece = board.getPieceByPosition(position);
                 String color = applyColor(piece);
                 String pieceName = PieceName.getNameFromPieceType(piece);
 
@@ -35,11 +35,6 @@ public class OutputView {
         System.out.println(getStringColor() + color + "차례입니다.");
     }
 
-    public void printWinner(PieceColor turnColor) {
-        String color = getTeamName(turnColor);
-        System.out.println(color + " 승리");
-    }
-
     private String applyColor(Piece piece) {
         PieceColor color = piece.getColor();
         if (color == PieceColor.RED) {
@@ -49,6 +44,16 @@ public class OutputView {
             return BLUE_COLOR;
         }
         return WHITE_COLOR;
+    }
+
+    public void printWinner(PieceColor winner) {
+        String color = getTeamName(winner);
+        System.out.println(color + " 승리");
+    }
+
+    public void printTeamScore(double teamScore, PieceColor pieceColor) {
+        String color = getTeamName(pieceColor);
+        System.out.println(color + " 기물 점수: " + teamScore);
     }
 
     private static String getTeamName(PieceColor turnColor) {

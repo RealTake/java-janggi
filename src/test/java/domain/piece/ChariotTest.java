@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import domain.board.Column;
+import domain.board.MovePath;
 import domain.board.Position;
 import domain.board.Row;
 import java.util.ArrayList;
@@ -19,7 +20,9 @@ class ChariotTest {
         Chariot chariot = new Chariot(PieceColor.RED);
         Position source = new Position(Row.FOUR, Column.ONE);
         Position destination = new Position(Row.ZERO, Column.ONE);
-        boolean canMove = chariot.isValidMovement(source, destination);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = chariot.isValidMovement(movePath);
 
         assertThat(canMove).isTrue();
     }
@@ -29,7 +32,9 @@ class ChariotTest {
         Chariot chariot = new Chariot(PieceColor.RED);
         Position source = new Position(Row.FOUR, Column.ONE);
         Position destination = new Position(Row.FOUR, Column.THREE);
-        boolean canMove = chariot.isValidMovement(source, destination);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = chariot.isValidMovement(movePath);
 
         assertThat(canMove).isTrue();
     }
@@ -39,7 +44,9 @@ class ChariotTest {
         Chariot chariot = new Chariot(PieceColor.RED);
         Position source = new Position(Row.FOUR, Column.ONE);
         Position destination = new Position(Row.ZERO, Column.TWO);
-        boolean canMove = chariot.isValidMovement(source, destination);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = chariot.isValidMovement(movePath);
 
         assertThat(canMove).isFalse();
     }
@@ -49,8 +56,9 @@ class ChariotTest {
         Elephant elephant = new Elephant(PieceColor.RED);
         Position source = new Position(Row.ONE, Column.ONE);
         Position destination = new Position(Row.FOUR, Column.THREE);
+        MovePath movePath = new MovePath(source, destination);
 
-        List<Position> allRoute = elephant.findAllRoute(source, destination);
+        List<Position> allRoute = elephant.findAllRoute(movePath);
 
         assertThat(allRoute).hasSize(2);
         assertThat(allRoute.get(0)).isEqualTo(new Position(Row.TWO, Column.ONE));
@@ -62,8 +70,9 @@ class ChariotTest {
         Chariot chariot = new Chariot(PieceColor.RED);
         Position source = new Position(Row.ONE, Column.ONE);
         Position destination = new Position(Row.ONE, Column.FIVE);
+        MovePath movePath = new MovePath(source, destination);
 
-        List<Position> allRoute = chariot.findAllRoute(source, destination);
+        List<Position> allRoute = chariot.findAllRoute(movePath);
 
         assertAll(
                 () -> assertThat(allRoute).hasSize(3),
@@ -101,5 +110,29 @@ class ChariotTest {
 
         boolean canMove = chariot.canMove(elephant, piecesOnRoute);
         assertThat(canMove).isTrue();
+    }
+
+    @Test
+    void 차는_궁성_내부에서_대각으로_이동가능() {
+        Piece piece = new Chariot(PieceColor.RED);
+        Position source = new Position(Row.ONE, Column.FOUR);
+        Position destination = new Position(Row.THREE, Column.SIX);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = piece.isValidMovement(movePath);
+
+        assertThat(canMove).isTrue();
+    }
+
+    @Test
+    void 차는_궁성_외부에서_대각으로_이동불가능() {
+        Piece piece = new Chariot(PieceColor.RED);
+        Position source = new Position(Row.ONE, Column.ONE);
+        Position destination = new Position(Row.THREE, Column.THREE);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = piece.isValidMovement(movePath);
+
+        assertThat(canMove).isFalse();
     }
 }

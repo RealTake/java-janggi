@@ -1,38 +1,38 @@
 package domain.piece;
 
+import domain.board.MovePath;
 import domain.board.Position;
 import domain.rule.DefaultMoveRule;
 import java.util.List;
 
 public class Soldier extends Piece {
 
-    public static final int FORWARD_MOVE = 1;
-    public static final int BACKWARD_MOVE = -1;
+    public static final int SOLDIER_MOVE = 1;
 
     public Soldier(PieceColor color) {
         super(PieceType.SOLDIER, color, DefaultMoveRule.getInstance());
     }
 
     @Override
-    public boolean isValidMovement(Position source, Position destination) {
-        int rowDifference = source.rowDifference(destination);
-        int columnDifference = source.columnDifference(destination);
-
-        if ((color == PieceColor.RED) && (rowDifference == FORWARD_MOVE && columnDifference == NO_MOVE)) {
-            return true;
+    public boolean isValidMovement(MovePath movePath) {
+        if (isWrongDirection(movePath)) {
+            return false;
         }
-        if ((color == PieceColor.BLUE) && (rowDifference == BACKWARD_MOVE && columnDifference == NO_MOVE)) {
-            return true;
-        }
-        if ((rowDifference == NO_MOVE && columnDifference == BACKWARD_MOVE) || (rowDifference == NO_MOVE
-                && columnDifference == FORWARD_MOVE)) {
-            return true;
-        }
-        return false;
+        return movePath.isStraightMoveBy(SOLDIER_MOVE) || movePath.isDiagonalMoveBy(SOLDIER_MOVE);
     }
 
     @Override
-    public List<Position> findAllRoute(Position source, Position destination) {
-        return List.of();
+    public List<Position> findAllRoute(MovePath movePath) {
+        return movePath.getBetweenPositions();
+    }
+
+    private boolean isWrongDirection(MovePath movepath) {
+        if (color == PieceColor.RED) {
+            return movepath.isUpward();
+        }
+        if (color == PieceColor.BLUE) {
+            return movepath.isDownward();
+        }
+        return false;
     }
 }

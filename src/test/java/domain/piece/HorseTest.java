@@ -3,6 +3,7 @@ package domain.piece;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import domain.board.Column;
+import domain.board.MovePath;
 import domain.board.Position;
 import domain.board.Row;
 import java.util.ArrayList;
@@ -16,7 +17,9 @@ class HorseTest {
         Horse horse = new Horse(PieceColor.RED);
         Position source = new Position(Row.ONE, Column.ONE);
         Position destination = new Position(Row.THREE, Column.TWO);
-        boolean canMove = horse.isValidMovement(source, destination);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = horse.isValidMovement(movePath);
 
         assertThat(canMove).isTrue();
     }
@@ -26,7 +29,9 @@ class HorseTest {
         Horse horse = new Horse(PieceColor.RED);
         Position source = new Position(Row.ONE, Column.ONE);
         Position destination = new Position(Row.TWO, Column.TWO);
-        boolean canMove = horse.isValidMovement(source, destination);
+        MovePath movePath = new MovePath(source, destination);
+
+        boolean canMove = horse.isValidMovement(movePath);
 
         assertThat(canMove).isFalse();
     }
@@ -36,7 +41,9 @@ class HorseTest {
         Piece horse = new Horse(PieceColor.RED);
         Position source = new Position(Row.ONE, Column.ONE);
         Position destination = new Position(Row.THREE, Column.TWO);
-        List<Position> positions = horse.findAllRoute(source, destination);
+        MovePath movePath = new MovePath(source, destination);
+
+        List<Position> positions = horse.findAllRoute(movePath);
 
         assertThat(positions).hasSize(1);
         assertThat(positions.getFirst()).isEqualTo(new Position(Row.TWO, Column.ONE));

@@ -6,6 +6,13 @@ import java.util.List;
 import java.util.Scanner;
 
 public class InputView {
+
+    private static final int SOURCE_POSITION_INDEX = 0;
+    private static final int MOVE_PIECE_INDEX = 1;
+    private static final int DESTINATION_POSITION_INDEX = 2;
+    private static final String LOAD_GAME_CONFIRM = "y";
+
+
     private final Scanner scanner = new Scanner(System.in);
 
     public MoveCommandDTO readMoveCommand() {
@@ -20,6 +27,14 @@ public class InputView {
                 .map(String::trim)
                 .toList();
 
-        return MoveCommandDTO.from(commands.get(0), commands.get(1), commands.get(2));
+        return MoveCommandDTO.from(commands.get(SOURCE_POSITION_INDEX), commands.get(MOVE_PIECE_INDEX),
+                commands.get(DESTINATION_POSITION_INDEX));
+    }
+
+    public boolean readLoadGameSelected() {
+        System.out.println("기존의 게임을 이어서 하시겠습니다? (Y/N)");
+        String input = scanner.nextLine().trim();
+
+        return input.equalsIgnoreCase(LOAD_GAME_CONFIRM);
     }
 }
