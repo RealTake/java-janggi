@@ -62,15 +62,25 @@ public final class OutputView {
                 RED + SCORE_RB.getString(pieceType.name()) + "(" + j + "," + i + ")" + RESET);
     }
 
-    public static void printWinnerTeam(final Team team) {
+    public static void printWinnerTeam(final Team team, final double winnerScore, final double loserScore) {
         System.out.println(TEAM_RB.getString(team.name()) + "가 승리했습니다.");
+        System.out.println(TEAM_RB.getString(team.name()) + "의 점수: " + winnerScore);
+        System.out.println(TEAM_RB.getString(team.opposite().name()) + "의 점수: " + loserScore);
     }
 
     public static void printCaptureMessage() {
         System.out.println("상대팀 말을 잡았습니다.\n");
     }
 
-    public static void printEndTurn() {
+    public static void printInvalidFromPoint() {
         System.out.println("우리팀 말이 아닙니다. 턴이 종료되었습니다.\n");
+    }
+
+    public static void printInvalidEndPoint() {
+        System.out.println("말이 이동할 수 없는 위치입니다. 턴이 종료되었습니다.");
+    }
+
+    public static void printEndTurn() {
+        System.out.println("턴이 종료되었습니다.");
     }
 }

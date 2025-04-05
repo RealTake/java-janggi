@@ -10,6 +10,8 @@ public final class Point {
     private final int y;
 
     private Point(final int x, final int y) {
+        validateRange(x, MAX_X);
+        validateRange(y, MAX_Y);
         this.x = x;
         this.y = y;
     }
@@ -17,8 +19,6 @@ public final class Point {
     public static Point of(final String x, final String y) {
         final int parsedX = parseInt(x);
         final int parsedY = parseInt(y);
-        validateRange(parsedX, MAX_X);
-        validateRange(parsedY, MAX_Y);
         return new Point(parsedX, parsedY);
     }
 
@@ -44,28 +44,32 @@ public final class Point {
         return isGreenPalace() || isRedPalace();
     }
 
+    public boolean isDiagonalPalace() {
+        return isGreenDiagonalPalace() || isRedDiagonalPalace();
+    }
+
+    public boolean isGreenDiagonalPalace() {
+        return isGreenPalace() && !isGreenPalacePoint();
+    }
+
+    public boolean isRedDiagonalPalace() {
+        return isRedPalace() && !isRedPalacePoint();
+    }
+
     public boolean isGreenPalace() {
         return x >= 3 && x <= 5 && y >= 0 && y <= 2;
+    }
+
+    private boolean isGreenPalacePoint() {
+        return (x == 3 && y == 1) || (x == 4 && y == 2) || (x == 5 && y == 1) || (x == 4 && y == 0);
     }
 
     public boolean isRedPalace() {
         return x >= 3 && x <= 5 && y >= 7 && y <= 9;
     }
 
-    public int distanceToMaxX() {
-        return MAX_X - x;
-    }
-
-    public int distanceToMinX() {
-        return x;
-    }
-
-    public int distanceToMaxY() {
-        return MAX_Y - y;
-    }
-
-    public int distanceToMinY() {
-        return y;
+    private boolean isRedPalacePoint() {
+        return (x == 3 && y == 8) || (x == 4 && y == 9) || (x == 5 && y == 8) || (x == 4 && y == 7);
     }
 
     public Direction generateDirection(final Point other) {
@@ -112,6 +116,10 @@ public final class Point {
 
     public Point leftDown() {
         return new Point(x - 1, y - 1);
+    }
+
+    public PointValue value() {
+        return new PointValue(x, y);
     }
 
     @Override

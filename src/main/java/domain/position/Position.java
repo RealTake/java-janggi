@@ -3,6 +3,7 @@ package domain.position;
 import domain.piece.Piece;
 import domain.piece.PieceType;
 import java.util.List;
+import java.util.Objects;
 
 public final class Position {
 
@@ -58,11 +59,33 @@ public final class Position {
         return isSamePieceType(pieceType) && isDifferentPieceType(middlePosition);
     }
 
+    public PieceType getPieceType() {
+        return piece.type();
+    }
+
     public Position getNextPosition(final Point toPoint) {
         return new Position(toPoint, piece);
     }
 
     public Piece getPiece() {
         return piece;
+    }
+
+    public PointValue getPointValue() {
+        return point.value();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Position position = (Position) o;
+        return Objects.equals(point, position.point);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(point);
     }
 }
