@@ -1,6 +1,6 @@
 package janggi.piece;
 
-import janggi.Score;
+import janggi.player.Score;
 
 public enum PieceType {
     GENERAL("장"),
@@ -16,6 +16,10 @@ public enum PieceType {
 
     PieceType(final String description) {
         this.description = description;
+    }
+
+    public static PieceType from(final String pieceType) {
+        return PieceType.valueOf(pieceType);
     }
 
     public Score score() {

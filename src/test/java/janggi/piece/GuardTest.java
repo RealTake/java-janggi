@@ -1,9 +1,9 @@
 package janggi.piece;
 
-import janggi.Board;
-import janggi.Team;
+import janggi.board.Board;
 import janggi.coordinate.Position;
 import janggi.coordinate.Vector;
+import janggi.player.Team;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,8 +22,8 @@ class GuardTest {
     void defaultsOf() {
         // given
         // when
-        List<Guard> ChoGuards = Guard.defaultsOf(Team.CHO);
-        List<Guard> HanGuards = Guard.defaultsOf(Team.HAN);
+        final List<Guard> ChoGuards = Guard.defaultsOf(Team.CHO);
+        final List<Guard> HanGuards = Guard.defaultsOf(Team.HAN);
 
         // then
         assertAll(() -> {
@@ -38,14 +38,15 @@ class GuardTest {
     @DisplayName("사는 수직/수평으로 1칸 이동할 수 있다")
     void move() {
         // given
-        Position position = Position.of(5, 5);
-        Piece guard = Guard.of(position, Team.HAN);
-        Board board = Board.from(Pieces.empty().add(guard));
+        final Piece guard = Guard.defaultsOf(Team.CHO).getFirst();
 
-        Position movedPosition = position.add(new Vector(-1, 0));
+        final Position position = guard.getPosition();
+        final Board board = Board.from(Pieces.empty().add(guard));
+
+        final Position movedPosition = position.add(new Vector(-1, 0));
 
         // when
-        Piece move = guard.move(board, movedPosition);
+        final Piece move = guard.move(board, movedPosition);
 
         // then
         assertThat(move.getPosition()).isEqualTo(movedPosition);
@@ -54,18 +55,32 @@ class GuardTest {
     @ParameterizedTest
     @CsvSource(value = {"1, 1", "2, 0"})
     @DisplayName("사는 2칸 이상 움직일 수 없다")
-    void move(int rowDirection, int columnDirection) {
+    void move(final int rowDirection, final int columnDirection) {
         // given
-        Position position = Position.of(5, 5);
-        Piece guard = Guard.of(position, Team.HAN);
-        Board board = Board.from(Pieces.empty().add(guard));
+        final Position position = Position.of(5, 5);
+        final Piece guard = Guard.of(position, Team.HAN);
+        final Board board = Board.from(Pieces.empty().add(guard));
 
-        Position movedPosition = position.add(new Vector(rowDirection, columnDirection));
+        final Position movedPosition = position.add(new Vector(rowDirection, columnDirection));
 
         // when
         // then
         assertThatThrownBy(() -> guard.move(board, movedPosition))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이동할 수 없는 지점입니다.");
+    }
+
+    @Test
+    @DisplayName("사는 궁성을 나갈 수 없다")
+    void cannotExitPalace() {
+        // given
+        final Guard guard = Guard.of(Position.of(8, 5), Team.CHO);
+        final Board board = Board.from(Pieces.empty().add(guard));
+
+        // when
+        // then
+        assertThatThrownBy(() -> guard.move(board, Position.of(7, 5)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("해당 기물은 궁성 밖으로 움직일 수 없습니다");
     }
 }

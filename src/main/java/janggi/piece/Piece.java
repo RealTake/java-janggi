@@ -1,35 +1,33 @@
 package janggi.piece;
 
-import janggi.Board;
-import janggi.Score;
-import janggi.Team;
+import janggi.board.Board;
 import janggi.coordinate.Position;
-import janggi.piece.strategy.block.RequiredBlockCountStrategy;
-import janggi.piece.strategy.move.MoveStrategy;
-
-import java.util.function.Consumer;
+import janggi.piece.rule.movement.MovementRule;
+import janggi.player.Score;
+import janggi.player.Team;
 
 public abstract class Piece {
 
     protected final Position position;
     protected final Team team;
-    protected final MoveStrategy moveStrategy;
-    protected final RequiredBlockCountStrategy blockStrategy;
+    protected final MovementRule movementRule;
 
-    public Piece(final Position position, final Team team, final MoveStrategy moveStrategy, final RequiredBlockCountStrategy blockStrategy) {
+    protected Piece(final Position position, final Team team, final MovementRule movementRule) {
         this.position = position;
         this.team = team;
-        this.moveStrategy = moveStrategy;
-        this.blockStrategy = blockStrategy;
+        this.movementRule = movementRule;
     }
 
-    public Piece move(Board board, Position destination) {
+    public static Piece of(final int row, final int column, final String pieceType, final String team) {
+        return PieceFactory.of(row, column, PieceType.from(pieceType), Team.from(team));
+    }
+
+    public Piece move(final Board board, final Position destination) {
         validateMove(board, destination);
         return createPiece(destination);
     }
 
-    public Score die(Consumer<Position> remover) {
-        remover.accept(this.position);
+    public Score getScore() {
         return getType().score();
     }
 
@@ -42,13 +40,12 @@ public abstract class Piece {
     protected abstract Piece createPiece(Position destination);
 
     protected void validateMove(final Board board, final Position destination) {
-        validateIsAlly(board, destination);
-        validateMoveShape(board, destination);
-        validateIsBlock(board, destination);
+        validateNoAllyAtDestination(board, destination);
+        validateMovementRule(board, destination);
         validateSpecialRule(board, destination);
     }
 
-    protected void validateSpecialRule(Board board, Position destination) {
+    protected void validateSpecialRule(final Board board, final Position destination) {
     }
 
     public boolean isAlly(final Team team) {
@@ -59,16 +56,12 @@ public abstract class Piece {
         return position;
     }
 
-    private void validateMoveShape(final Board board, final Position destination) {
-        moveStrategy.validate(board, position, destination);
+    private void validateMovementRule(final Board board, final Position destination) {
+        movementRule.validate(board, position, destination);
     }
 
-    private void validateIsBlock(final Board board, final Position destination) {
-        blockStrategy.validate(board, position, destination);
-    }
-
-    private void validateIsAlly(final Board board, final Position destination) {
-        if (board.isAlly(destination, team)) {
+    private void validateNoAllyAtDestination(final Board board, final Position destination) {
+        if (board.isAllyAt(destination, team)) {
             throw new IllegalArgumentException("목적지에 아군이 존재합니다.");
         }
     }

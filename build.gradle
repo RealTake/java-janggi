@@ -9,10 +9,18 @@ repositories {
 }
 
 dependencies {
+    runtimeOnly("com.mysql:mysql-connector-j:9.2.0")
+
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation platform('org.assertj:assertj-bom:3.27.3')
     testImplementation('org.junit.jupiter:junit-jupiter')
     testImplementation('org.assertj:assertj-core')
+
+    testImplementation 'com.h2database:h2:2.2.224'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
+    testImplementation 'org.testcontainers:mysql:1.19.3'
 }
 
 java {

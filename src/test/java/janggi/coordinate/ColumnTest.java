@@ -3,11 +3,33 @@ package janggi.coordinate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ColumnTest {
+
+    @Test
+    @DisplayName("defaults를 통해서 기본 열들을 생성할 수 있다")
+    void defaults() {
+        // given
+        // when
+        final List<Column> defaults = Column.defaults();
+
+        // then
+        assertThat(defaults).containsExactlyElementsOf(
+                List.of(new Column(1),
+                        new Column(2),
+                        new Column(3),
+                        new Column(4),
+                        new Column(5),
+                        new Column(6),
+                        new Column(7),
+                        new Column(8),
+                        new Column(9)));
+    }
 
     @Test
     @DisplayName("Column은 1부터 9까지의 정수만 허용한다")
@@ -29,10 +51,10 @@ class ColumnTest {
     @DisplayName("add(delta)를 통해 Column을 이동할 수 있다")
     void addColumn() {
         // given
-        Column column = new Column(4);
+        final Column column = new Column(4);
 
         // when
-        Column moved = column.add(2);
+        final Column moved = column.add(2);
 
         // then
         assertThat(moved.value()).isEqualTo(6);
@@ -42,11 +64,11 @@ class ColumnTest {
     @DisplayName("다른 Column과의 절댓값 거리를 계산할 수 있다")
     void calculateDistanceTo() {
         // given
-        Column col1 = new Column(2);
-        Column col2 = new Column(6);
+        final Column col1 = new Column(2);
+        final Column col2 = new Column(6);
 
         // when
-        Distance distance = col1.distanceTo(col2);
+        final Distance distance = col1.distanceTo(col2);
 
 
         // then
@@ -57,11 +79,11 @@ class ColumnTest {
     @DisplayName("다른 Column과의 벡터를 계산할 수 있다")
     void calculateVectorTo() {
         // given
-        Column from = new Column(3);
-        Column to = new Column(1);
+        final Column from = new Column(3);
+        final Column to = new Column(1);
 
         // when
-        Vector vector = from.vectorTo(to);
+        final Vector vector = from.vectorTo(to);
 
         // then
         assertThat(vector).isEqualTo(new Vector(0, -2));

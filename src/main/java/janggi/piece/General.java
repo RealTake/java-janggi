@@ -1,24 +1,31 @@
 package janggi.piece;
 
-import janggi.Team;
+import janggi.board.Board;
 import janggi.coordinate.Position;
-import janggi.piece.strategy.block.RequiredBlockCountStrategy;
-import janggi.piece.strategy.move.MoveStrategy;
-import janggi.piece.strategy.move.SingleMoveStrategy;
+import janggi.piece.rule.movement.MovementRule;
+import janggi.piece.rule.movement.SingleMovementRule;
+import janggi.piece.rule.palace.PalaceRestrictRule;
+import janggi.player.Team;
 
 public class General extends Piece {
 
-    public General(final Position position, final Team team, final MoveStrategy moveStrategy, final RequiredBlockCountStrategy blockStrategy) {
-        super(position, team, moveStrategy, blockStrategy);
+    private final PalaceRestrictRule palaceRestrictRule;
+
+    public General(final Position position,
+                   final Team team,
+                   final MovementRule movementRule,
+                   final PalaceRestrictRule palaceRestrictRule) {
+        super(position, team, movementRule);
+        this.palaceRestrictRule = palaceRestrictRule;
     }
 
     public static General of(final Position position, final Team team) {
-        return new General(position, team, new SingleMoveStrategy(), RequiredBlockCountStrategy.common());
+        return new General(position, team, SingleMovementRule.withNonBlock(), new PalaceRestrictRule());
     }
 
-    public static General defaultOf(Team team) {
-        int defaultRow = Team.decideRow(2, team);
-        int defaultColumn = 5;
+    public static General defaultOf(final Team team) {
+        final int defaultRow = Team.decideRow(2, team);
+        final int defaultColumn = 5;
 
         return General.of(Position.of(defaultRow, defaultColumn), team);
     }
@@ -26,6 +33,11 @@ public class General extends Piece {
     @Override
     protected Piece createPiece(final Position position) {
         return General.of(position, team);
+    }
+
+    @Override
+    protected void validateSpecialRule(final Board board, final Position destination) {
+        palaceRestrictRule.validate(board, destination);
     }
 
     @Override

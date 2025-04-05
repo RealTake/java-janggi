@@ -18,40 +18,45 @@ public class Route {
     }
 
     public List<Position> calculate() {
-        return calculate(true);
+        return calculate(true, true);
     }
 
-    public List<Position> calculate(boolean excludeDestination) {
-        List<Position> route = new ArrayList<>();
-        route.add(departure);
+    public List<Position> calculateWithDestination() {
+        return calculate(true, false);
+    }
 
-        Vector origin = departure.vectorTo(destination);
-        Vector straightPart = origin.extractStraightForDiagonal();
-        Vector diagonalPart = origin.subtract(straightPart);
+    public List<Position> calculateWithDepartureAndDestination() {
+        return calculate(false, false);
+    }
 
-        for (Vector step : straightPart.splitToUnitVectors()) {
-            Position next = route.getLast().add(step);
-            route.add(next);
-        }
+    private List<Position> calculate(final boolean shouldExcludeDeparture, final boolean shouldExcludeDestination) {
+        final List<Position> route = new ArrayList<>(List.of(departure));
 
-        for (Vector step : diagonalPart.splitToUnitVectors()) {
-            Position next = route.getLast().add(step);
-            route.add(next);
-        }
+        final Vector origin = departure.vectorTo(destination);
+        final Vector straightPart = origin.extractStraightForDiagonal();
+        final Vector diagonalPart = origin.subtract(straightPart);
 
-        excludeDepartureAndDestination(route, excludeDestination);
+        calculatePart(straightPart, route);
+        calculatePart(diagonalPart, route);
+
+        excludeDepartureAndDestination(route, shouldExcludeDeparture, shouldExcludeDestination);
 
         return route;
     }
 
-    private void excludeDepartureAndDestination(final List<Position> route, final boolean excludeDestination) {
-        route.removeFirst();
+    private void calculatePart(final Vector part, final List<Position> route) {
+        for (final Vector step : part.splitToUnitVectors()) {
+            final Position next = route.getLast().add(step);
+            route.add(next);
+        }
+    }
 
-        if (route.isEmpty()) {
-            return;
+    private void excludeDepartureAndDestination(final List<Position> route, final boolean shouldExcludeDeparture, final boolean shouldExcludeDestination) {
+        if (shouldExcludeDeparture) {
+            route.removeFirst();
         }
 
-        if (excludeDestination) {
+        if (shouldExcludeDestination && !route.isEmpty()) {
             route.removeLast();
         }
     }

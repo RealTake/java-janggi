@@ -1,10 +1,9 @@
 package janggi.piece;
 
-import janggi.Board;
-import janggi.Score;
-import janggi.Team;
+import janggi.board.Board;
 import janggi.coordinate.Position;
 import janggi.coordinate.Vector;
+import janggi.player.Team;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,50 +14,52 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class PieceTest {
 
     private static Stream<Arguments> provideAllyPiece() {
-        Position position = Position.of(5, 5);
-        Team team = Team.HAN;
+        final Team team = Team.HAN;
+        final Position position = Position.of(9, 5);
 
         return Stream.of(
                 Arguments.of(Guard.of(position, team), Soldier.of(position.add(new Vector(1, 0)), team), 1, 0),
                 Arguments.of(General.of(position, team), Soldier.of(position.add(new Vector(1, 0)), team), 1, 0),
-                Arguments.of(Soldier.of(position, team), Soldier.of(position.add(new Vector(1, 0)), team), 1, 0),
+                Arguments.of(Soldier.of(position, team), Soldier.of(position.add(new Vector(-1, 0)), team), -1, 0),
                 Arguments.of(Horse.of(position, team), Soldier.of(position.add(new Vector(1, 2)), team), 1, 2),
-                Arguments.of(Elephant.of(position, team), Soldier.of(position.add(new Vector(2, 3)), team), 2, 3),
-                Arguments.of(Chariot.of(position, team), Soldier.of(position.add(new Vector(3, 0)), team), 3, 0),
-                Arguments.of(Cannon.of(position, team), Soldier.of(position.add(new Vector(3, 0)), team), 3, 0));
+                Arguments.of(Elephant.of(position, team), Soldier.of(position.add(new Vector(-2, 3)), team), -2, 3),
+                Arguments.of(Chariot.of(position, team), Soldier.of(position.add(new Vector(0, 3)), team), 0, 3),
+                Arguments.of(Cannon.of(position, team), Soldier.of(position.add(new Vector(0, 3)), team), 0, 3));
     }
 
     private static Stream<Arguments> provideEnemyPiece() {
-        Position position = Position.of(5, 5);
-        Team team = Team.HAN;
-        Team ohterTeam = Team.CHO;
+        final Team team = Team.CHO;
+        final Position position = Position.of(9, 5);
+        final Team ohterTeam = Team.HAN;
 
         return Stream.of(
                 Arguments.of(Guard.of(position, team), Soldier.of(position.add(new Vector(1, 0)), ohterTeam), 1, 0),
                 Arguments.of(General.of(position, team), Soldier.of(position.add(new Vector(1, 0)), ohterTeam), 1, 0),
-                Arguments.of(Soldier.of(position, team), Soldier.of(position.add(new Vector(1, 0)), ohterTeam), 1, 0),
+                Arguments.of(Soldier.of(position, team), Soldier.of(position.add(new Vector(-1, 0)), ohterTeam), -1, 0),
                 Arguments.of(Horse.of(position, team), Soldier.of(position.add(new Vector(1, 2)), ohterTeam), 1, 2),
-                Arguments.of(Elephant.of(position, team), Soldier.of(position.add(new Vector(2, 3)), ohterTeam), 2, 3),
-                Arguments.of(Chariot.of(position, team), Soldier.of(position.add(new Vector(3, 0)), ohterTeam), 3, 0),
-                Arguments.of(Cannon.of(position, team), Soldier.of(position.add(new Vector(3, 0)), ohterTeam), 3, 0));
+                Arguments.of(Elephant.of(position, team), Soldier.of(position.add(new Vector(-2, 3)), ohterTeam), -2, 3),
+                Arguments.of(Chariot.of(position, team), Soldier.of(position.add(new Vector(-3, 0)), ohterTeam), -3, 0),
+                Arguments.of(Cannon.of(position, team), Soldier.of(position.add(new Vector(-3, 0)), ohterTeam), -3, 0));
     }
 
     @ParameterizedTest
     @MethodSource("provideAllyPiece")
     @DisplayName("모든 기물은 목적지에 아군이 존재할 경우 이동할 수 없다")
-    void cannotMoveWhenExistAllyPieceInDestination(Piece piece,
-                                                   Piece allyPiece,
-                                                   int rowDirection,
-                                                   int columnDirection) {
+    void cannotMoveWhenExistAllyPieceInDestination(final Piece piece,
+                                                   final Piece allyPiece,
+                                                   final int rowDirection,
+                                                   final int columnDirection) {
         // given
-        Board board = Board.from(Pieces.empty().addAll(List.of(piece, allyPiece)));
-        Position movedPosition = piece.getPosition().add(new Vector(rowDirection, columnDirection));
+        final Board board = Board.from(Pieces.empty().addAll(List.of(piece, allyPiece)));
+        final Position movedPosition = piece.getPosition().add(new Vector(rowDirection, columnDirection));
 
         // when
         // then
@@ -70,19 +71,19 @@ class PieceTest {
     @ParameterizedTest
     @MethodSource("provideEnemyPiece")
     @DisplayName("모든 기물은 목적지에 적군이 존재할 경우 이동할 수 있다")
-    void canMoveWhenExistEnemyPieceInDestination(Piece piece,
-                                                 Piece enemyPiece,
-                                                 int rowDirection,
-                                                 int columnDirection) {
+    void canMoveWhenExistEnemyPieceInDestination(final Piece piece,
+                                                 final Piece enemyPiece,
+                                                 final int rowDirection,
+                                                 final int columnDirection) {
         // given
-        List<Piece> pieces = new ArrayList<>(List.of(piece, enemyPiece));
-        Position movedPosition = piece.getPosition().add(new Vector(rowDirection, columnDirection));
+        final List<Piece> pieces = new ArrayList<>(List.of(piece, enemyPiece));
+        final Position movedPosition = piece.getPosition().add(new Vector(rowDirection, columnDirection));
 
         if (piece.getType().isCannon()) {
-            pieces.add(Soldier.of(movedPosition.add(new Vector(-1, 0)), Team.HAN));
+            pieces.add(Soldier.of(movedPosition.add(new Vector(1, 0)), Team.HAN));
         }
 
-        Board board = Board.from(Pieces.empty().addAll(pieces));
+        final Board board = Board.from(Pieces.empty().addAll(pieces));
 
         // when
         // then
@@ -92,20 +93,17 @@ class PieceTest {
     }
 
     @Test
-    @DisplayName("자신이 죽을 때, 보드에서 자신의 위치를 제거하고, 자신의 타입에 맞는 점수를 반환한다")
-    void dieShouldCallRemoverAndReturnCorrectScore() {
+    @DisplayName("원시 타입의 정보들로 기물을 생성할 수 있다")
+    void of() {
         // given
-        Position position = Position.of(2, 5);
-        Piece piece = Guard.of(position, Team.CHO);
-        List<Position> removedPositions = new ArrayList<>();
-
         // when
-        Score score = piece.die(removedPositions::add);
+        final Piece piece = Piece.of(1, 1, "SOLDIER", "CHO");
 
         // then
         assertAll(() -> {
-            assertThat(removedPositions).containsExactly(position);
-            assertThat(score).isEqualTo(Score.guard());
+            assertThat(piece.getPosition()).isEqualTo(Position.of(1, 1));
+            assertThat(piece.getType()).isEqualTo(PieceType.SOLDIER);
+            assertThat(piece.getTeam()).isEqualTo(Team.CHO);
         });
     }
 }
