@@ -1,7 +1,20 @@
 package controller;
 
+import dao.BoardDao;
+import dao.JanggiConnection;
+import dao.PieceDao;
+import dao.PlayerDao;
+import dao.TeamDao;
 import domain.JanggiGame;
-import domain.board.BoardPoint;
+import domain.Player;
+import domain.board.Board;
+import domain.board.Score;
+import dto.MovementRequestDto;
+import entity.BoardRepository;
+import entity.GameInitializer;
+import entity.PieceRepository;
+import entity.PlayerRepository;
+import entity.TeamRepository;
 import java.util.List;
 import view.InputView;
 import view.OutputView;
@@ -16,21 +29,38 @@ public class JanggiController {
     }
 
     public void run() {
-        final JanggiGame game = new JanggiGame();
+        BoardRepository boardRepository = new BoardRepository(new BoardDao(new JanggiConnection()));
+        PlayerRepository playerRepository = new PlayerRepository(new PlayerDao(new JanggiConnection()));
+        TeamRepository teamRepository = new TeamRepository(new TeamDao(new JanggiConnection()));
+
+        GameInitializer gameInitializer = new GameInitializer(
+                boardRepository,
+                new PieceRepository(new PieceDao(new JanggiConnection())),
+                teamRepository,
+                playerRepository
+        );
+
+        Board board = gameInitializer.createBoard();
+        List<Player> players = gameInitializer.getAllPlayers();
+
+        final JanggiGame game = new JanggiGame(board, players, boardRepository, playerRepository, teamRepository);
+
         outputView.printBoard(game.getBoard());
-        boolean isFirstPlayerTurn = true;
         while (true) {
-            processMove(game, isFirstPlayerTurn);
-            isFirstPlayerTurn = !isFirstPlayerTurn;
+            if (game.isGeneralDied()) {
+                Score score = game.calculateScore();
+                OutputView.printGameEndMessage(score);
+                break;
+            }
+            processMove(game);
+
         }
     }
 
-    private void processMove(final JanggiGame game, final boolean isFirstPlayerTurn) {
-        final List<BoardPoint> movementRequest = inputView.readMovementRequest();
-        final BoardPoint startBoardPoint = movementRequest.getFirst();
-        final BoardPoint arrivalBoardPoint = movementRequest.getLast();
+    private void processMove(final JanggiGame game) {
+        final MovementRequestDto movementRequestDto = inputView.readMovementRequest();
 
-        game.move(startBoardPoint, arrivalBoardPoint, isFirstPlayerTurn);
+        game.move(movementRequestDto.startPoint(), movementRequestDto.arrivalPoint());
 
         outputView.printBoard(game.getBoard());
     }
