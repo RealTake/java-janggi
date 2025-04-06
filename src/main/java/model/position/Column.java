@@ -23,7 +23,7 @@ public enum Column {
         this.value = value;
     }
 
-    public static Column getColumnBy(int inputValue) {
+    public static Column findColumnFrom(int inputValue) {
         return Arrays.stream(Column.values())
             .filter(result -> result.value == inputValue)
             .findFirst()
@@ -31,11 +31,11 @@ public enum Column {
     }
 
     public Column up() {
-        return getColumnBy(this.value + 1);
+        return findColumnFrom(this.value + 1);
     }
 
     public Column up(int increaseAmount) {
-        return getColumnBy(this.value + increaseAmount);
+        return findColumnFrom(this.value + increaseAmount);
     }
 
     public boolean canUp() {
@@ -47,11 +47,11 @@ public enum Column {
     }
 
     public Column down() {
-        return getColumnBy(this.value - 1);
+        return findColumnFrom(this.value - 1);
     }
 
     public Column down(int decreaseAmount) {
-        return getColumnBy(this.value - Math.abs(decreaseAmount));
+        return findColumnFrom(this.value - Math.abs(decreaseAmount));
     }
 
     public boolean canDown() {
@@ -60,6 +60,10 @@ public enum Column {
 
     public boolean canDown(int decreaseAmount) {
         return this.value - Math.abs(decreaseAmount) >= MIN_VALUE;
+    }
+
+    public static Column createFrom(String input) {
+        return Column.valueOf(input);
     }
 
     public int getValue() {

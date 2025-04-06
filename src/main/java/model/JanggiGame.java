@@ -1,37 +1,48 @@
 package model;
 
-import java.util.List;
 import java.util.Map;
 import model.piece.Piece;
+import model.piece.PieceInitializer;
+import model.piece.Team;
 import model.position.Position;
-import utils.InputParser;
+import model.piece.Score;
 
 public class JanggiGame {
 
     private final Pieces pieces;
     private Team turn;
 
-    public JanggiGame() {
-        Map<Position, Piece> pieces = PieceInitializer.generate();
+    private JanggiGame(Map<Position, Piece> pieces, Team turn) {
         this.pieces = new Pieces(pieces);
-        turn = Team.GREEN;
+        this.turn = turn;
+    }
+
+    public static JanggiGame initPiecesFrom(Map<Position, Piece> currentPieces, Team currentTeam) {
+        Map<Position, Piece> pieces = initPieces(currentPieces);
+        Team turn = initTeam(currentTeam);
+        return new JanggiGame(pieces, turn);
+    }
+
+    private static Map<Position, Piece> initPieces(Map<Position, Piece> currentPieces) {
+        if (currentPieces.isEmpty()) {
+            return PieceInitializer.generate();
+        }
+        return currentPieces;
+    }
+
+    private static Team initTeam(Team currentTurn) {
+        if (currentTurn == null) {
+            return Team.GREEN;
+        }
+        return currentTurn;
     }
 
     public Map<Position, Piece> getPieces() {
         return pieces.getPieces();
     }
 
-    public Position createPositionAndCheckTurn(String choiceDeparture) {
-        Position position = createPositionFrom(choiceDeparture);
-        validateTurnAndChange(position);
-        return position;
-    }
-
-    public Position createPositionFrom(String choiceDeparture) {
-        List<Integer> columnAndRowOfDeparture = InputParser.splitAndConvert(choiceDeparture);
-        int column = columnAndRowOfDeparture.get(0);
-        int row = columnAndRowOfDeparture.get(1);
-        return new Position(column, row);
+    public boolean isEnd() {
+        return !pieces.isGeneralAlive();
     }
 
     public Piece findPieceBy(Position departure) {
@@ -40,15 +51,15 @@ public class JanggiGame {
 
     public void move(Position departure, Position arrival) {
         pieces.move(departure, arrival);
-    }
-
-    private void validateTurnAndChange(Position departure) {
-        Piece piece = pieces.findPieceBy(departure);
-        piece.checkOfTurn(turn);
-        turn = turn.change();
+        this.turn = turn.change();
     }
 
     public Team getCurrentTurn() {
         return this.turn;
+    }
+
+    public Score showGameResult() {
+        Map<Position, Piece> pieces = this.pieces.getPieces();
+        return Score.calculateScoreFrom(pieces);
     }
 }

@@ -22,7 +22,7 @@ public enum Row {
         this.value = value;
     }
 
-    public static Row getRowBy(int inputValue) {
+    public static Row findRowFrom(int inputValue) {
         return Arrays.stream(Row.values())
             .filter(result -> result.value == inputValue)
             .findFirst()
@@ -30,15 +30,11 @@ public enum Row {
     }
 
     public Row down() {
-        return getRowBy(this.value - 1);
+        return findRowFrom(this.value - 1);
     }
 
     public Row down(int decreaseAmount) {
-        return getRowBy(this.value - Math.abs(decreaseAmount));
-    }
-
-    public boolean canDown() {
-        return this.value > MIN_VALUE;
+        return findRowFrom(this.value - Math.abs(decreaseAmount));
     }
 
     public boolean canDown(int decreaseAmount) {
@@ -46,19 +42,18 @@ public enum Row {
     }
 
     public Row up() {
-        return getRowBy(this.value + 1);
+        return findRowFrom(this.value + 1);
     }
 
     public Row up(int increaseAmount) {
-        return getRowBy(this.value + increaseAmount);
-    }
-
-    public boolean canUp() {
-        return this.value < MAX_VALUE;
+        return findRowFrom(this.value + increaseAmount);
     }
 
     public boolean canUp(int increaseAmount) {
         return this.value + increaseAmount <= MAX_VALUE;
     }
 
+    public static Row createFrom(String input) {
+        return Row.valueOf(input);
+    }
 }

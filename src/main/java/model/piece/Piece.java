@@ -1,29 +1,38 @@
 package model.piece;
 
 import java.util.List;
-import model.Team;
+import java.util.Objects;
 import model.position.Position;
 
-public abstract class Piece {
+public class Piece {
 
     private final Team team;
+    private final PieceType pieceType;
 
-    public Piece(Team team) {
+    public Piece(Team team, PieceType pieceType) {
         this.team = team;
+        this.pieceType = pieceType;
     }
 
-    public void checkOfTurn(Team turn) {
-        if (this.team.equals(turn)) {
-            return;
-        }
-        throw new IllegalArgumentException("본인 팀의 턴이 아닙니다.");
+    public String getName() {
+        return pieceType.getName();
     }
 
-    public abstract List<Position> calculateAllDirection(Position departure, Position arrival);
+    public List<Position> calculateAllDirection(Position departure, Position arrival) {
+        return pieceType.calculateAllDirection(departure, arrival);
+    }
 
-    public abstract boolean isCannon();
+    public boolean isCannon() {
+        return pieceType == PieceType.CANNON;
+    }
 
-    public abstract String getName();
+    public boolean isGeneral() {
+        return pieceType == PieceType.GENERAL;
+    }
+
+    public int getScore() {
+        return pieceType.getScore();
+    }
 
     public boolean isSameTeam(Piece piece) {
         return this.team == piece.getTeam();
@@ -31,5 +40,23 @@ public abstract class Piece {
 
     public Team getTeam() {
         return team;
+    }
+
+    public String getType() {
+        return pieceType.name();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Piece piece = (Piece) o;
+        return team == piece.team && pieceType == piece.pieceType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(team, pieceType);
     }
 }
