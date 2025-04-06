@@ -31,13 +31,13 @@ public class Pieces implements PiecesView, Cloneable {
         return new Pieces(pieces.stream().collect(Collectors.toMap(Piece::getPosition, Function.identity())));
     }
 
-    public static PiecesView fromPieceViews(Collection<? extends PieceView> pieces) {
+    public static PiecesView fromPieceViews(Collection<PieceView> pieces) {
         return from(pieces.stream().map(piece -> (Piece) piece).collect(Collectors.toList()));
     }
 
-    public Pieces getMapWithoutPosition(int x, int y) {
+    public Pieces getMapWithoutPosition(Position position) {
         Pieces map = new Pieces(this);
-        map.removeByPosition(x, y);
+        map.removeByPosition(position);
         return map;
     }
 
@@ -45,12 +45,11 @@ public class Pieces implements PiecesView, Cloneable {
         values.put(piece.getPosition(), piece);
     }
 
-    public void removeByPosition(int x, int y) {
-        values.remove(new Position(x, y));
+    public void removeByPosition(Position position) {
+        values.remove(position);
     }
 
-    public Piece findExistingByPosition(int x, int y) {
-        Position position = new Position(x, y);
+    public Piece findExistingByPosition(Position position) {
         if (!values.containsKey(position)) {
             throw new IllegalArgumentException("해당 위치엔 기물이 존재하지 않습니다.");
         }
@@ -83,7 +82,7 @@ public class Pieces implements PiecesView, Cloneable {
     }
 
     @Override
-    public Optional<? extends PieceView> findByPosition(Position position) {
+    public Optional<PieceView> findByPosition(Position position) {
         return Optional.ofNullable(values.get(position));
     }
 
@@ -118,6 +117,13 @@ public class Pieces implements PiecesView, Cloneable {
     public boolean containsPieceType(PieceType pieceType) {
         return values.values().stream()
             .anyMatch(piece -> piece.getPieceType().equals(pieceType));
+    }
+
+    @Override
+    public boolean isAllyOnDestination(Side side, Position destination) {
+        return values.values().stream()
+            .filter(onPathPiece -> onPathPiece.isSamePosition(destination))
+            .anyMatch(piece -> piece.getSide() == side);
     }
 
     @Override

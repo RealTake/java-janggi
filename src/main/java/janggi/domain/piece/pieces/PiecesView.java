@@ -16,9 +16,9 @@ public interface PiecesView {
 
     boolean hasOnlyOnePiece();
 
-    PiecesView getMapWithoutPosition(int x, int y);
+    PiecesView getMapWithoutPosition(Position position);
 
-    Optional<? extends PieceView> findByPosition(Position position);
+    Optional<PieceView> findByPosition(Position position);
 
     int size();
 
@@ -29,4 +29,6 @@ public interface PiecesView {
     List<Side> findAllByPieceType(PieceType pieceType);
 
     boolean containsPieceType(PieceType pieceType);
+
+    boolean isAllyOnDestination(Side side, Position destination);
 }
