@@ -10,14 +10,14 @@ public enum Team {
         this.displayName = displayName;
     }
 
-    public String getName() {
-        return displayName;
-    }
-
     public Team convertTeam() {
         if (this == GREEN) {
             return RED;
         }
         return GREEN;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 }

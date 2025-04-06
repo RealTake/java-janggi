@@ -1,27 +1,36 @@
 package janggi.piece;
 
 import static janggi.moving.Movement.DOWN_STRAIGHT;
+import static janggi.moving.Movement.LEFT_DOWN;
 import static janggi.moving.Movement.LEFT_STRAIGHT;
+import static janggi.moving.Movement.LEFT_UP;
+import static janggi.moving.Movement.RIGHT_DOWN;
 import static janggi.moving.Movement.RIGHT_STRAIGHT;
+import static janggi.moving.Movement.RIGHT_UP;
 import static janggi.moving.Movement.UP_STRAIGHT;
 
-import janggi.moving.Movements;
-import janggi.moving.Path;
-import janggi.moving.PossibleMovements;
+import janggi.PieceType;
 import janggi.Team;
 import janggi.board.Board;
 import janggi.board.position.Position;
-
+import janggi.moving.Movements;
+import janggi.moving.Path;
+import janggi.moving.PossibleMovements;
 import java.util.List;
 
 public class Chariot extends Piece {
-    protected static final String NAME = "차";
-    private static final PossibleMovements possibleMovements = new PossibleMovements(
+    private static final PossibleMovements POSSIBLE_MOVEMENTS = new PossibleMovements(
             List.of(new Movements(UP_STRAIGHT), new Movements(DOWN_STRAIGHT), new Movements(LEFT_STRAIGHT),
                     new Movements(RIGHT_STRAIGHT)));
+    private static final PossibleMovements POSSIBLE_CASTLE_MOVEMENTS = new PossibleMovements(
+            List.of(new Movements(UP_STRAIGHT), new Movements(DOWN_STRAIGHT), new Movements(LEFT_STRAIGHT),
+                    new Movements(RIGHT_STRAIGHT), new Movements(RIGHT_UP), new Movements(RIGHT_UP, RIGHT_UP),
+                    new Movements(LEFT_UP), new Movements(LEFT_UP, LEFT_UP), new Movements(RIGHT_DOWN),
+                    new Movements(RIGHT_DOWN, RIGHT_DOWN), new Movements(LEFT_DOWN),
+                    new Movements(LEFT_DOWN, LEFT_DOWN)));
 
-    public Chariot(Team team) {
-        super(team);
+    protected Chariot(Team team, PieceType pieceType) {
+        super(team, pieceType);
     }
 
     @Override
@@ -35,12 +44,15 @@ public class Chariot extends Piece {
     }
 
     @Override
-    protected Path calculatePath(Position start, Position goal) {
-        return possibleMovements.calculatePath(start, goal);
+    protected PossibleMovements getPossibleMovements(Board board, Position start) {
+        if (board.isInCastle(start)) {
+            return POSSIBLE_CASTLE_MOVEMENTS;
+        }
+        return POSSIBLE_MOVEMENTS;
     }
 
     @Override
-    public String getName() {
-        return NAME;
+    public int getScore() {
+        return 13;
     }
 }

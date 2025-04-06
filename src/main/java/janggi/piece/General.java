@@ -1,10 +1,18 @@
 package janggi.piece;
 
+import static janggi.Team.RED;
+import static janggi.board.Board.GREEN_CASTLE;
+import static janggi.board.Board.RED_CASTLE;
 import static janggi.moving.Movement.DOWN;
 import static janggi.moving.Movement.LEFT;
+import static janggi.moving.Movement.LEFT_DOWN;
+import static janggi.moving.Movement.LEFT_UP;
 import static janggi.moving.Movement.RIGHT;
+import static janggi.moving.Movement.RIGHT_DOWN;
+import static janggi.moving.Movement.RIGHT_UP;
 import static janggi.moving.Movement.UP;
 
+import janggi.PieceType;
 import janggi.moving.Movements;
 import janggi.moving.Path;
 import janggi.moving.PossibleMovements;
@@ -15,17 +23,31 @@ import janggi.board.position.Position;
 import java.util.List;
 
 public class General extends Piece {
-    private static final String NAME = "궁";
     private static final PossibleMovements possibleMovements = new PossibleMovements(
-            List.of(new Movements(UP), new Movements(LEFT), new Movements(RIGHT), new Movements(DOWN)));
+            List.of(new Movements(UP), new Movements(LEFT), new Movements(RIGHT), new Movements(DOWN),
+                    new Movements(LEFT_UP), new Movements(LEFT_DOWN), new Movements(RIGHT_UP),
+                    new Movements(RIGHT_DOWN)));
 
-    public General(Team team) {
-        super(team);
+    protected General(Team team, PieceType pieceType) {
+        super(team, pieceType);
     }
 
     @Override
     protected void validatePath(Board board, Path path) {
+        validateOutOfCastle(path);
         validateNonPieceOnPath(board, path);
+    }
+
+    private void validateOutOfCastle(Path path) {
+        List<Position> castle = GREEN_CASTLE;
+        if (team == RED) {
+            castle = RED_CASTLE;
+        }
+        for (Position position : path.getPath()) {
+            if (!castle.contains(position)) {
+                throw new IllegalArgumentException("[ERROR] 궁은 궁성을 벗어날 수 없습니다.");
+            }
+        }
     }
 
     @Override
@@ -34,17 +56,12 @@ public class General extends Piece {
     }
 
     @Override
-    public boolean isGeneral() {
-        return true;
+    protected PossibleMovements getPossibleMovements(Board board, Position start) {
+        return possibleMovements;
     }
 
     @Override
-    protected Path calculatePath(Position start, Position goal) {
-        return possibleMovements.calculatePath(start, goal);
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
+    public int getScore() {
+        return 0;
     }
 }

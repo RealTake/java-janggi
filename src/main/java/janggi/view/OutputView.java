@@ -16,12 +16,16 @@ public class OutputView {
     private static final String RED_COLOR_SUFFIX = "\u001B[0m";
 
     public void printGameStartMessage() {
-        System.out.println("장기 게임을 시작합니다. 선공은 초나라입니다.");
+        System.out.println("장기 게임을 시작합니다.");
         System.out.println("ex) 1,1 2,2 (1,1 에 위치한 기물을 2,2로 이동)\n");
     }
 
-    public void printGameOver(Team winningTeam) {
-        System.out.printf("%s가 승리했습니다.\n", winningTeam.getName());
+    public void printGameResult(Board board, Team winningTeam) {
+        for (Team team : Team.values()) {
+            int score = board.calculateScore(team);
+            System.out.printf("%s의 승점 : %d\n", team.getDisplayName(), score);
+        }
+        System.out.printf("\n%s가 승리했습니다.(궁 잡음 혹은 승점 우승)\n", winningTeam.getDisplayName());
     }
 
     public void printBoard(Board currentBoard) {
@@ -49,10 +53,10 @@ public class OutputView {
             return;
         }
         if (piece.isSameTeam(Team.GREEN)) {
-            System.out.print(GREEN_COLOR_PREFIX + piece.getName() + " " + GREEN_COLOR_SUFFIX);
+            System.out.print(GREEN_COLOR_PREFIX + piece.getDisplayName() + " " + GREEN_COLOR_SUFFIX);
             return;
         }
-        System.out.print(RED_COLOR_PREFIX + piece.getName() + " " + RED_COLOR_SUFFIX);
+        System.out.print(RED_COLOR_PREFIX + piece.getDisplayName() + " " + RED_COLOR_SUFFIX);
     }
 
     public void printErrorMessage(IllegalArgumentException e) {
