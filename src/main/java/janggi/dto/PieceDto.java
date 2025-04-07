@@ -1,7 +1,7 @@
 package janggi.dto;
 
-import janggi.direction.PieceType;
-import janggi.piece.players.Team;
+import janggi.domain.piece.Piece;
+import janggi.domain.players.Team;
 
-public record PieceDto(Team team, PieceType pieceType, int y, int x) {
+public record PieceDto(Team team, Piece piece, int y, int x) {
 }
