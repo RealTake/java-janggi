@@ -1,0 +1,60 @@
+package team.janggi.domain.piece;
+
+import java.util.Map;
+import java.util.Objects;
+import team.janggi.domain.Position;
+import team.janggi.domain.Team;
+import team.janggi.domain.strategy.move.EmptyMoveStrategy;
+import team.janggi.domain.strategy.move.MoveStrategy;
+
+public class Piece {
+    private Team team;
+    private PieceType pieceType;
+    private MoveStrategy moveStrategy;
+
+    public Piece(Team team, PieceType pieceType, MoveStrategy moveStrategy) {
+        this.team = team;
+        this.pieceType = pieceType;
+        this.moveStrategy = moveStrategy;
+
+        validate();
+    }
+
+    public Piece(PieceType pieceType) {
+        this(Team.NONE, pieceType, new EmptyMoveStrategy());
+    }
+
+    private void validate() {
+        if (team == null || pieceType == null || moveStrategy == null) {
+            throw new IllegalArgumentException("team, pieceType, moveStrategy는 null이 될 수 없습니다.");
+        }
+    }
+
+    public boolean canMove(Position from,
+                           Position to,
+                           Map<Position, Piece> mapStatus) {
+        if (moveStrategy == null) {
+            throw new IllegalStateException("이 말은 이동할 수 없습니다.");
+        }
+
+        return moveStrategy.calculateMove(from, to, mapStatus);
+    }
+
+    public boolean isSameTeam(Team otherTeam) {
+        return this.team == otherTeam;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        // 클래스 타입이 정확히 일치하는지 확인 (상속 관계에서의 비교 방지)
+        if (o == null || getClass() != o.getClass()) return false;
+        Piece piece = (Piece) o;
+        return team == piece.team;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(team, getClass());
+    }
+}
