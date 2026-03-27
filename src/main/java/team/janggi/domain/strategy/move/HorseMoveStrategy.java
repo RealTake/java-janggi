@@ -2,8 +2,8 @@ package team.janggi.domain.strategy.move;
 
 import java.util.Map;
 import team.janggi.domain.Position;
-import team.janggi.domain.piece.Empty;
 import team.janggi.domain.piece.Piece;
+import team.janggi.domain.piece.PieceType;
 
 public class HorseMoveStrategy implements MoveStrategy {
 
@@ -11,7 +11,7 @@ public class HorseMoveStrategy implements MoveStrategy {
 
     @Override
     public boolean calculateMove(Position from, Position to, Map<Position, Piece> mapStatus) {
-        return validateDirection(from, to) && !isPathBlock(from, to, mapStatus) && canKill(from, to, mapStatus);
+        return validateDirection(from, to) && isPathBlock(from, to, mapStatus) && canKill(from, to, mapStatus);
     }
 
     private boolean validateDirection(Position from, Position to) {
@@ -36,7 +36,7 @@ public class HorseMoveStrategy implements MoveStrategy {
 
         Position obstaclePosition = new Position(fromX, fromY);
         Piece obstacle = mapStatus.get(obstaclePosition);
-        return !obstacle.equals(Empty.instance);
+        return obstacle.isSamePieceType(PieceType.EMPTY);
     }
 
     private boolean canKill(Position from, Position to, Map<Position, Piece> mapStatus) {
