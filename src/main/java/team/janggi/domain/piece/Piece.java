@@ -40,8 +40,16 @@ public class Piece {
         return moveStrategy.calculateMove(from, to, mapStatus);
     }
 
+    public boolean isSameTeam(Piece otherPiece) {
+        return isSameTeam(otherPiece.team);
+    }
+
     public boolean isSameTeam(Team otherTeam) {
         return this.team == otherTeam;
+    }
+
+    public boolean isSamePieceType(PieceType otherPieceType) {
+        return this.pieceType == otherPieceType;
     }
 
     @Override
