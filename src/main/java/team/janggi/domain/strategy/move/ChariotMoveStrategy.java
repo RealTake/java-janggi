@@ -19,7 +19,7 @@ public class ChariotMoveStrategy implements MoveStrategy {
 
         final List<Piece> paths = getPaths(from, to, mapStatus);
 
-        if (isBlocked(paths)) {
+        if (!isValidPaths(paths)) {
             return false;
         }
 
@@ -32,16 +32,12 @@ public class ChariotMoveStrategy implements MoveStrategy {
         return !target.isSameTeam(me);
     }
 
-    private boolean isBlocked(List<Piece> paths) {
+    private boolean isValidPaths(List<Piece> paths) {
         if (paths.isEmpty()) {
-            return false;
+            return true;
         }
-        
-        paths = new ArrayList<>(paths);
-        paths.removeLast();
 
-        return paths.stream()
-                .anyMatch(piece -> !piece.isSamePieceType(PieceType.EMPTY));
+        return paths.stream().allMatch(piece -> piece.isSamePieceType(PieceType.EMPTY));
     }
 
     private List<Piece> getPaths(Position from, Position to, Map<Position, Piece> mapStatus) {
