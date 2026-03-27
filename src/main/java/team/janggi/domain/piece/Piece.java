@@ -16,26 +16,15 @@ public class Piece {
         this.team = team;
         this.pieceType = pieceType;
         this.moveStrategy = moveStrategy;
-
-        validate();
     }
 
     public Piece(PieceType pieceType) {
         this(Team.NONE, pieceType, new EmptyMoveStrategy());
     }
 
-    private void validate() {
-        if (team == null || pieceType == null || moveStrategy == null) {
-            throw new IllegalArgumentException("team, pieceType, moveStrategy는 null이 될 수 없습니다.");
-        }
-    }
-
     public boolean canMove(Position from,
                            Position to,
                            Map<Position, Piece> mapStatus) {
-        if (moveStrategy == null) {
-            throw new IllegalStateException("이 말은 이동할 수 없습니다.");
-        }
 
         return moveStrategy.calculateMove(from, to, mapStatus);
     }
