@@ -1,7 +1,7 @@
 package team.janggi.domain.piece;
 
 import team.janggi.domain.Team;
-import team.janggi.domain.strategy.move.MoveStrategy;
+import team.janggi.domain.strategy.move.HorseMoveStrategy;
 
 /**
  * 마
@@ -9,6 +9,6 @@ import team.janggi.domain.strategy.move.MoveStrategy;
 public class Horse extends Piece {
 
     public Horse(Team team) {
-        super(team, PieceType.HORSE, MoveStrategy.HorseMoveStrategy);
+        super(team, PieceType.HORSE, HorseMoveStrategy.instance);
     }
 }

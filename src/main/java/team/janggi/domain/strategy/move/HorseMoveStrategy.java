@@ -6,7 +6,6 @@ import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
 
 public class HorseMoveStrategy implements MoveStrategy {
-
     public static final HorseMoveStrategy instance = new HorseMoveStrategy();
 
     @Override

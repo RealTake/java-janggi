@@ -1,7 +1,7 @@
 package team.janggi.domain.piece;
 
 import team.janggi.domain.Team;
-import team.janggi.domain.strategy.move.MoveStrategy;
+import team.janggi.domain.strategy.move.CannonMoveStrategy;
 
 /**
  * 포
@@ -9,6 +9,6 @@ import team.janggi.domain.strategy.move.MoveStrategy;
 public class Cannon extends Piece {
 
     public Cannon(Team team) {
-        super(team, PieceType.CANNON, MoveStrategy.CannonMoveStrategy);
+        super(team, PieceType.CANNON, CannonMoveStrategy.instance);
     }
 }
