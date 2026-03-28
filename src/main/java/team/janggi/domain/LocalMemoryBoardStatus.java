@@ -15,8 +15,7 @@ public class LocalMemoryBoardStatus implements BoardStatus {
 
     @Override
     public void movePiece(Team team, Position from, Position to) {
-        validateTeam(team, from);
-        validatePosition(from, to);
+        validate(team, from, to);
 
         final Piece piece = getPiece(from);
 
@@ -40,6 +39,11 @@ public class LocalMemoryBoardStatus implements BoardStatus {
 
     private Piece getPiece(Position position) {
         return map.get(position);
+    }
+
+    private void validate(Team team, Position from, Position to) {
+        validateTeam(team, from);
+        validatePosition(from, to);
     }
 
     private void validateTeam(Team team, Position from) {
