@@ -6,6 +6,8 @@ import team.janggi.domain.piece.Empty;
 import team.janggi.domain.strategy.layout.normal.NormalLayoutStrategy;
 
 public class NormalBoardStrategy implements BoardStructStrategy {
+    private static final int NORMAL_BOARD_ROW_SIZE = 10;
+    private static final int NORMAL_BOARD_COL_SIZE = 9;
 
     private final NormalLayoutStrategy layout;
 
@@ -15,17 +17,14 @@ public class NormalBoardStrategy implements BoardStructStrategy {
 
     @Override
     public void initBoardStatus(BoardStatus status) {
-        final int Normal_BOARD_ROW_SIZE = 10;
-        final int Normal_BOARD_COL_SIZE = 9;
-
-        initMapByEmpty(Normal_BOARD_ROW_SIZE, Normal_BOARD_COL_SIZE, status);
+        initMapByEmpty(status);
 
         layout.init(status);
     }
 
-    private void initMapByEmpty(int rowSize, int colSize, BoardStatus status) {
-        for (int row = 0; row < rowSize; row++) {
-            for (int column = 0; column < colSize; column++) {
+    private void initMapByEmpty( BoardStatus status) {
+        for (int row = 0; row < NORMAL_BOARD_ROW_SIZE; row++) {
+            for (int column = 0; column < NORMAL_BOARD_COL_SIZE; column++) {
                 status.setPiece(new Position(row, column), Empty.instance);
             }
         }
