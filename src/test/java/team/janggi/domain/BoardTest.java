@@ -107,40 +107,50 @@ public class BoardTest {
         검증_한나라_기본_배치(pieceMap);
 
         // 상/마 차림 검증 (초는 9번 행, 한은 0번 행)
-        assertSetup(pieceMap, 9, Team.CHO, choSetup);
-        assertSetup(pieceMap, 0, Team.HAN, hanSetup);
+        assertPieceSetup(pieceMap, 9, Team.CHO, choSetup);
+        assertPieceSetup(pieceMap, 0, Team.HAN, hanSetup);
     }
 
-    private void assertSetup(Map<Position, Piece> pieceMap, int row, Team team, NormalSetup setup) {
+    private void assertPieceSetup(Map<Position, Piece> pieceMap, int row, Team team, NormalSetup setup) {
         switch (setup) {
             case 왼상차림 -> Assertions.assertAll(
-                    () -> Assertions.assertEquals(new Elephant(team), pieceMap.get(new Position(row, 1))),
-                    () -> Assertions.assertEquals(new Horse(team), pieceMap.get(new Position(row, 2))),
-                    () -> Assertions.assertEquals(new Horse(team), pieceMap.get(new Position(row, 6))),
-                    () -> Assertions.assertEquals(new Elephant(team), pieceMap.get(new Position(row, 7)))
+                    () -> assertPiece(pieceMap, row, team, 1, new Elephant(team)),
+                    () -> assertPiece(pieceMap, row, team, 2, new Horse(team)),
+                    () -> assertPiece(pieceMap, row, team, 6, new Elephant(team)),
+                    () -> assertPiece(pieceMap, row, team, 7, new Horse(team))
             );
 
             case 오른상차림 -> Assertions.assertAll(
-                    () -> Assertions.assertEquals(new Horse(team), pieceMap.get(new Position(row, 1))),
-                    () -> Assertions.assertEquals(new Elephant(team), pieceMap.get(new Position(row, 2))),
-                    () -> Assertions.assertEquals(new Elephant(team), pieceMap.get(new Position(row, 6))),
-                    () -> Assertions.assertEquals(new Horse(team), pieceMap.get(new Position(row, 7)))
+                    () -> assertPiece(pieceMap, row, team, 1, new Horse(team)),
+                    () -> assertPiece(pieceMap, row, team, 2, new Elephant(team)),
+                    () -> assertPiece(pieceMap, row, team, 6, new Horse(team)),
+                    () -> assertPiece(pieceMap, row, team, 7, new Elephant(team))
             );
 
             case 안상차림 -> Assertions.assertAll(
-                    () -> Assertions.assertEquals(new Horse(team), pieceMap.get(new Position(row, 1))),
-                    () -> Assertions.assertEquals(new Elephant(team), pieceMap.get(new Position(row, 2))),
-                    () -> Assertions.assertEquals(new Horse(team), pieceMap.get(new Position(row, 6))),
-                    () -> Assertions.assertEquals(new Elephant(team), pieceMap.get(new Position(row, 7)))
+                    () -> assertPiece(pieceMap, row, team, 1, new Horse(team)),
+                    () -> assertPiece(pieceMap, row, team, 2, new Elephant(team)),
+                    () -> assertPiece(pieceMap, row, team, 6, new Elephant(team)),
+                    () -> assertPiece(pieceMap, row, team, 7, new Horse(team))
             );
 
             case 바깥상차림 -> Assertions.assertAll(
-                    () -> Assertions.assertEquals(new Elephant(team), pieceMap.get(new Position(row, 1))),
-                    () -> Assertions.assertEquals(new Horse(team), pieceMap.get(new Position(row, 2))),
-                    () -> Assertions.assertEquals(new Elephant(team), pieceMap.get(new Position(row, 6))),
-                    () -> Assertions.assertEquals(new Horse(team), pieceMap.get(new Position(row, 7)))
+                    () -> assertPiece(pieceMap, row, team, 1, new Elephant(team)),
+                    () -> assertPiece(pieceMap, row, team, 2, new Horse(team)),
+                    () -> assertPiece(pieceMap, row, team, 6, new Horse(team)),
+                    () -> assertPiece(pieceMap, row, team, 7, new Elephant(team))
             );
         }
+    }
+
+    private void assertPiece(Map<Position, Piece> pieceMap, int row, Team team, int column, Piece expected) {
+        int actualColumn = column;
+
+        if (team == Team.HAN) {
+            actualColumn = 8 - column;
+        }
+
+        Assertions.assertEquals(expected, pieceMap.get(new Position(row, actualColumn)));
     }
 
 
