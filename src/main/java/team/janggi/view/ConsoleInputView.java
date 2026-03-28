@@ -57,38 +57,52 @@ public class ConsoleInputView {
     }
 
     private NormalSetup readNormalSetup(String titleLine) {
-        NormalSetup[] setups = NormalSetup.values();
-        int choiceMax = setups.length;
-        while (true) {
+        final NormalSetup[] setups = NormalSetup.values();
+
+        NormalSetup readNormalSetup = null;
+        do {
             printLine(titleLine);
-            for (int i = 0; i < setups.length; i++) {
-                printLine((i + SETUP_CHOICE_MIN) + ". " + setups[i].name());
-            }
-            printText("선택 (" + SETUP_CHOICE_MIN + "-" + choiceMax + "): ");
-            String line = scanner.nextLine().trim();
-            NormalSetup parsed = tryParseNormalSetup(line, setups, choiceMax);
-            if (parsed != null) {
-                return parsed;
-            }
-            printLine(INVALID_SETUP_CHOICE_MESSAGE);
-        }
+            printSetup(setups);
+
+            readNormalSetup = readNormalSetup(titleLine, setups);
+        } while (readNormalSetup == null);
+
+        return readNormalSetup;
     }
 
-    private NormalSetup tryParseNormalSetup(String line, NormalSetup[] setups, int choiceMax) {
+    private NormalSetup readNormalSetup(String titleLine, NormalSetup[] setups) {
+        printText("선택 (" + SETUP_CHOICE_MIN + "-" + setups.length + "): ");
+
+        int setupChoice;
         try {
-            int n = Integer.parseInt(line);
-            boolean ok = n >= SETUP_CHOICE_MIN && n <= choiceMax;
-            return ok ? setups[n - SETUP_CHOICE_MIN] : null;
+            setupChoice = Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
+            printLine(INVALID_SETUP_CHOICE_MESSAGE);
             return null;
+        }
+
+        final boolean isValidateRange = setupChoice >= SETUP_CHOICE_MIN && setupChoice <= setups.length;
+        if (!isValidateRange) {
+            printLine(INVALID_SETUP_CHOICE_MESSAGE);
+            return null;
+        }
+
+        return setups[setupChoice - SETUP_CHOICE_MIN];
+    }
+
+    private void printSetup(NormalSetup[] setups) {
+        for (int i = 0; i < setups.length; i++) {
+            printLine((i + SETUP_CHOICE_MIN) + ". " + setups[i].name());
         }
     }
 
     private Position tryParsePosition(String line) {
-        String[] parts = line.split("\\s+");
+        final String[] parts = line.split("\\s+");
+
         if (parts.length < 2) {
             return null;
         }
+
         try {
             int row = Integer.parseInt(parts[0]);
             int col = Integer.parseInt(parts[1]);
