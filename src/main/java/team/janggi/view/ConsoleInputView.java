@@ -6,15 +6,15 @@ import team.janggi.domain.Team;
 import team.janggi.domain.strategy.layout.normal.NormalSetup;
 
 public class ConsoleInputView {
-    private static final int ROW_COUNT = 10;
-    private static final int COL_COUNT = 9;
+    private static final int Y_COUNT = 10;
+    private static final int X_COUNT = 9;
     private static final int SETUP_CHOICE_MIN = 1;
     private static final String TITLE_CHO_NORMAL_SETUP = "초나라 상차림을 선택하세요.";
     private static final String TITLE_HAN_NORMAL_SETUP = "한나라 상차림을 선택하세요.";
-    private static final String PROMPT_MOVE_SOURCE_SUFFIX = "움직일 기물 좌표 (행 열): ";
-    private static final String PROMPT_MOVE_DESTINATION_SUFFIX = "도착 좌표 (행 열): ";
+    private static final String PROMPT_MOVE_SOURCE_SUFFIX = "움직일 기물 좌표 (열 행): ";
+    private static final String PROMPT_MOVE_DESTINATION_SUFFIX = "도착 좌표 (열 행): ";
     private static final String INVALID_COORDINATE_MESSAGE =
-            "0~" + (ROW_COUNT - 1) + " 행, 0~" + (COL_COUNT - 1) + " 열 형식으로 다시 입력하세요.";
+            "0~" + (Y_COUNT - 1) + " 열, 0~" + (X_COUNT - 1) + " 행 형식으로 다시 입력하세요.";
     private static final String INVALID_SETUP_CHOICE_MESSAGE =
             SETUP_CHOICE_MIN + "부터 " + NormalSetup.values().length + "까지의 숫자를 입력하세요.";
 
@@ -103,15 +103,23 @@ public class ConsoleInputView {
             return null;
         }
 
+        int x;
+        int y;
         try {
-            int row = Integer.parseInt(parts[0]);
-            int col = Integer.parseInt(parts[1]);
-            boolean rowOk = row >= 0 && row < ROW_COUNT;
-            boolean colOk = col >= 0 && col < COL_COUNT;
-            return rowOk && colOk ? new Position(row, col) : null;
+            x = Integer.parseInt(parts[1]);
+            y = Integer.parseInt(parts[0]);
         } catch (NumberFormatException e) {
             return null;
         }
+
+        final boolean xOk = x >= 0 && x < X_COUNT;
+        final boolean yOk = y >= 0 && y < Y_COUNT;
+
+        if (yOk && xOk) {
+            return new Position(x, y);
+        }
+
+        return null;
     }
 
     private void printText(String text) {

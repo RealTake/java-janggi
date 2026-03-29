@@ -8,8 +8,8 @@ import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
 
 public class ConsoleOutputView {
-    private static final int ROW_SIZE = 10;
-    private static final int COLUMN_SIZE = 9;
+    private static final int X_SIZE = 10;
+    private static final int Y_SIZE = 9;
     private static final String SPACE = " ";
     private static final String HEADER_LEFT_PADDING = "   ";
     private static final String EMPTY_TEXT = "";
@@ -21,25 +21,25 @@ public class ConsoleOutputView {
 
     public void print(Board board) {
         final Map<Position, Piece> status = board.getStatus();
-        final int totalCellCount = ROW_SIZE * COLUMN_SIZE;
+        final int totalCellCount = X_SIZE * Y_SIZE;
 
         printColumnHeader();
         for (int index = 0; index < totalCellCount; index++) {
-            int row = index / COLUMN_SIZE;
-            int col = index % COLUMN_SIZE;
-            printText(rowPrefix(row, col));
+            int y = index / Y_SIZE;
+            int x = index % Y_SIZE;
+            printText(yPrefix(y, x));
 
-            Piece piece = status.get(new Position(row, col));
+            Piece piece = status.get(new Position(x, y));
             String cellText = toSymbol(piece);
             printText(applyTeamColor(piece, cellText) + SPACE);
-            printText(rowSuffix(col));
+            printText(ySuffix(x));
         }
     }
 
     private void printColumnHeader() {
         printText(HEADER_LEFT_PADDING);
-        for (int col = 0; col < COLUMN_SIZE; col++) {
-            printText(toFullWidthDigit(col) + SPACE);
+        for (int x = 0; x < Y_SIZE; x++) {
+            printText(toFullWidthDigit(x) + SPACE);
         }
         printLine();
     }
@@ -85,16 +85,16 @@ public class ConsoleOutputView {
         return String.valueOf((char) ('０' + value));
     }
 
-    private String rowPrefix(int row, int col) {
-        if (col == 0) {
-            return String.format("%2d%s", row, SPACE);
+    private String yPrefix(int y, int x) {
+        if (x == 0) {
+            return String.format("%2d%s", y, SPACE);
         }
 
         return EMPTY_TEXT;
     }
 
-    private String rowSuffix(int col) {
-        if (col == COLUMN_SIZE - 1) {
+    private String ySuffix(int x) {
+        if (x == Y_SIZE - 1) {
             return System.lineSeparator();
         }
 
