@@ -1,5 +1,6 @@
 package team.janggi.domain.strategy.layout.normal;
 
+import java.util.List;
 import team.janggi.domain.BoardStatus;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
@@ -30,7 +31,7 @@ public class NormalLayoutStrategy implements LayoutStrategy {
     private static final int HAN_CANNON_RANK_Y = 2;  // 포 라인
     private static final int HAN_SOLDIER_RANK_Y = 3; // 병 라인
 
-    private static final int[] SOLDIER_X = {0, 2, 4, 6, 8};
+    private static final List<Integer> SOLDIER_X_POSITIONS = List.of(0, 2, 4, 6, 8);
 
     public NormalLayoutStrategy(NormalSetup choSetup, NormalSetup hanSetup) {
         this.choSetup = choSetup;
@@ -53,7 +54,7 @@ public class NormalLayoutStrategy implements LayoutStrategy {
         boardStatus.setPiece(new Position(7, CHO_CANNON_RANK_Y), new Cannon(Team.CHO));
 
         // 졸
-        for (int x : SOLDIER_X) {
+        for (int x : SOLDIER_X_POSITIONS) {
             boardStatus.setPiece(new Position(x, CHO_SOLDIER_RANK_Y), new Soldier(Team.CHO));
         }
 
@@ -78,7 +79,7 @@ public class NormalLayoutStrategy implements LayoutStrategy {
         boardStatus.setPiece(new Position(7, HAN_CANNON_RANK_Y), new Cannon(Team.HAN));
 
         // 병
-        for (int x : SOLDIER_X) {
+        for (int x : SOLDIER_X_POSITIONS) {
             boardStatus.setPiece(new Position(x, HAN_SOLDIER_RANK_Y), new Soldier(Team.HAN));
         }
 
