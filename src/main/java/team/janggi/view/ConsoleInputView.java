@@ -59,18 +59,18 @@ public class ConsoleInputView {
     private NormalSetup readNormalSetup(String titleLine) {
         final NormalSetup[] setups = NormalSetup.values();
 
-        NormalSetup readNormalSetup = null;
+        NormalSetup readNormalSetup;
         do {
             printLine(titleLine);
             printSetup(setups);
 
-            readNormalSetup = readNormalSetup(titleLine, setups);
+            readNormalSetup = readNormalSetup(setups);
         } while (readNormalSetup == null);
 
         return readNormalSetup;
     }
 
-    private NormalSetup readNormalSetup(String titleLine, NormalSetup[] setups) {
+    private NormalSetup readNormalSetup(NormalSetup[] setups) {
         printText("선택 (" + SETUP_CHOICE_MIN + "-" + setups.length + "): ");
 
         int setupChoice;
