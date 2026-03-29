@@ -1,6 +1,7 @@
-package team.janggi.domain;
+package team.janggi.domain.status;
 
-import java.util.Map;
+import team.janggi.domain.Position;
+import team.janggi.domain.Team;
 import team.janggi.domain.piece.Piece;
 
 public interface BoardStatus {
@@ -9,7 +10,7 @@ public interface BoardStatus {
 
     void setPiece(Position position, Piece piece);
 
-    Map<Position, Piece> getBoardStatus();
+    BoardStateReader getBoardStatus();
 
     Piece getPiece(Position position);
 

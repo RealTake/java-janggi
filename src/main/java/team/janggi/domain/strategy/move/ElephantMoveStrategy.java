@@ -1,17 +1,17 @@
 package team.janggi.domain.strategy.move;
 
-import java.util.Map;
 import team.janggi.domain.Position;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
+import team.janggi.domain.status.BoardStateReader;
 
 public class ElephantMoveStrategy implements MoveStrategy {
 
     public static final ElephantMoveStrategy instance = new ElephantMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, Map<Position, Piece> mapStatus) {
-        return validateDirection(from, to) && isPathBlock(from, to, mapStatus) && canKill(from, to, mapStatus);
+    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
+        return validateDirection(from, to) && isPathBlock(from, to, statusView) && canKill(from, to, statusView);
     }
 
     private boolean validateDirection(Position from, Position to) {
@@ -21,7 +21,7 @@ public class ElephantMoveStrategy implements MoveStrategy {
         return (dx + dy) == 5;
     }
 
-    private boolean isPathBlock(Position from, Position to, Map<Position, Piece> mapStatus) {
+    private boolean isPathBlock(Position from, Position to, BoardStateReader statusView) {
         int dx = Math.abs(from.x() - to.x());
         int dy = Math.abs(from.y() - to.y());
 
@@ -35,7 +35,7 @@ public class ElephantMoveStrategy implements MoveStrategy {
         }
 
         Position obstaclePosition = new Position(fromX, fromY);
-        Piece obstacle = mapStatus.get(obstaclePosition);
+        Piece obstacle = statusView.get(obstaclePosition);
         if (!obstacle.isSamePieceType(PieceType.EMPTY)){
             return false;
         }
@@ -44,16 +44,16 @@ public class ElephantMoveStrategy implements MoveStrategy {
         int y2 = (to.y() - from.y()) / Math.abs(to.y() - from.y());
 
         Position obstaclePosition2 = new Position(fromX+x2, fromY+y2);
-        Piece obastacle2 = mapStatus.get(obstaclePosition2);
+        Piece obastacle2 = statusView.get(obstaclePosition2);
         if (!obastacle2.isSamePieceType(PieceType.EMPTY)) {
             return false;
         }
         return true;
     }
 
-    private boolean canKill(Position from, Position to, Map<Position, Piece> mapStatus) {
-        Piece currentPiece = mapStatus.get(from);
-        Piece definationPiece = mapStatus.get(to);
+    private boolean canKill(Position from, Position to, BoardStateReader statusView) {
+        Piece currentPiece = statusView.get(from);
+        Piece definationPiece = statusView.get(to);
         return !currentPiece.isSameTeam(definationPiece);
     }
 

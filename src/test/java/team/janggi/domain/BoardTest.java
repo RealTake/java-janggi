@@ -1,6 +1,5 @@
 package team.janggi.domain;
 
-import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import team.janggi.domain.piece.Cannon;
@@ -11,6 +10,8 @@ import team.janggi.domain.piece.Horse;
 import team.janggi.domain.piece.King;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.Soldier;
+import team.janggi.domain.status.BoardStateReader;
+import team.janggi.domain.status.LocalMemoryBoardStatus;
 import team.janggi.domain.strategy.boardstruct.NormalBoardStrategy;
 import team.janggi.domain.strategy.layout.normal.NormalLayoutStrategy;
 import team.janggi.domain.strategy.layout.normal.NormalSetup;
@@ -36,14 +37,14 @@ public class BoardTest {
         Board board = new Board(boardStruct);
         board.initBoard();
 
-        Map<Position, Piece> pieceMap = board.getStatus();
+        BoardStateReader pieceMap = board.getStatus();
         // 초나라(CHO)가 아래쪽에 잘 배치되었는지 확인
         검증_초나라_기본_배치(pieceMap);
         // 한나라(HAN)가 위쪽에 잘 배치되었는지 확인
         검증_한나라_기본_배치(pieceMap);
     }
 
-    private void 검증_초나라_기본_배치(Map<Position, Piece> pieceMap) {
+    private void 검증_초나라_기본_배치(BoardStateReader pieceMap) {
         Assertions.assertAll(
                 () -> Assertions.assertEquals(new Chariot(Team.CHO), pieceMap.get(new Position(0, 9))),
                 () -> Assertions.assertEquals(new Chariot(Team.CHO), pieceMap.get(new Position(8, 9))),
@@ -60,7 +61,7 @@ public class BoardTest {
         );
     }
 
-    private void 검증_한나라_기본_배치(Map<Position, Piece> pieceMap) {
+    private void 검증_한나라_기본_배치(BoardStateReader pieceMap) {
         Assertions.assertAll(
                 () -> Assertions.assertEquals(new Chariot(Team.HAN), pieceMap.get(new Position(0, 0))),
                 () -> Assertions.assertEquals(new Chariot(Team.HAN), pieceMap.get(new Position(8, 0))),
@@ -100,7 +101,7 @@ public class BoardTest {
         Board board = new Board(boardStruct);
         board.initBoard();
 
-        Map<Position, Piece> pieceMap = board.getStatus();
+        BoardStateReader pieceMap = board.getStatus();
 
         // 고정 기물 검증
         검증_초나라_기본_배치(pieceMap);
@@ -111,7 +112,7 @@ public class BoardTest {
         assertPieceSetup(pieceMap, 0, Team.HAN, hanSetup);
     }
 
-    private void assertPieceSetup(Map<Position, Piece> pieceMap, int y, Team team, NormalSetup setup) {
+    private void assertPieceSetup(BoardStateReader pieceMap, int y, Team team, NormalSetup setup) {
         switch (setup) {
             case 왼상차림 -> Assertions.assertAll(
                     () -> assertPiece(pieceMap, y, team, 1, new Elephant(team)),
@@ -143,7 +144,7 @@ public class BoardTest {
         }
     }
 
-    private void assertPiece(Map<Position, Piece> pieceMap, int y, Team team, int x, Piece expected) {
+    private void assertPiece(BoardStateReader pieceMap, int y, Team team, int x, Piece expected) {
         int actualX = x;
 
         if (team == Team.HAN) {
@@ -172,7 +173,7 @@ public class BoardTest {
         board.move(Team.CHO, from, to);
 
         // 이동 후 해당 위치에 병이 있는지 확인
-        Map<Position, Piece> pieceMap = board.getStatus();
+        BoardStateReader pieceMap = board.getStatus();
         Assertions.assertEquals(soldier, pieceMap.get(to));
     }
 }

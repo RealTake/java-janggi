@@ -1,9 +1,9 @@
 package team.janggi.domain.piece;
 
-import java.util.Map;
 import java.util.Objects;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
+import team.janggi.domain.status.BoardStateReader;
 import team.janggi.domain.strategy.move.EmptyMoveStrategy;
 import team.janggi.domain.strategy.move.MoveStrategy;
 
@@ -24,7 +24,7 @@ public class Piece {
 
     public boolean canMove(Position from,
                            Position to,
-                           Map<Position, Piece> mapStatus) {
+                           BoardStateReader mapStatus) {
 
         return moveStrategy.calculateMove(from, to, mapStatus);
     }

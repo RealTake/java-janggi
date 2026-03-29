@@ -1,16 +1,16 @@
 package team.janggi.domain.strategy.move;
 
-import java.util.Map;
 import team.janggi.domain.Position;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
+import team.janggi.domain.status.BoardStateReader;
 
 public class HorseMoveStrategy implements MoveStrategy {
     public static final HorseMoveStrategy instance = new HorseMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, Map<Position, Piece> mapStatus) {
-        return validateDirection(from, to) && isPathBlock(from, to, mapStatus) && canKill(from, to, mapStatus);
+    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
+        return validateDirection(from, to) && isPathBlock(from, to, statusView) && canKill(from, to, statusView);
     }
 
     private boolean validateDirection(Position from, Position to) {
@@ -20,7 +20,7 @@ public class HorseMoveStrategy implements MoveStrategy {
         return (dx + dy) == 3;
     }
 
-    private boolean isPathBlock(Position from, Position to, Map<Position, Piece> mapStatus) {
+    private boolean isPathBlock(Position from, Position to, BoardStateReader statusView) {
         int dx = Math.abs(from.x() - to.x());
         int dy = Math.abs(from.y() - to.y());
 
@@ -34,13 +34,13 @@ public class HorseMoveStrategy implements MoveStrategy {
         }
 
         Position obstaclePosition = new Position(fromX, fromY);
-        Piece obstacle = mapStatus.get(obstaclePosition);
+        Piece obstacle = statusView.get(obstaclePosition);
         return obstacle.isSamePieceType(PieceType.EMPTY);
     }
 
-    private boolean canKill(Position from, Position to, Map<Position, Piece> mapStatus) {
-        Piece currentPiece = mapStatus.get(from);
-        Piece definationPiece = mapStatus.get(to);
+    private boolean canKill(Position from, Position to, BoardStateReader statusView) {
+        Piece currentPiece = statusView.get(from);
+        Piece definationPiece = statusView.get(to);
         return !currentPiece.isSameTeam(definationPiece);
     }
 }

@@ -1,16 +1,16 @@
 package team.janggi.domain.strategy.move;
 
-import java.util.Map;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.piece.Piece;
+import team.janggi.domain.status.BoardStateReader;
 
 public class SoldierMoveStrategy implements MoveStrategy {
     public static final SoldierMoveStrategy instance = new SoldierMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, Map<Position, Piece> mapStatus) {
-        Piece soldier = mapStatus.get(from);
+    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
+        Piece soldier = statusView.get(from);
         if (soldier.isSameTeam(Team.CHO)) {
             return canChoForward(from, to) || canSideMove(from, to);
         }

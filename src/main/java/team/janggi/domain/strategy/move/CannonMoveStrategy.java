@@ -3,28 +3,28 @@ package team.janggi.domain.strategy.move;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import team.janggi.domain.Position;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
+import team.janggi.domain.status.BoardStateReader;
 
 public class CannonMoveStrategy implements MoveStrategy {
     public static final CannonMoveStrategy instance = new CannonMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, Map<Position, Piece> mapStatus) {
+    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
         if (!isAllowDirection(from, to)) {
             return false;
         }
 
-        final List<Piece> paths = getPaths(from, to, mapStatus);
+        final List<Piece> paths = getPaths(from, to, statusView);
 
         if (!isPathsValid(paths)) {
             return false;
         }
 
-        final Piece me = mapStatus.get(from);
-        final Piece lastPiece = mapStatus.get(to);
+        final Piece me = statusView.get(from);
+        final Piece lastPiece = statusView.get(to);
         return canKill(lastPiece, me);
     }
 
@@ -49,7 +49,7 @@ public class CannonMoveStrategy implements MoveStrategy {
                 .anyMatch(piece::isSamePieceType);
     }
 
-    private List<Piece> getPaths(Position from, Position to, Map<Position, Piece> mapStatus) {
+    private List<Piece> getPaths(Position from, Position to, BoardStateReader statusView) {
         List<Piece> paths = new ArrayList<>();
 
         int dx = Integer.signum(to.x() - from.x());
@@ -59,7 +59,7 @@ public class CannonMoveStrategy implements MoveStrategy {
         int currentY = from.y() + dy;
 
         while (currentX != to.x() || currentY != to.y()) {
-            paths.add(mapStatus.get(new Position(currentX, currentY)));
+            paths.add(statusView.get(new Position(currentX, currentY)));
             currentX += dx;
             currentY += dy;
         }

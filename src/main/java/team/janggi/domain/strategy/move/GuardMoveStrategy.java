@@ -1,8 +1,8 @@
 package team.janggi.domain.strategy.move;
 
-import java.util.Map;
 import team.janggi.domain.Position;
 import team.janggi.domain.piece.Piece;
+import team.janggi.domain.status.BoardStateReader;
 
 public class GuardMoveStrategy implements MoveStrategy {
     private static final int MAX_MOVE_DISTANCE = 1;
@@ -10,8 +10,8 @@ public class GuardMoveStrategy implements MoveStrategy {
     public static final GuardMoveStrategy instance = new GuardMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, Map<Position, Piece> mapStatus) {
-        return validateDirection(from, to) && !validateObstacle(from, to, mapStatus);
+    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
+        return validateDirection(from, to) && !validateObstacle(from, to, statusView);
     }
 
     private boolean validateDirection(Position from, Position to) {
@@ -21,9 +21,9 @@ public class GuardMoveStrategy implements MoveStrategy {
         return (dx + dy) == MAX_MOVE_DISTANCE || (dx == MAX_MOVE_DISTANCE) && (dy == MAX_MOVE_DISTANCE);
     }
 
-    private boolean validateObstacle(Position from, Position to, Map<Position, Piece> mapStatus) {
-        Piece toPiece = mapStatus.get(to);
-        Piece fromPiece = mapStatus.get(from);
+    private boolean validateObstacle(Position from, Position to, BoardStateReader statusView) {
+        Piece toPiece = statusView.get(to);
+        Piece fromPiece = statusView.get(from);
         return toPiece.isSameTeam(fromPiece);
     }
 }

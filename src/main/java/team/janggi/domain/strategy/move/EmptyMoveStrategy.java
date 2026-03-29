@@ -1,14 +1,13 @@
 package team.janggi.domain.strategy.move;
 
-import java.util.Map;
-import team.janggi.domain.piece.Piece;
 import team.janggi.domain.Position;
+import team.janggi.domain.status.BoardStateReader;
 
 public class EmptyMoveStrategy implements MoveStrategy {
     public static final EmptyMoveStrategy instance = new EmptyMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, Map<Position, Piece> mapStatus) {
+    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
         return false;
     }
 }

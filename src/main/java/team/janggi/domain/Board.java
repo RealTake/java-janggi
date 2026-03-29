@@ -1,8 +1,10 @@
 package team.janggi.domain;
 
-import java.util.Map;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
+import team.janggi.domain.status.BoardStatus;
+import team.janggi.domain.status.BoardStateReader;
+import team.janggi.domain.status.LocalMemoryBoardStatus;
 import team.janggi.domain.strategy.boardstruct.BoardStructStrategy;
 
 public class Board {
@@ -22,7 +24,7 @@ public class Board {
         boardStructStrategy.initBoardStatus(boardStatus);
     }
 
-    public Map<Position, Piece> getStatus() {
+    public BoardStateReader getStatus() {
         return boardStatus.getBoardStatus();
     }
 
