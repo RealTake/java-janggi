@@ -54,17 +54,40 @@ public class ConsoleOutputView {
 
     private String pieceCode(Piece piece) {
         final boolean isCho = piece.isSameTeam(Team.CHO);
+        final PieceType pieceType = piece.getPieceType();
 
-        return switch (piece.getPieceType()) {
-            case KING -> isCho ? "宮" : "將";
-            case GUARD -> "士";
-            case HORSE -> "馬";
-            case ELEPHANT -> "象";
-            case CHARIOT -> "車";
-            case CANNON -> isCho ? "包" : "砲";
-            case SOLDIER -> isCho ? "卒" : "兵";
-            default -> UNKNOWN_SYMBOL;
-        };
+        if (pieceType == PieceType.KING && isCho) {
+            return "宮";
+        }
+        if (pieceType == PieceType.KING) {
+            return "將";
+        }
+        if (pieceType == PieceType.GUARD) {
+            return "士";
+        }
+        if (pieceType == PieceType.HORSE) {
+            return "馬";
+        }
+        if (pieceType == PieceType.ELEPHANT) {
+            return "象";
+        }
+        if (pieceType == PieceType.CHARIOT) {
+            return "車";
+        }
+        if (pieceType == PieceType.CANNON && isCho) {
+            return "包";
+        }
+        if (pieceType == PieceType.CANNON) {
+            return "砲";
+        }
+        if (pieceType == PieceType.SOLDIER && isCho) {
+            return "卒";
+        }
+        if (pieceType == PieceType.SOLDIER) {
+            return "兵";
+        }
+
+        return UNKNOWN_SYMBOL;
     }
 
     private String applyTeamColor(Piece piece, String value) {
