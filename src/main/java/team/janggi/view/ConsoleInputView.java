@@ -106,8 +106,8 @@ public class ConsoleInputView {
         int x;
         int y;
         try {
-            x = Integer.parseInt(parts[1]);
-            y = Integer.parseInt(parts[0]);
+            x = Integer.parseInt(parts[0]);
+            y = Integer.parseInt(parts[1]);
         } catch (NumberFormatException e) {
             return null;
         }

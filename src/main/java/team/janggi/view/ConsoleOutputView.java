@@ -11,7 +11,6 @@ public class ConsoleOutputView {
     private static final int X_SIZE = 10;
     private static final int Y_SIZE = 9;
     private static final String SPACE = " ";
-    private static final String HEADER_LEFT_PADDING = "   ";
     private static final String EMPTY_TEXT = "";
     private static final String EMPTY_SYMBOL = "．";
     private static final String UNKNOWN_SYMBOL = "？";
@@ -27,20 +26,20 @@ public class ConsoleOutputView {
         for (int index = 0; index < totalCellCount; index++) {
             int y = index / Y_SIZE;
             int x = index % Y_SIZE;
-            printText(yPrefix(y, x));
 
             Piece piece = status.get(new Position(x, y));
             String cellText = toSymbol(piece);
-            printText(applyTeamColor(piece, cellText) + SPACE);
-            printText(ySuffix(x));
+            printText(applyTeamColor(piece, cellText));
+            printText(cellSeparatorAfter(x));
+            printText(rowLineSuffix(x, y));
         }
     }
 
     private void printColumnHeader() {
-        printText(HEADER_LEFT_PADDING);
         for (int x = 0; x < Y_SIZE; x++) {
             printText(toFullWidthDigit(x) + SPACE);
         }
+        printText(headerRowIndexColumnPadding());
         printLine();
     }
 
@@ -108,20 +107,20 @@ public class ConsoleOutputView {
         return String.valueOf((char) ('０' + value));
     }
 
-    private String yPrefix(int y, int x) {
-        if (x == 0) {
-            return String.format("%2d%s", y, SPACE);
+    private String cellSeparatorAfter(int x) {
+        return x < Y_SIZE - 1 ? SPACE : EMPTY_TEXT;
+    }
+
+    private String rowLineSuffix(int x, int y) {
+        if (x == Y_SIZE - 1) {
+            return SPACE + y + System.lineSeparator();
         }
 
         return EMPTY_TEXT;
     }
 
-    private String ySuffix(int x) {
-        if (x == Y_SIZE - 1) {
-            return System.lineSeparator();
-        }
-
-        return EMPTY_TEXT;
+    private String headerRowIndexColumnPadding() {
+        return SPACE;
     }
 
     private void printText(String text) {
