@@ -11,4 +11,7 @@ public interface BoardStatus {
 
     Map<Position, Piece> getBoardStatus();
 
+    Piece getPiece(Position position);
+
+    boolean isOutOfBounds(Position position);
 }
