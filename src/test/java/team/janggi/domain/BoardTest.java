@@ -106,7 +106,7 @@ public class BoardTest {
         검증_초나라_기본_배치(pieceMap);
         검증_한나라_기본_배치(pieceMap);
 
-        // 상/마 차림 검증 (초는 9번 행, 한은 0번 행)
+        // 상/마 차림 검증 (초는 ㅛ9번 , 한은 0번 행)
         assertPieceSetup(pieceMap, 9, Team.CHO, choSetup);
         assertPieceSetup(pieceMap, 0, Team.HAN, hanSetup);
     }
