@@ -10,8 +10,8 @@ public class ElephantMoveStrategy implements MoveStrategy {
     public static final ElephantMoveStrategy instance = new ElephantMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
-        return validateDirection(from, to) && isPathBlock(from, to, statusView) && canKill(from, to, statusView);
+    public boolean calculateMove(Position from, Position to, BoardStateReader stateReader) {
+        return validateDirection(from, to) && isPathBlock(from, to, stateReader) && canKill(from, to, stateReader);
     }
 
     private boolean validateDirection(Position from, Position to) {
@@ -21,7 +21,7 @@ public class ElephantMoveStrategy implements MoveStrategy {
         return (dx + dy) == 5;
     }
 
-    private boolean isPathBlock(Position from, Position to, BoardStateReader statusView) {
+    private boolean isPathBlock(Position from, Position to, BoardStateReader stateReader) {
         int dx = Math.abs(from.x() - to.x());
         int dy = Math.abs(from.y() - to.y());
 
@@ -35,7 +35,7 @@ public class ElephantMoveStrategy implements MoveStrategy {
         }
 
         Position obstaclePosition = new Position(fromX, fromY);
-        Piece obstacle = statusView.get(obstaclePosition);
+        Piece obstacle = stateReader.get(obstaclePosition);
         if (!obstacle.isSamePieceType(PieceType.EMPTY)){
             return false;
         }
@@ -44,16 +44,16 @@ public class ElephantMoveStrategy implements MoveStrategy {
         int y2 = (to.y() - from.y()) / Math.abs(to.y() - from.y());
 
         Position obstaclePosition2 = new Position(fromX+x2, fromY+y2);
-        Piece obastacle2 = statusView.get(obstaclePosition2);
+        Piece obastacle2 = stateReader.get(obstaclePosition2);
         if (!obastacle2.isSamePieceType(PieceType.EMPTY)) {
             return false;
         }
         return true;
     }
 
-    private boolean canKill(Position from, Position to, BoardStateReader statusView) {
-        Piece currentPiece = statusView.get(from);
-        Piece definationPiece = statusView.get(to);
+    private boolean canKill(Position from, Position to, BoardStateReader stateReader) {
+        Piece currentPiece = stateReader.get(from);
+        Piece definationPiece = stateReader.get(to);
         return !currentPiece.isSameTeam(definationPiece);
     }
 

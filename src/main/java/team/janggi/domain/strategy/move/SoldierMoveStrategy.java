@@ -9,8 +9,8 @@ public class SoldierMoveStrategy implements MoveStrategy {
     public static final SoldierMoveStrategy instance = new SoldierMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
-        Piece soldier = statusView.get(from);
+    public boolean calculateMove(Position from, Position to, BoardStateReader stateReader) {
+        Piece soldier = stateReader.get(from);
         if (soldier.isSameTeam(Team.CHO)) {
             return canChoForward(from, to) || canSideMove(from, to);
         }

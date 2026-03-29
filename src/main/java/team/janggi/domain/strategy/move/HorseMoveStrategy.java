@@ -9,8 +9,8 @@ public class HorseMoveStrategy implements MoveStrategy {
     public static final HorseMoveStrategy instance = new HorseMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
-        return validateDirection(from, to) && isPathBlock(from, to, statusView) && canKill(from, to, statusView);
+    public boolean calculateMove(Position from, Position to, BoardStateReader stateReader) {
+        return validateDirection(from, to) && isPathBlock(from, to, stateReader) && canKill(from, to, stateReader);
     }
 
     private boolean validateDirection(Position from, Position to) {
@@ -20,7 +20,7 @@ public class HorseMoveStrategy implements MoveStrategy {
         return (dx + dy) == 3;
     }
 
-    private boolean isPathBlock(Position from, Position to, BoardStateReader statusView) {
+    private boolean isPathBlock(Position from, Position to, BoardStateReader stateReader) {
         int dx = Math.abs(from.x() - to.x());
         int dy = Math.abs(from.y() - to.y());
 
@@ -34,13 +34,13 @@ public class HorseMoveStrategy implements MoveStrategy {
         }
 
         Position obstaclePosition = new Position(fromX, fromY);
-        Piece obstacle = statusView.get(obstaclePosition);
+        Piece obstacle = stateReader.get(obstaclePosition);
         return obstacle.isSamePieceType(PieceType.EMPTY);
     }
 
-    private boolean canKill(Position from, Position to, BoardStateReader statusView) {
-        Piece currentPiece = statusView.get(from);
-        Piece definationPiece = statusView.get(to);
+    private boolean canKill(Position from, Position to, BoardStateReader stateReader) {
+        Piece currentPiece = stateReader.get(from);
+        Piece definationPiece = stateReader.get(to);
         return !currentPiece.isSameTeam(definationPiece);
     }
 }

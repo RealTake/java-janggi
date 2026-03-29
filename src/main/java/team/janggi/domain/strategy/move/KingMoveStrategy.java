@@ -10,8 +10,8 @@ public class KingMoveStrategy implements MoveStrategy {
     public static final KingMoveStrategy instance = new KingMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
-        return validateDirection(from, to) && !validateObstacle(from, to, statusView);
+    public boolean calculateMove(Position from, Position to, BoardStateReader stateReader) {
+        return validateDirection(from, to) && !validateObstacle(from, to, stateReader);
     }
 
     private boolean validateDirection(Position from, Position to) {
@@ -21,9 +21,9 @@ public class KingMoveStrategy implements MoveStrategy {
         return (dx + dy) == MAX_MOVE_DISTANCE || (dx == MAX_MOVE_DISTANCE) && (dy == MAX_MOVE_DISTANCE);
     }
 
-    private boolean validateObstacle(Position from, Position to, BoardStateReader statusView) {
-        Piece toPiece = statusView.get(to);
-        Piece fromPiece = statusView.get(from);
+    private boolean validateObstacle(Position from, Position to, BoardStateReader stateReader) {
+        Piece toPiece = stateReader.get(to);
+        Piece fromPiece = stateReader.get(from);
         return toPiece.isSameTeam(fromPiece);
     }
 

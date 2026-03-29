@@ -7,7 +7,7 @@ public class EmptyMoveStrategy implements MoveStrategy {
     public static final EmptyMoveStrategy instance = new EmptyMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
+    public boolean calculateMove(Position from, Position to, BoardStateReader stateReader) {
         return false;
     }
 }

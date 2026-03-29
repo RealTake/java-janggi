@@ -7,5 +7,5 @@ public interface MoveStrategy {
 
     boolean calculateMove(Position from,
                           Position to,
-                          BoardStateReader statusView);
+                          BoardStateReader stateReader);
 }

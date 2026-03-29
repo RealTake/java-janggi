@@ -12,19 +12,19 @@ public class CannonMoveStrategy implements MoveStrategy {
     public static final CannonMoveStrategy instance = new CannonMoveStrategy();
 
     @Override
-    public boolean calculateMove(Position from, Position to, BoardStateReader statusView) {
+    public boolean calculateMove(Position from, Position to, BoardStateReader stateReader) {
         if (!isAllowDirection(from, to)) {
             return false;
         }
 
-        final List<Piece> paths = getPaths(from, to, statusView);
+        final List<Piece> paths = getPaths(from, to, stateReader);
 
         if (!isPathsValid(paths)) {
             return false;
         }
 
-        final Piece me = statusView.get(from);
-        final Piece lastPiece = statusView.get(to);
+        final Piece me = stateReader.get(from);
+        final Piece lastPiece = stateReader.get(to);
         return canKill(lastPiece, me);
     }
 
@@ -49,7 +49,7 @@ public class CannonMoveStrategy implements MoveStrategy {
                 .anyMatch(piece::isSamePieceType);
     }
 
-    private List<Piece> getPaths(Position from, Position to, BoardStateReader statusView) {
+    private List<Piece> getPaths(Position from, Position to, BoardStateReader stateReader) {
         List<Piece> paths = new ArrayList<>();
 
         int dx = Integer.signum(to.x() - from.x());
@@ -59,7 +59,7 @@ public class CannonMoveStrategy implements MoveStrategy {
         int currentY = from.y() + dy;
 
         while (currentX != to.x() || currentY != to.y()) {
-            paths.add(statusView.get(new Position(currentX, currentY)));
+            paths.add(stateReader.get(new Position(currentX, currentY)));
             currentX += dx;
             currentY += dy;
         }
