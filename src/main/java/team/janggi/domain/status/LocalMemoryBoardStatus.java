@@ -22,13 +22,12 @@ public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
     @Override
     public void movePiece(Team team, Position from, Position to) {
         final Piece piece = getPiece(from);
-
-            if (!piece.canMove(from, to, getBoardStatus())) {
+        if (!piece.canMove(from, to, getBoardStatus())) {
             throw new IllegalArgumentException("해당 위치로 이동할 수 없습니다.");
         }
 
-            map.put(to, piece);
-            map.put(from, Empty.instance);
+        map.put(to, piece);
+        map.put(from, Empty.instance);
     }
 
     @Override
