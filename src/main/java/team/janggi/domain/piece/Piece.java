@@ -41,10 +41,6 @@ public class Piece {
         return this.pieceType == otherPieceType;
     }
 
-    public PieceType getPieceType() {
-        return pieceType;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -52,36 +52,35 @@ public class ConsoleOutputView {
 
     private String pieceCode(Piece piece) {
         final boolean isCho = piece.isSameTeam(Team.CHO);
-        final PieceType pieceType = piece.getPieceType();
 
-        if (pieceType == PieceType.KING && isCho) {
+        if (piece.isSamePieceType(PieceType.KING) && isCho) {
             return "宮";
         }
-        if (pieceType == PieceType.KING) {
+        if (piece.isSamePieceType(PieceType.KING)) {
             return "將";
         }
-        if (pieceType == PieceType.GUARD) {
+        if (piece.isSamePieceType(PieceType.GUARD)) {
             return "士";
         }
-        if (pieceType == PieceType.HORSE) {
+        if (piece.isSamePieceType(PieceType.HORSE)) {
             return "馬";
         }
-        if (pieceType == PieceType.ELEPHANT) {
+        if (piece.isSamePieceType(PieceType.ELEPHANT)) {
             return "象";
         }
-        if (pieceType == PieceType.CHARIOT) {
+        if (piece.isSamePieceType(PieceType.CHARIOT)) {
             return "車";
         }
-        if (pieceType == PieceType.CANNON && isCho) {
+        if (piece.isSamePieceType(PieceType.CANNON) && isCho) {
             return "包";
         }
-        if (pieceType == PieceType.CANNON) {
+        if (piece.isSamePieceType(PieceType.CANNON)) {
             return "砲";
         }
-        if (pieceType == PieceType.SOLDIER && isCho) {
+        if (piece.isSamePieceType(PieceType.SOLDIER) && isCho) {
             return "卒";
         }
-        if (pieceType == PieceType.SOLDIER) {
+        if (piece.isSamePieceType(PieceType.SOLDIER)) {
             return "兵";
         }
 
