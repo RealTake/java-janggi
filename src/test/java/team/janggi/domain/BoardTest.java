@@ -2,6 +2,11 @@ package team.janggi.domain;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import team.janggi.domain.board.Board;
+import team.janggi.domain.board.BoardInitializer;
+import team.janggi.domain.board.BoardStateReader;
+import team.janggi.domain.board.LocalMemoryBoardStatus;
+import team.janggi.domain.board.NormalSetup;
 import team.janggi.domain.piece.Cannon;
 import team.janggi.domain.piece.Chariot;
 import team.janggi.domain.piece.Elephant;
@@ -10,18 +15,12 @@ import team.janggi.domain.piece.Horse;
 import team.janggi.domain.piece.King;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.Soldier;
-import team.janggi.domain.status.BoardStateReader;
-import team.janggi.domain.status.LocalMemoryBoardStatus;
-import team.janggi.domain.strategy.BoardInitializer;
-import team.janggi.domain.strategy.layout.normal.NormalLayoutStrategy;
-import team.janggi.domain.strategy.layout.normal.NormalSetup;
 
 public class BoardTest {
 
     @Test
     void 기본_장기_보드_생성_테스트() {
-        var layout = new NormalLayoutStrategy(NormalSetup.바깥상차림, NormalSetup.바깥상차림);
-        var boardStruct = new BoardInitializer(layout);
+        var boardStruct = new BoardInitializer(NormalSetup.바깥상차림, NormalSetup.바깥상차림);
 
         Board board = new Board(boardStruct);
         board.init();
@@ -31,8 +30,7 @@ public class BoardTest {
 
     @Test
     void 기본_장기_배치_테스트() {
-        var layout = new NormalLayoutStrategy(NormalSetup.바깥상차림, NormalSetup.바깥상차림);
-        var boardStruct = new BoardInitializer(layout);
+        var boardStruct = new BoardInitializer(NormalSetup.바깥상차림, NormalSetup.바깥상차림);
 
         Board board = new Board(boardStruct);
         board.init();
@@ -95,8 +93,7 @@ public class BoardTest {
     }
 
     private void runTest(NormalSetup choSetup, NormalSetup hanSetup) {
-        var layout = new NormalLayoutStrategy(choSetup, hanSetup);
-        var boardStruct = new BoardInitializer(layout);
+        var boardStruct = new BoardInitializer(choSetup, hanSetup);
 
         Board board = new Board(boardStruct);
         board.init();
@@ -157,7 +154,7 @@ public class BoardTest {
 
     @Test
     public void 기물_이동_테스트() {
-        var boardStruct = new BoardInitializer(EmptyLayoutStrategy.instance);
+        var boardStruct = new EmptyBoardInitializer();
         var boardStatus = new LocalMemoryBoardStatus();
         var board = new Board(boardStatus, boardStruct);
 

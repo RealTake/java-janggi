@@ -1,4 +1,4 @@
-package team.janggi.domain.strategy.layout.normal;
+package team.janggi.domain.board;
 
 public enum NormalSetup {
     왼상차림,

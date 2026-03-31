@@ -1,9 +1,9 @@
-package team.janggi.domain.strategy.move;
+package team.janggi.domain.piece.strategy;
 
 import team.janggi.domain.Position;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
-import team.janggi.domain.status.BoardStateReader;
+import team.janggi.domain.board.BoardStateReader;
 
 public class HorseMoveStrategy implements MoveStrategy {
     public static final HorseMoveStrategy instance = new HorseMoveStrategy();

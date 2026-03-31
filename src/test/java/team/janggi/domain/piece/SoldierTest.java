@@ -3,12 +3,12 @@ package team.janggi.domain.piece;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import team.janggi.domain.status.BoardStatus;
-import team.janggi.domain.EmptyLayoutStrategy;
-import team.janggi.domain.status.LocalMemoryBoardStatus;
+import team.janggi.domain.board.BoardStatus;
+import team.janggi.domain.EmptyBoardInitializer;
+import team.janggi.domain.board.LocalMemoryBoardStatus;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.strategy.BoardInitializer;
+import team.janggi.domain.board.BoardInitializer;
 
 public class SoldierTest {
 
@@ -16,7 +16,7 @@ public class SoldierTest {
 
     @BeforeEach
     void setUp() {
-        new BoardInitializer(EmptyLayoutStrategy.instance).initBoardStatus(boardStatus);
+        new EmptyBoardInitializer().initBoardStatus(boardStatus);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package team.janggi.domain.status;
+package team.janggi.domain.board;
 
 import java.util.HashMap;
 import java.util.Map;

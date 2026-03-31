@@ -1,7 +1,7 @@
-package team.janggi.domain.strategy.move;
+package team.janggi.domain.piece.strategy;
 
 import team.janggi.domain.Position;
-import team.janggi.domain.status.BoardStateReader;
+import team.janggi.domain.board.BoardStateReader;
 
 public class HanSoldierMoveStrategy implements MoveStrategy {
     public static final HanSoldierMoveStrategy instance = new HanSoldierMoveStrategy();

@@ -3,9 +3,9 @@ package team.janggi.domain.piece;
 import java.util.Objects;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.status.BoardStateReader;
-import team.janggi.domain.strategy.move.EmptyMoveStrategy;
-import team.janggi.domain.strategy.move.MoveStrategy;
+import team.janggi.domain.board.BoardStateReader;
+import team.janggi.domain.piece.strategy.EmptyMoveStrategy;
+import team.janggi.domain.piece.strategy.MoveStrategy;
 
 public class Piece {
     private Team team;

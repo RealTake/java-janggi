@@ -1,25 +1,21 @@
-package team.janggi.domain.strategy;
+package team.janggi.domain;
 
-import team.janggi.domain.status.BoardStatus;
-import team.janggi.domain.Position;
+import team.janggi.domain.board.BoardInitializer;
+import team.janggi.domain.board.BoardStatus;
+import team.janggi.domain.board.NormalSetup;
 import team.janggi.domain.piece.Empty;
-import team.janggi.domain.strategy.layout.normal.NormalLayoutStrategy;
 
-public class BoardInitializer implements NormalBoardStructStrategy {
+public class EmptyBoardInitializer extends BoardInitializer {
     private static final int NORMAL_BOARD_Y_SIZE = 10;
     private static final int NORMAL_BOARD_X_SIZE = 9;
 
-    private final NormalLayoutStrategy layout;
-
-    public BoardInitializer(NormalLayoutStrategy layout) {
-        this.layout = layout;
+    public EmptyBoardInitializer() {
+        super(NormalSetup.바깥상차림, NormalSetup.바깥상차림);
     }
 
     @Override
     public void initBoardStatus(BoardStatus status) {
         initMapByEmpty(status);
-
-        layout.init(status);
     }
 
     private void initMapByEmpty( BoardStatus status) {

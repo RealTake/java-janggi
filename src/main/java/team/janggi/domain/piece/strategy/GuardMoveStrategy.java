@@ -1,8 +1,8 @@
-package team.janggi.domain.strategy.move;
+package team.janggi.domain.piece.strategy;
 
 import team.janggi.domain.Position;
 import team.janggi.domain.piece.Piece;
-import team.janggi.domain.status.BoardStateReader;
+import team.janggi.domain.board.BoardStateReader;
 
 public class GuardMoveStrategy implements MoveStrategy {
     private static final int MAX_MOVE_DISTANCE = 1;

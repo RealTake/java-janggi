@@ -1,4 +1,4 @@
-package team.janggi.domain.strategy.layout.normal;
+package team.janggi.domain.board;
 
 import java.util.List;
 import team.janggi.domain.Position;
@@ -6,39 +6,47 @@ import team.janggi.domain.Team;
 import team.janggi.domain.piece.Cannon;
 import team.janggi.domain.piece.Chariot;
 import team.janggi.domain.piece.Elephant;
+import team.janggi.domain.piece.Empty;
 import team.janggi.domain.piece.Guard;
 import team.janggi.domain.piece.Horse;
 import team.janggi.domain.piece.King;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.Soldier;
-import team.janggi.domain.status.BoardStatus;
-import team.janggi.domain.strategy.layout.LayoutStrategy;
 
-public class NormalLayoutStrategy implements LayoutStrategy {
-
-    private final NormalSetup choSetup;
-    private final NormalSetup hanSetup;
-
-    // 초(CHO)는 이제 아래쪽(Y 번호가 큰 쪽)에 위치합니다.
+public class BoardInitializer {
+    private static final int NORMAL_BOARD_Y_SIZE = 10;
+    private static final int NORMAL_BOARD_X_SIZE = 9;
     private static final int CHO_BACK_RANK_Y = 9;    // 맨 아래
     private static final int CHO_KING_RANK_Y = 8;    // 궁성 안
     private static final int CHO_CANNON_RANK_Y = 7;  // 포 라인
     private static final int CHO_SOLDIER_RANK_Y = 6; // 졸 라인
-
-    private static final int HAN_OFFSET_Y = 9; // 한나라(HAN)는 초나라(CHO)에서 Y 좌표를 9에서 빼서 배치합니다.
-    private static final int HAN_OFFSET_X = 8; // 한나라(HAN)는 초나라(CHO)에서 X 좌표를 8에서 빼서 배치합니다.
-
     private static final List<Integer> SOLDIER_X_POSITIONS = List.of(0, 2, 4, 6, 8);
 
-    public NormalLayoutStrategy(NormalSetup choSetup, NormalSetup hanSetup) {
+    private final NormalSetup choSetup;
+    private final NormalSetup hanSetup;
+
+    public BoardInitializer(NormalSetup choSetup, NormalSetup hanSetup) {
         this.choSetup = choSetup;
         this.hanSetup = hanSetup;
     }
 
-    @Override
-    public void init(BoardStatus boardStatus) {
-        initLayoutByTeam(boardStatus, Team.CHO, choSetup);
-        initLayoutByTeam(boardStatus, Team.HAN, hanSetup);
+    public void initBoardStatus(BoardStatus status) {
+        initMapByEmpty(status);
+
+        initLayoutByTeam(status, Team.CHO, choSetup);
+        initLayoutByTeam(status, Team.HAN, hanSetup);
+    }
+
+    private void initMapByEmpty( BoardStatus status) {
+        for (int y = 0; y < NORMAL_BOARD_Y_SIZE; y++) {
+            initMapRowByEmpty(status, y);
+        }
+    }
+
+    private void initMapRowByEmpty(BoardStatus status, int y) {
+        for (int x = 0; x < NORMAL_BOARD_X_SIZE; x++) {
+            status.setPiece(new Position(x, y), Empty.instance);
+        }
     }
 
     private void initLayoutByTeam(BoardStatus boardStatus, Team team, NormalSetup setup) {
@@ -100,22 +108,20 @@ public class NormalLayoutStrategy implements LayoutStrategy {
     }
 
     private void setPieceXPositionReverseByTeam(BoardStatus boardStatus, Piece piece, Team team, int x, int y) {
-        int actualX = x;
-
-        if (team == Team.HAN) {
-            actualX = HAN_OFFSET_X - x;
-        }
-
-        boardStatus.setPiece(new Position(actualX, y), piece);
+        boardStatus.setPiece(new Position(dimensionRevers(team, NORMAL_BOARD_X_SIZE - 1, x), y), piece);
     }
 
     private void setPieceYPositionReverseByTeam(BoardStatus boardStatus, Piece piece, Team team, int x, int y) {
-        int actualY = y;
+        boardStatus.setPiece(new Position(x, dimensionRevers(team, NORMAL_BOARD_Y_SIZE - 1, y)), piece);
+    }
+
+    private int dimensionRevers(Team team, int offset, int dimension) {
+        int actual = dimension;
 
         if (team == Team.HAN) {
-            actualY = HAN_OFFSET_Y - y;
+            actual = offset - dimension;
         }
 
-        boardStatus.setPiece(new Position(x, actualY), piece);
+        return actual;
     }
 }

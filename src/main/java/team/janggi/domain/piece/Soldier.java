@@ -1,9 +1,9 @@
 package team.janggi.domain.piece;
 
 import team.janggi.domain.Team;
-import team.janggi.domain.strategy.move.ChoSoldierMoveStrategy;
-import team.janggi.domain.strategy.move.HanSoldierMoveStrategy;
-import team.janggi.domain.strategy.move.MoveStrategy;
+import team.janggi.domain.piece.strategy.ChoSoldierMoveStrategy;
+import team.janggi.domain.piece.strategy.HanSoldierMoveStrategy;
+import team.janggi.domain.piece.strategy.MoveStrategy;
 
 /**
  * 병

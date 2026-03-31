@@ -1,11 +1,11 @@
 package team.janggi.view;
 
-import team.janggi.domain.Board;
+import team.janggi.domain.board.Board;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
-import team.janggi.domain.status.BoardStateReader;
+import team.janggi.domain.board.BoardStateReader;
 
 public class ConsoleOutputView {
     private static final int X_SIZE = 10;

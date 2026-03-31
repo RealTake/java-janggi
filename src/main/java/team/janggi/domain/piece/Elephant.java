@@ -1,8 +1,7 @@
 package team.janggi.domain.piece;
 
 import team.janggi.domain.Team;
-import team.janggi.domain.strategy.move.ElephantMoveStrategy;
-import team.janggi.domain.strategy.move.MoveStrategy;
+import team.janggi.domain.piece.strategy.ElephantMoveStrategy;
 
 /**
  * 상

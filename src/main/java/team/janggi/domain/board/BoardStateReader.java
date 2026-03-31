@@ -1,4 +1,4 @@
-package team.janggi.domain.status;
+package team.janggi.domain.board;
 
 import team.janggi.domain.Position;
 import team.janggi.domain.piece.Piece;

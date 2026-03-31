@@ -1,11 +1,9 @@
-package team.janggi.domain;
+package team.janggi.domain.board;
 
+import team.janggi.domain.Position;
+import team.janggi.domain.Team;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
-import team.janggi.domain.status.BoardStateReader;
-import team.janggi.domain.status.BoardStatus;
-import team.janggi.domain.status.LocalMemoryBoardStatus;
-import team.janggi.domain.strategy.BoardInitializer;
 
 public class Board {
     private final BoardStatus boardStatus;

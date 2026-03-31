@@ -1,12 +1,12 @@
 package team.janggi.control;
 
 import java.util.Map;
-import team.janggi.domain.Board;
+import team.janggi.domain.board.Board;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.strategy.BoardInitializer;
+import team.janggi.domain.board.BoardInitializer;
 import team.janggi.domain.strategy.layout.normal.NormalLayoutStrategy;
-import team.janggi.domain.strategy.layout.normal.NormalSetup;
+import team.janggi.domain.board.NormalSetup;
 import team.janggi.view.ConsoleInputView;
 import team.janggi.view.ConsoleOutputView;
 

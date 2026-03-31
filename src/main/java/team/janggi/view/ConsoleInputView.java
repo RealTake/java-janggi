@@ -3,7 +3,7 @@ package team.janggi.view;
 import java.util.Scanner;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.strategy.layout.normal.NormalSetup;
+import team.janggi.domain.board.NormalSetup;
 
 public class ConsoleInputView {
     private static final int Y_COUNT = 10;
