@@ -3,12 +3,11 @@ package team.janggi.domain.piece;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import team.janggi.domain.board.BoardStatus;
 import team.janggi.domain.EmptyBoardInitializer;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.board.BoardInitializer;
+import team.janggi.domain.board.BoardStatus;
+import team.janggi.domain.board.LocalMemoryBoardStatus;
 
 public class SoldierTest {
 
@@ -22,7 +21,7 @@ public class SoldierTest {
     @Test
     void 초의_졸은_전진_할_수_있다() {
         // given
-        Soldier soldier = new Soldier(Team.CHO);
+        Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         Position currentPosition = new Position(5, 5);
 
         boardStatus.setPiece(currentPosition, soldier);
@@ -37,7 +36,7 @@ public class SoldierTest {
     @Test
     void 한의_졸은_전진_할_수_있다() {
         // given
-        Soldier soldier = new Soldier(Team.HAN);
+        Piece soldier = Piece.of(PieceType.SOLDIER, Team.HAN);
         Position currentPosition = new Position(5, 5);
 
         boardStatus.setPiece(currentPosition, soldier);
@@ -52,7 +51,7 @@ public class SoldierTest {
     @Test
     void 초의_졸은_후퇴_할_수_없다() {
         // given
-        Soldier soldier = new Soldier(Team.CHO);
+        Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         Position currentPosition = new Position(5, 5);
 
         boardStatus.setPiece(currentPosition, soldier);
@@ -67,7 +66,7 @@ public class SoldierTest {
     @Test
     void 한의_졸은_후퇴_할_수_없다() {
         // given
-        Soldier soldier = new Soldier(Team.HAN);
+        Piece soldier = Piece.of(PieceType.SOLDIER, Team.HAN);
         Position currentPosition = new Position(5, 5);
 
         boardStatus.setPiece(currentPosition, soldier);
@@ -81,7 +80,7 @@ public class SoldierTest {
 
     @Test
     void 초의_졸은_좌으로_이동할_수_있다() {
-        var soldier = new Soldier(Team.CHO);
+        var soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         var currentPosition = new Position(5, 5);
 
         boardStatus.setPiece(currentPosition, soldier);
@@ -93,7 +92,7 @@ public class SoldierTest {
 
     @Test
     void 한의_졸은_좌으로_이동할_수_있다() {
-        var soldier = new Soldier(Team.HAN);
+        var soldier = Piece.of(PieceType.SOLDIER, Team.HAN);
         var currentPosition = new Position(5, 5);
 
         boardStatus.setPiece(currentPosition, soldier);
@@ -106,7 +105,7 @@ public class SoldierTest {
 
     @Test
     void 초의_졸은_우로_이동할_수_있다() {
-        var soldier = new Soldier(Team.CHO);
+        var soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         var currentPosition = new Position(5, 5);
 
         boardStatus.setPiece(currentPosition, soldier);
@@ -119,7 +118,7 @@ public class SoldierTest {
 
     @Test
     void 한의_졸은_우로_이동할_수_있다() {
-        var soldier = new Soldier(Team.HAN);
+        var soldier = Piece.of(PieceType.SOLDIER, Team.HAN);
         var currentPosition = new Position(5, 5);
 
         boardStatus.setPiece(currentPosition, soldier);

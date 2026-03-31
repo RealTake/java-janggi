@@ -4,12 +4,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import team.janggi.domain.board.BoardStatus;
 import team.janggi.domain.EmptyBoardInitializer;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.board.BoardInitializer;
+import team.janggi.domain.board.BoardStatus;
+import team.janggi.domain.board.LocalMemoryBoardStatus;
 
 public class HorseTest {
 
@@ -33,7 +32,7 @@ public class HorseTest {
     })
     void 마는_장애물이_없으면_날일자_경로로_이동할_수_있다(int startX, int startY, int endX, int endY){
         // given
-        Piece horse = new Horse(Team.CHO);
+        Piece horse = Piece.of(PieceType.HORSE, Team.CHO);
         Position from = new Position(startX, startY);
         Position to = new Position(endX, endY);
 
@@ -49,11 +48,11 @@ public class HorseTest {
     })
     void 마는_장애물이_존재하면_날일자_경로로_이동할_수_없다(int startX, int startY, int endX, int endY, int obstacleX, int obstacleY) {
         // given
-        Piece horse = new Horse(Team.CHO);
+        Piece horse = Piece.of(PieceType.HORSE, Team.CHO);
         Position from = new Position(startX, startY);
         Position to = new Position(endX, endY);
 
-        Piece obstacle = new Soldier(Team.CHO);
+        Piece obstacle = Piece.of(PieceType.SOLDIER, Team.CHO);
         Position obstaclePosition = new Position(obstacleX, obstacleY);
         boardStatus.setPiece(from, horse);
         boardStatus.setPiece(obstaclePosition, obstacle);

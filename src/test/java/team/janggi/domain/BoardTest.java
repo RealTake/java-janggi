@@ -7,14 +7,8 @@ import team.janggi.domain.board.BoardInitializer;
 import team.janggi.domain.board.BoardStateReader;
 import team.janggi.domain.board.LocalMemoryBoardStatus;
 import team.janggi.domain.board.NormalSetup;
-import team.janggi.domain.piece.Cannon;
-import team.janggi.domain.piece.Chariot;
-import team.janggi.domain.piece.Elephant;
-import team.janggi.domain.piece.Guard;
-import team.janggi.domain.piece.Horse;
-import team.janggi.domain.piece.King;
 import team.janggi.domain.piece.Piece;
-import team.janggi.domain.piece.Soldier;
+import team.janggi.domain.piece.PieceType;
 
 public class BoardTest {
 
@@ -44,35 +38,35 @@ public class BoardTest {
 
     private void 검증_초나라_기본_배치(BoardStateReader pieceMap) {
         Assertions.assertAll(
-                () -> Assertions.assertEquals(new Chariot(Team.CHO), pieceMap.get(new Position(0, 9))),
-                () -> Assertions.assertEquals(new Chariot(Team.CHO), pieceMap.get(new Position(8, 9))),
-                () -> Assertions.assertEquals(new Cannon(Team.CHO), pieceMap.get(new Position(1, 7))),
-                () -> Assertions.assertEquals(new Cannon(Team.CHO), pieceMap.get(new Position(7, 7))),
-                () -> Assertions.assertEquals(new Soldier(Team.CHO), pieceMap.get(new Position(0, 6))),
-                () -> Assertions.assertEquals(new Soldier(Team.CHO), pieceMap.get(new Position(2, 6))),
-                () -> Assertions.assertEquals(new Soldier(Team.CHO), pieceMap.get(new Position(4, 6))),
-                () -> Assertions.assertEquals(new Soldier(Team.CHO), pieceMap.get(new Position(6, 6))),
-                () -> Assertions.assertEquals(new Soldier(Team.CHO), pieceMap.get(new Position(8, 6))),
-                () -> Assertions.assertEquals(new King(Team.CHO), pieceMap.get(new Position(4, 8))),
-                () -> Assertions.assertEquals(new Guard(Team.CHO), pieceMap.get(new Position(3, 9))),
-                () -> Assertions.assertEquals(new Guard(Team.CHO), pieceMap.get(new Position(5, 9)))
+                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.CHO), pieceMap.get(new Position(0, 9))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.CHO), pieceMap.get(new Position(8, 9))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.CHO), pieceMap.get(new Position(1, 7))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.CHO), pieceMap.get(new Position(7, 7))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.get(new Position(0, 6))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.get(new Position(2, 6))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.get(new Position(4, 6))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.get(new Position(6, 6))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.get(new Position(8, 6))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.KING, Team.CHO), pieceMap.get(new Position(4, 8))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.CHO), pieceMap.get(new Position(3, 9))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.CHO), pieceMap.get(new Position(5, 9)))
         );
     }
 
     private void 검증_한나라_기본_배치(BoardStateReader pieceMap) {
         Assertions.assertAll(
-                () -> Assertions.assertEquals(new Chariot(Team.HAN), pieceMap.get(new Position(0, 0))),
-                () -> Assertions.assertEquals(new Chariot(Team.HAN), pieceMap.get(new Position(8, 0))),
-                () -> Assertions.assertEquals(new Cannon(Team.HAN), pieceMap.get(new Position(1, 2))),
-                () -> Assertions.assertEquals(new Cannon(Team.HAN), pieceMap.get(new Position(7, 2))),
-                () -> Assertions.assertEquals(new Soldier(Team.HAN), pieceMap.get(new Position(0, 3))),
-                () -> Assertions.assertEquals(new Soldier(Team.HAN), pieceMap.get(new Position(2, 3))),
-                () -> Assertions.assertEquals(new Soldier(Team.HAN), pieceMap.get(new Position(4, 3))),
-                () -> Assertions.assertEquals(new Soldier(Team.HAN), pieceMap.get(new Position(6, 3))),
-                () -> Assertions.assertEquals(new Soldier(Team.HAN), pieceMap.get(new Position(8, 3))),
-                () -> Assertions.assertEquals(new King(Team.HAN), pieceMap.get(new Position(4, 1))),
-                () -> Assertions.assertEquals(new Guard(Team.HAN), pieceMap.get(new Position(3, 0))),
-                () -> Assertions.assertEquals(new Guard(Team.HAN), pieceMap.get(new Position(5, 0)))
+                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.HAN), pieceMap.get(new Position(0, 0))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.HAN), pieceMap.get(new Position(8, 0))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.HAN), pieceMap.get(new Position(1, 2))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.HAN), pieceMap.get(new Position(7, 2))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.get(new Position(0, 3))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.get(new Position(2, 3))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.get(new Position(4, 3))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.get(new Position(6, 3))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.get(new Position(8, 3))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.KING, Team.HAN), pieceMap.get(new Position(4, 1))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.HAN), pieceMap.get(new Position(3, 0))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.HAN), pieceMap.get(new Position(5, 0)))
         );
     }
 
@@ -112,31 +106,31 @@ public class BoardTest {
     private void assertPieceSetup(BoardStateReader pieceMap, int y, Team team, NormalSetup setup) {
         switch (setup) {
             case 왼상차림 -> Assertions.assertAll(
-                    () -> assertPiece(pieceMap, y, team, 1, new Elephant(team)),
-                    () -> assertPiece(pieceMap, y, team, 2, new Horse(team)),
-                    () -> assertPiece(pieceMap, y, team, 6, new Elephant(team)),
-                    () -> assertPiece(pieceMap, y, team, 7, new Horse(team))
+                    () -> assertPiece(pieceMap, y, team, 1, Piece.of(PieceType.ELEPHANT, team)),
+                    () -> assertPiece(pieceMap, y, team, 2, Piece.of(PieceType.HORSE, team)),
+                    () -> assertPiece(pieceMap, y, team, 6, Piece.of(PieceType.ELEPHANT, team)),
+                    () -> assertPiece(pieceMap, y, team, 7, Piece.of(PieceType.HORSE, team))
             );
 
             case 오른상차림 -> Assertions.assertAll(
-                    () -> assertPiece(pieceMap, y, team, 1, new Horse(team)),
-                    () -> assertPiece(pieceMap, y, team, 2, new Elephant(team)),
-                    () -> assertPiece(pieceMap, y, team, 6, new Horse(team)),
-                    () -> assertPiece(pieceMap, y, team, 7, new Elephant(team))
+                    () -> assertPiece(pieceMap, y, team, 1, Piece.of(PieceType.HORSE, team)),
+                    () -> assertPiece(pieceMap, y, team, 2, Piece.of(PieceType.ELEPHANT, team)),
+                    () -> assertPiece(pieceMap, y, team, 6, Piece.of(PieceType.HORSE, team)),
+                    () -> assertPiece(pieceMap, y, team, 7, Piece.of(PieceType.ELEPHANT, team))
             );
 
             case 안상차림 -> Assertions.assertAll(
-                    () -> assertPiece(pieceMap, y, team, 1, new Horse(team)),
-                    () -> assertPiece(pieceMap, y, team, 2, new Elephant(team)),
-                    () -> assertPiece(pieceMap, y, team, 6, new Elephant(team)),
-                    () -> assertPiece(pieceMap, y, team, 7, new Horse(team))
+                    () -> assertPiece(pieceMap, y, team, 1, Piece.of(PieceType.HORSE, team)),
+                    () -> assertPiece(pieceMap, y, team, 2, Piece.of(PieceType.ELEPHANT, team)),
+                    () -> assertPiece(pieceMap, y, team, 6, Piece.of(PieceType.ELEPHANT, team)),
+                    () -> assertPiece(pieceMap, y, team, 7, Piece.of(PieceType.HORSE, team))
             );
 
             case 바깥상차림 -> Assertions.assertAll(
-                    () -> assertPiece(pieceMap, y, team, 1, new Elephant(team)),
-                    () -> assertPiece(pieceMap, y, team, 2, new Horse(team)),
-                    () -> assertPiece(pieceMap, y, team, 6, new Horse(team)),
-                    () -> assertPiece(pieceMap, y, team, 7, new Elephant(team))
+                    () -> assertPiece(pieceMap, y, team, 1, Piece.of(PieceType.ELEPHANT, team)),
+                    () -> assertPiece(pieceMap, y, team, 2, Piece.of(PieceType.HORSE, team)),
+                    () -> assertPiece(pieceMap, y, team, 6, Piece.of(PieceType.HORSE, team)),
+                    () -> assertPiece(pieceMap, y, team, 7, Piece.of(PieceType.ELEPHANT, team))
             );
         }
     }
@@ -161,7 +155,7 @@ public class BoardTest {
         board.init();
 
         // 졸 기물 세팅
-        Soldier soldier = new Soldier(Team.CHO);
+        Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         boardStatus.setPiece(new Position(6, 5), soldier);
 
         // 초나라의 졸을 왼쪽으로 한칸 이동

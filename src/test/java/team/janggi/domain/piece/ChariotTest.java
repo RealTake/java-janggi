@@ -67,14 +67,14 @@ public class ChariotTest {
         final Team myTeam = Team.CHO;
         final Team opponentTeam = Team.HAN;
 
-        Piece me = new Chariot(myTeam);
+        Piece me = Piece.of(PieceType.CHARIOT, myTeam);
         Position from = new Position(startX, startY);
         Position to = new Position(endX, endY);
 
         // 피스 세팅
         boardStatus.setPiece(from, me);
         if (isEnemyExist) {
-            boardStatus.setPiece(to, new Soldier(opponentTeam));
+            boardStatus.setPiece(to, Piece.of(PieceType.SOLDIER, opponentTeam));
         }
 
         // when
@@ -114,13 +114,13 @@ public class ChariotTest {
         // given
         final Team myTeam = Team.CHO;
 
-        Piece me = new Chariot(myTeam);
+        Piece me = Piece.of(PieceType.CHARIOT, myTeam);
         Position from = new Position(startX, startY);
         Position to = new Position(endX, endY);
 
         // 피스 세팅
         boardStatus.setPiece(from, me);
-        boardStatus.setPiece(to, new Soldier(myTeam)); // 목표 위치에 아군 기물 세팅
+        boardStatus.setPiece(to, Piece.of(PieceType.SOLDIER, myTeam)); // 목표 위치에 아군 기물 세팅
 
         // when
         boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());

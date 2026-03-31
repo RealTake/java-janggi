@@ -4,7 +4,15 @@ import java.util.Objects;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.board.BoardStateReader;
+import team.janggi.domain.piece.strategy.CannonMoveStrategy;
+import team.janggi.domain.piece.strategy.ChariotMoveStrategy;
+import team.janggi.domain.piece.strategy.ChoSoldierMoveStrategy;
+import team.janggi.domain.piece.strategy.ElephantMoveStrategy;
 import team.janggi.domain.piece.strategy.EmptyMoveStrategy;
+import team.janggi.domain.piece.strategy.GuardMoveStrategy;
+import team.janggi.domain.piece.strategy.HanSoldierMoveStrategy;
+import team.janggi.domain.piece.strategy.HorseMoveStrategy;
+import team.janggi.domain.piece.strategy.KingMoveStrategy;
 import team.janggi.domain.piece.strategy.MoveStrategy;
 
 public class Piece {
@@ -20,6 +28,47 @@ public class Piece {
 
     public Piece(PieceType pieceType) {
         this(Team.NONE, pieceType, new EmptyMoveStrategy());
+    }
+
+    public final static Piece EMPTY_PIECE = new Piece(PieceType.EMPTY);
+
+    public static Piece of(PieceType pieceType, Team team) {
+        if (pieceType == PieceType.EMPTY) {
+            return EMPTY_PIECE;
+        }
+        if (pieceType == PieceType.SOLDIER) {
+            return new Piece(team, PieceType.SOLDIER, getSoldierMoveStrategyByTeam(team));
+        }
+        if (pieceType == PieceType.KING) {
+            return new Piece(team, PieceType.KING, KingMoveStrategy.instance);
+        }
+        if (pieceType == PieceType.GUARD) {
+            return new Piece(team, PieceType.GUARD, GuardMoveStrategy.instance);
+        }
+        if (pieceType == PieceType.ELEPHANT) {
+            return new Piece(team, PieceType.ELEPHANT, ElephantMoveStrategy.instance);
+        }
+        if (pieceType == PieceType.HORSE) {
+            return new Piece(team, PieceType.HORSE, HorseMoveStrategy.instance);
+        }
+        if (pieceType == PieceType.CHARIOT) {
+            return new Piece(team, PieceType.CHARIOT, ChariotMoveStrategy.instance);
+        }
+        if (pieceType == PieceType.CANNON) {
+            return new Piece(team, PieceType.CANNON, CannonMoveStrategy.instance);
+        }
+
+        throw new IllegalArgumentException("지원하지 않는 기물 타입입니다: " + pieceType);
+    }
+
+    private static MoveStrategy getSoldierMoveStrategyByTeam(Team team) {
+        if (team == Team.CHO) {
+            return ChoSoldierMoveStrategy.instance;
+        }
+        if (team == Team.HAN) {
+            return HanSoldierMoveStrategy.instance;
+        }
+        throw new IllegalArgumentException("졸은 초 또는 한 팀에 속해야 합니다.");
     }
 
     public boolean canMove(Position from,

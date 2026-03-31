@@ -4,12 +4,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import team.janggi.domain.board.BoardStatus;
 import team.janggi.domain.EmptyBoardInitializer;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.board.BoardInitializer;
+import team.janggi.domain.board.BoardStatus;
+import team.janggi.domain.board.LocalMemoryBoardStatus;
 
 public class KingTest {
 
@@ -29,7 +28,7 @@ public class KingTest {
     })
     void 궁은_상하좌우로_한칸_이동_할_수_있다(int startX, int startY, int endX, int endY){
         // given
-        Piece king = new King(Team.CHO);
+        Piece king = Piece.of(PieceType.KING, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
         boardStatus.setPiece(currentPosition, king);
@@ -50,7 +49,7 @@ public class KingTest {
     })
     void 궁은_대각선으로_한칸_이동_할_수_있다(int startX, int startY, int endX, int endY){
         // given
-        Piece king = new King(Team.CHO);
+        Piece king = Piece.of(PieceType.KING, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
         boardStatus.setPiece(currentPosition, king);

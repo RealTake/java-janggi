@@ -3,7 +3,7 @@ package team.janggi.domain;
 import team.janggi.domain.board.BoardInitializer;
 import team.janggi.domain.board.BoardStatus;
 import team.janggi.domain.board.NormalSetup;
-import team.janggi.domain.piece.Empty;
+import team.janggi.domain.piece.Piece;
 
 public class EmptyBoardInitializer extends BoardInitializer {
     private static final int NORMAL_BOARD_Y_SIZE = 10;
@@ -26,7 +26,7 @@ public class EmptyBoardInitializer extends BoardInitializer {
 
     private void initMapRowByEmpty(BoardStatus status, int y) {
         for (int x = 0; x < NORMAL_BOARD_X_SIZE; x++) {
-            status.setPiece(new Position(x, y), Empty.instance);
+            status.setPiece(new Position(x, y), Piece.EMPTY_PIECE);
         }
     }
 }

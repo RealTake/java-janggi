@@ -4,12 +4,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import team.janggi.domain.board.BoardStatus;
 import team.janggi.domain.EmptyBoardInitializer;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.board.BoardInitializer;
+import team.janggi.domain.board.BoardStatus;
+import team.janggi.domain.board.LocalMemoryBoardStatus;
 
 public class ElephantTest {
     private final BoardStatus boardStatus = new LocalMemoryBoardStatus();
@@ -32,7 +31,7 @@ public class ElephantTest {
     })
     void 상은_상하좌우_한칸_후_대각선_두칸_위치로_이동한다(int startX, int startY, int endX, int endY) {
         // given
-        Piece elephant = new Elephant(Team.CHO);
+        Piece elephant = Piece.of(PieceType.ELEPHANT, Team.CHO);
         Position from = new Position(startX, startY);
         Position to = new Position(endX, endY);
 
@@ -51,11 +50,11 @@ public class ElephantTest {
     })
     void 상은_이동_경로_중간에_기물이_있으면_멱에_걸린다(int startX, int startY, int endX, int endY, int obstacleX, int obstacleY) {
         // given
-        Piece elephant = new Elephant(Team.CHO);
+        Piece elephant = Piece.of(PieceType.ELEPHANT, Team.CHO);
         Position from = new Position(startX, startY);
         Position to = new Position(endX, endY);
 
-        Piece obstacle = new Soldier(Team.HAN);
+        Piece obstacle = Piece.of(PieceType.SOLDIER, Team.HAN);
         Position obstaclePosition = new Position(obstacleX, obstacleY);
 
         boardStatus.setPiece(from, elephant);
@@ -73,7 +72,7 @@ public class ElephantTest {
             "5, 5, 10, 11"
     })
     void 상은_정해진_행마법_이외의_곳으로는_이동할_수_없다(int startX, int startY, int endX, int endY){
-        Piece elephant = new Elephant(Team.CHO);
+        Piece elephant = Piece.of(PieceType.ELEPHANT, Team.CHO);
         Position from = new Position(startX, startY);
         Position to = new Position(endX, endY);
 
@@ -96,10 +95,10 @@ public class ElephantTest {
     })
     void 상은_목적지에_아군_기물이_있으면_이동할_수_없다(int startX, int startY, int endX, int endY){
         // given
-        Piece elephant = new Elephant(Team.CHO);
+        Piece elephant = Piece.of(PieceType.ELEPHANT, Team.CHO);
         Position from = new Position(startX, startY);
 
-        Piece soldier = new Soldier(Team.CHO);
+        Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         Position to = new Position(endX, endY);
 
         // when
@@ -121,10 +120,10 @@ public class ElephantTest {
     })
     void 상은_목적지의_상대_기물을_잡으며_이동할_수_있다(int startX, int startY, int endX, int endY){
         // given
-        Piece elephant = new Elephant(Team.CHO);
+        Piece elephant = Piece.of(PieceType.ELEPHANT, Team.CHO);
         Position from = new Position(startX, startY);
 
-        Piece soldier = new Soldier(Team.HAN);
+        Piece soldier = Piece.of(PieceType.SOLDIER, Team.HAN);
         Position to = new Position(endX, endY);
 
         // when

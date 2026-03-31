@@ -42,7 +42,7 @@ public class CannonTest {
         final Team myTeam = Team.CHO;
         final Team opponentTeam = Team.HAN;
 
-        final Piece me = new Cannon(myTeam);
+        final Piece me = Piece.of(PieceType.CANNON, myTeam);
         final Position from = new Position(startX, startY);
         final Position to = new Position(endX, endY);
         final Position obstaclePosition = new Position(obstacleX, obstacleY);
@@ -51,10 +51,10 @@ public class CannonTest {
         // 포 피스 세팅
         boardStatus.setPiece(from, me);
         // 장애물 피스 세팅
-        boardStatus.setPiece(obstaclePosition, new Soldier(myTeam));
+        boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, myTeam));
         // 목표 위치에 적기물 세팅
         if (isEnemyExist) {
-            boardStatus.setPiece(to, new Soldier(opponentTeam));
+            boardStatus.setPiece(to, Piece.of(PieceType.SOLDIER, opponentTeam));
         }
 
         // then
@@ -79,7 +79,7 @@ public class CannonTest {
         final Team myTeam = Team.CHO;
         final Team opponentTeam = Team.HAN;
 
-        final Piece me = new Cannon(myTeam);
+        final Piece me = Piece.of(PieceType.CANNON, myTeam);
         final Position from = new Position(startX, startY);
         final Position to = new Position(endX, endY);
         final Position obstaclePosition = new Position(obstacleX, obstacleY);
@@ -88,9 +88,9 @@ public class CannonTest {
         // 포 피스 세팅
         boardStatus.setPiece(from, me);
         // 장애물 피스 세팅
-        boardStatus.setPiece(obstaclePosition, new Soldier(myTeam));
+        boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, myTeam));
         // 목표 위치에 적기물 세팅
-        boardStatus.setPiece(to, new Soldier(myTeam));
+        boardStatus.setPiece(to, Piece.of(PieceType.SOLDIER, myTeam));
 
         // then
         final boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());
@@ -109,7 +109,7 @@ public class CannonTest {
             int endX, int endY,
             boolean expected) {
         // given
-        final Piece me = new Cannon(Team.CHO);
+        final Piece me = Piece.of(PieceType.CANNON, Team.CHO);
         final Position from = new Position(startX, startY);
         final Position to = new Position(endX, endY);
 
@@ -136,7 +136,7 @@ public class CannonTest {
             int obstacleX, int obstacleY,
             boolean expected) {
         // given
-        final Piece me = new Cannon(Team.CHO);
+        final Piece me = Piece.of(PieceType.CANNON, Team.CHO);
         final Position from = new Position(startX, startY);
         final Position to = new Position(endX, endY);
         final Position obstaclePosition = new Position(obstacleX, obstacleY);
@@ -144,7 +144,7 @@ public class CannonTest {
         // 포 피스 세팅
         boardStatus.setPiece(from, me);
         // 장애물 피스 세팅
-        boardStatus.setPiece(obstaclePosition, new Cannon(Team.CHO));
+        boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.CANNON, Team.CHO));
 
         // when
         final boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());
@@ -165,7 +165,7 @@ public class CannonTest {
             int endX, int endY,
             boolean expected) {
         // given
-        final Piece me = new Cannon(Team.CHO);
+        final Piece me = Piece.of(PieceType.CANNON, Team.CHO);
         final Position from = new Position(startX, startY);
         final Position to = new Position(endX, endY);
 
@@ -193,7 +193,7 @@ public class CannonTest {
             int obstacle2X, int obstacle2Y,
             boolean expected) {
         // given
-        final Piece me = new Cannon(Team.CHO);
+        final Piece me = Piece.of(PieceType.CANNON, Team.CHO);
         final Position from = new Position(startX, startY);
         final Position to = new Position(endX, endY);
         final Position obstaclePosition = new Position(obstacleX, obstacleY);
@@ -202,9 +202,9 @@ public class CannonTest {
         // 포 피스 세팅
         boardStatus.setPiece(from, me);
         // 장애물 피스 세팅
-        boardStatus.setPiece(obstaclePosition, new Soldier(Team.CHO));
+        boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, Team.CHO));
         // 장애물 피스 세팅
-        boardStatus.setPiece(obstaclePosition2, new Soldier(Team.CHO));
+        boardStatus.setPiece(obstaclePosition2, Piece.of(PieceType.SOLDIER, Team.CHO));
 
         // when
         final boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());

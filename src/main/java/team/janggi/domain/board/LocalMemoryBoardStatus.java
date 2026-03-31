@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.piece.Empty;
 import team.janggi.domain.piece.Piece;
 
 public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
@@ -24,7 +23,7 @@ public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
         final Piece piece = getPiece(from);
 
         map.put(to, piece);
-        map.put(from, Empty.instance);
+        map.put(from, Piece.EMPTY_PIECE);
     }
 
     @Override

@@ -4,15 +4,8 @@ import java.util.List;
 import team.janggi.domain.BoardSize;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.piece.Cannon;
-import team.janggi.domain.piece.Chariot;
-import team.janggi.domain.piece.Elephant;
-import team.janggi.domain.piece.Empty;
-import team.janggi.domain.piece.Guard;
-import team.janggi.domain.piece.Horse;
-import team.janggi.domain.piece.King;
 import team.janggi.domain.piece.Piece;
-import team.janggi.domain.piece.Soldier;
+import team.janggi.domain.piece.PieceType;
 
 public class BoardInitializer {
     private static final int CHO_BACK_RANK_Y = 9;    // 맨 아래
@@ -46,30 +39,30 @@ public class BoardInitializer {
 
     private void initMapRowByEmpty(BoardStatus status, int y) {
         for (int x = 0; x < BoardSize.X; x++) {
-            status.setPiece(new Position(x, y), Empty.instance);
+            status.setPiece(new Position(x, y), Piece.EMPTY_PIECE);
         }
     }
 
     private void initLayoutByTeam(BoardStatus boardStatus, Team team, NormalSetup setup) {
         // 차
-        setPieceYPositionReverseByTeam(boardStatus, new Chariot(team), team, 0, CHO_BACK_RANK_Y);
-        setPieceYPositionReverseByTeam(boardStatus, new Chariot(team), team, 8, CHO_BACK_RANK_Y);
+        setPieceYPositionReverseByTeam(boardStatus, Piece.of(PieceType.CHARIOT, team), team, 0, CHO_BACK_RANK_Y);
+        setPieceYPositionReverseByTeam(boardStatus, Piece.of(PieceType.CHARIOT, team), team, 8, CHO_BACK_RANK_Y);
 
         // 포
-        setPieceYPositionReverseByTeam(boardStatus, new Cannon(team), team, 1, CHO_CANNON_RANK_Y);
-        setPieceYPositionReverseByTeam(boardStatus, new Cannon(team), team, 7, CHO_CANNON_RANK_Y);
+        setPieceYPositionReverseByTeam(boardStatus, Piece.of(PieceType.CANNON, team), team, 1, CHO_CANNON_RANK_Y);
+        setPieceYPositionReverseByTeam(boardStatus, Piece.of(PieceType.CANNON, team), team, 7, CHO_CANNON_RANK_Y);
 
         // 졸
         for (int x : SOLDIER_X_POSITIONS) {
-            setPieceYPositionReverseByTeam(boardStatus, new Soldier(team), team, x, CHO_SOLDIER_RANK_Y);
+            setPieceYPositionReverseByTeam(boardStatus, Piece.of(PieceType.SOLDIER, team), team, x, CHO_SOLDIER_RANK_Y);
         }
 
         // 왕
-        setPieceYPositionReverseByTeam(boardStatus, new King(team), team, 4, CHO_KING_RANK_Y);
+        setPieceYPositionReverseByTeam(boardStatus, Piece.of(PieceType.KING, team), team, 4, CHO_KING_RANK_Y);
 
         // 사
-        setPieceYPositionReverseByTeam(boardStatus, new Guard(team), team, 3, CHO_BACK_RANK_Y);
-        setPieceYPositionReverseByTeam(boardStatus, new Guard(team), team, 5, CHO_BACK_RANK_Y);
+        setPieceYPositionReverseByTeam(boardStatus, Piece.of(PieceType.GUARD, team), team, 3, CHO_BACK_RANK_Y);
+        setPieceYPositionReverseByTeam(boardStatus, Piece.of(PieceType.GUARD, team), team, 5, CHO_BACK_RANK_Y);
 
         // 상치림
         if (team == Team.CHO) {
@@ -84,34 +77,34 @@ public class BoardInitializer {
 
     private void setup(BoardStatus boardStatus, NormalSetup setup, Team team, int y) {
         if (setup == NormalSetup.왼상차림) {
-            setPieceXPositionReverseByTeam(boardStatus, new Elephant(team), team, 1, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Horse(team), team, 2, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Elephant(team), team, 6, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Horse(team), team, 7, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.ELEPHANT, team), team, 1, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.HORSE, team), team, 2, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.ELEPHANT, team), team, 6, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.HORSE, team), team, 7, y);
             return;
         }
 
         if (setup == NormalSetup.오른상차림) {
-            setPieceXPositionReverseByTeam(boardStatus, new Horse(team), team, 1, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Elephant(team), team, 2, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Horse(team), team, 6, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Elephant(team), team, 7, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.HORSE, team), team, 1, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.ELEPHANT, team), team, 2, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.HORSE, team), team, 6, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.ELEPHANT, team), team, 7, y);
             return;
         }
 
         if (setup == NormalSetup.안상차림) {
-            setPieceXPositionReverseByTeam(boardStatus, new Horse(team), team, 1, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Elephant(team), team, 2, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Elephant(team), team, 6, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Horse(team), team, 7, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.HORSE, team), team, 1, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.ELEPHANT, team), team, 2, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.ELEPHANT, team), team, 6, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.HORSE, team), team, 7, y);
             return;
         }
 
         if (setup == NormalSetup.바깥상차림) {
-            setPieceXPositionReverseByTeam(boardStatus, new Elephant(team), team, 1, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Horse(team), team, 2, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Horse(team), team, 6, y);
-            setPieceXPositionReverseByTeam(boardStatus, new Elephant(team), team, 7, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.ELEPHANT, team), team, 1, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.HORSE, team), team, 2, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.HORSE, team), team, 6, y);
+            setPieceXPositionReverseByTeam(boardStatus, Piece.of(PieceType.ELEPHANT, team), team, 7, y);
         }
     }
 
