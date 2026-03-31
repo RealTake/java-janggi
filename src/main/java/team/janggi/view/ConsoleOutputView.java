@@ -1,5 +1,6 @@
 package team.janggi.view;
 
+import team.janggi.domain.BoardSize;
 import team.janggi.domain.board.Board;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
@@ -8,8 +9,6 @@ import team.janggi.domain.piece.PieceType;
 import team.janggi.domain.board.BoardStateReader;
 
 public class ConsoleOutputView {
-    private static final int X_SIZE = 10;
-    private static final int Y_SIZE = 9;
     private static final String SPACE = " ";
     private static final String EMPTY_TEXT = "";
     private static final String EMPTY_SYMBOL = "．";
@@ -20,12 +19,12 @@ public class ConsoleOutputView {
 
     public void print(Board board) {
         final BoardStateReader status = board.getStatus();
-        final int totalCellCount = X_SIZE * Y_SIZE;
+        final int totalCellCount = BoardSize.X * BoardSize.Y;
 
         printColumnHeader();
         for (int index = 0; index < totalCellCount; index++) {
-            int y = index / Y_SIZE;
-            int x = index % Y_SIZE;
+            int y = index / BoardSize.Y;
+            int x = index % BoardSize.Y;
 
             Piece piece = status.get(new Position(x, y));
             String cellText = toSymbol(piece);
@@ -36,7 +35,7 @@ public class ConsoleOutputView {
     }
 
     private void printColumnHeader() {
-        for (int x = 0; x < Y_SIZE; x++) {
+        for (int x = 0; x < BoardSize.Y; x++) {
             printText(toFullWidthDigit(x) + SPACE);
         }
         printText(headerRowIndexColumnPadding());
@@ -108,11 +107,11 @@ public class ConsoleOutputView {
     }
 
     private String cellSeparatorAfter(int x) {
-        return x < Y_SIZE - 1 ? SPACE : EMPTY_TEXT;
+        return x < BoardSize.Y - 1 ? SPACE : EMPTY_TEXT;
     }
 
     private String rowLineSuffix(int x, int y) {
-        if (x == Y_SIZE - 1) {
+        if (x == BoardSize.Y - 1) {
             return SPACE + y + System.lineSeparator();
         }
 

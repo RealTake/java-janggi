@@ -5,7 +5,6 @@ import team.janggi.domain.board.Board;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.board.BoardInitializer;
-import team.janggi.domain.strategy.layout.normal.NormalLayoutStrategy;
 import team.janggi.domain.board.NormalSetup;
 import team.janggi.view.ConsoleInputView;
 import team.janggi.view.ConsoleOutputView;
@@ -32,10 +31,8 @@ public class JanggiController {
     private Board createBoard() {
         final NormalSetup choSetup = consoleInputView.readChoNormalSetup();
         final NormalSetup hanSetup = consoleInputView.readHanNormalSetup();
-
-        final NormalLayoutStrategy layout = new NormalLayoutStrategy(choSetup, hanSetup);
-        final BoardInitializer boardStructStrategy = new BoardInitializer(layout);
-        return new Board(boardStructStrategy);
+        final BoardInitializer boardInitializer = new BoardInitializer(choSetup, hanSetup);
+        return new Board(boardInitializer);
     }
 
     private Team doTurn(Board board, Team currentTurn) {

@@ -1,6 +1,7 @@
 package team.janggi.domain.board;
 
 import java.util.List;
+import team.janggi.domain.BoardSize;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.piece.Cannon;
@@ -14,9 +15,9 @@ import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.Soldier;
 
 public class BoardInitializer {
-    private static final int NORMAL_BOARD_Y_SIZE = 10;
-    private static final int NORMAL_BOARD_X_SIZE = 9;
     private static final int CHO_BACK_RANK_Y = 9;    // 맨 아래
+    private static final int HAN_BACK_RANK_Y = 0;    // 맨 위
+
     private static final int CHO_KING_RANK_Y = 8;    // 궁성 안
     private static final int CHO_CANNON_RANK_Y = 7;  // 포 라인
     private static final int CHO_SOLDIER_RANK_Y = 6; // 졸 라인
@@ -38,13 +39,13 @@ public class BoardInitializer {
     }
 
     private void initMapByEmpty( BoardStatus status) {
-        for (int y = 0; y < NORMAL_BOARD_Y_SIZE; y++) {
+        for (int y = 0; y < BoardSize.Y; y++) {
             initMapRowByEmpty(status, y);
         }
     }
 
     private void initMapRowByEmpty(BoardStatus status, int y) {
-        for (int x = 0; x < NORMAL_BOARD_X_SIZE; x++) {
+        for (int x = 0; x < BoardSize.X; x++) {
             status.setPiece(new Position(x, y), Empty.instance);
         }
     }
@@ -71,7 +72,14 @@ public class BoardInitializer {
         setPieceYPositionReverseByTeam(boardStatus, new Guard(team), team, 5, CHO_BACK_RANK_Y);
 
         // 상치림
-        setup(boardStatus, setup, team, CHO_BACK_RANK_Y);
+        if (team == Team.CHO) {
+            setup(boardStatus, setup, team, CHO_BACK_RANK_Y);
+        }
+
+        if (team == Team.HAN) {
+
+            setup(boardStatus, setup, team, HAN_BACK_RANK_Y);
+        }
     }
 
     private void setup(BoardStatus boardStatus, NormalSetup setup, Team team, int y) {
@@ -108,11 +116,11 @@ public class BoardInitializer {
     }
 
     private void setPieceXPositionReverseByTeam(BoardStatus boardStatus, Piece piece, Team team, int x, int y) {
-        boardStatus.setPiece(new Position(dimensionRevers(team, NORMAL_BOARD_X_SIZE - 1, x), y), piece);
+        boardStatus.setPiece(new Position(dimensionRevers(team, BoardSize.X - 1, x), y), piece);
     }
 
     private void setPieceYPositionReverseByTeam(BoardStatus boardStatus, Piece piece, Team team, int x, int y) {
-        boardStatus.setPiece(new Position(x, dimensionRevers(team, NORMAL_BOARD_Y_SIZE - 1, y)), piece);
+        boardStatus.setPiece(new Position(x, dimensionRevers(team, BoardSize.Y - 1, y)), piece);
     }
 
     private int dimensionRevers(Team team, int offset, int dimension) {
