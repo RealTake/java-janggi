@@ -28,6 +28,12 @@ public class Board {
 
     public void move(Team team, Position from, Position to) {
         validate(team, from, to);
+
+        final Piece piece = boardStatus.getPiece(from);
+        if (!piece.canMove(from, to, boardStatus.getBoardStatus())) {
+            throw new IllegalArgumentException("해당 위치로 이동할 수 없습니다.");
+        }
+
         boardStatus.movePiece(team, from, to);
     }
 
