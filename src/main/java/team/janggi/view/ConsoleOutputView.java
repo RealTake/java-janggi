@@ -23,8 +23,8 @@ public class ConsoleOutputView {
 
         printColumnHeader();
         for (int index = 0; index < totalCellCount; index++) {
-            int y = index / BoardSize.Y;
-            int x = index % BoardSize.Y;
+            int y = index / BoardSize.X;
+            int x = index % BoardSize.X;
 
             Piece piece = status.get(new Position(x, y));
             String cellText = toSymbol(piece);
@@ -35,7 +35,7 @@ public class ConsoleOutputView {
     }
 
     private void printColumnHeader() {
-        for (int x = 0; x < BoardSize.Y; x++) {
+        for (int x = 0; x < BoardSize.X; x++) {
             printText(toFullWidthDigit(x) + SPACE);
         }
         printText(headerRowIndexColumnPadding());
@@ -106,11 +106,11 @@ public class ConsoleOutputView {
     }
 
     private String cellSeparatorAfter(int x) {
-        return x < BoardSize.Y - 1 ? SPACE : EMPTY_TEXT;
+        return x < BoardSize.X - 1 ? SPACE : EMPTY_TEXT;
     }
 
     private String rowLineSuffix(int x, int y) {
-        if (x == BoardSize.Y - 1) {
+        if (x == BoardSize.X - 1) {
             return SPACE + y + System.lineSeparator();
         }
 
