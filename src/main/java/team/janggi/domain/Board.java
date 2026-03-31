@@ -2,26 +2,26 @@ package team.janggi.domain;
 
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
-import team.janggi.domain.status.BoardStatus;
 import team.janggi.domain.status.BoardStateReader;
+import team.janggi.domain.status.BoardStatus;
 import team.janggi.domain.status.LocalMemoryBoardStatus;
-import team.janggi.domain.strategy.boardstruct.BoardStructStrategy;
+import team.janggi.domain.strategy.BoardInitializer;
 
 public class Board {
     private final BoardStatus boardStatus;
-    private final BoardStructStrategy boardStructStrategy;
+    private final BoardInitializer initializer;
 
-    public Board(BoardStructStrategy boardStructStrategy) {
-        this(new LocalMemoryBoardStatus(), boardStructStrategy);
+    public Board(BoardInitializer initializer) {
+        this(new LocalMemoryBoardStatus(), initializer);
     }
 
-    public Board(BoardStatus boardStatus, BoardStructStrategy boardStructStrategy) {
+    public Board(BoardStatus boardStatus, BoardInitializer initializer) {
         this.boardStatus = boardStatus;
-        this.boardStructStrategy = boardStructStrategy;
+        this.initializer = initializer;
     }
 
-    public void initBoard() {
-        boardStructStrategy.initBoardStatus(boardStatus);
+    public void init() {
+        initializer.initBoardStatus(boardStatus);
     }
 
     public BoardStateReader getStatus() {

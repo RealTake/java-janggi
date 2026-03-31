@@ -9,14 +9,14 @@ import team.janggi.domain.EmptyLayoutStrategy;
 import team.janggi.domain.status.LocalMemoryBoardStatus;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.strategy.boardstruct.NormalBoardStrategy;
+import team.janggi.domain.strategy.BoardInitializer;
 
 public class ElephantTest {
     private final BoardStatus boardStatus = new LocalMemoryBoardStatus();
 
     @BeforeEach
     void setUp() {
-        new NormalBoardStrategy(EmptyLayoutStrategy.instance).initBoardStatus(boardStatus);
+        new BoardInitializer(EmptyLayoutStrategy.instance).initBoardStatus(boardStatus);
     }
 
     @ParameterizedTest
