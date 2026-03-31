@@ -37,11 +37,13 @@ public class ConsoleInputView {
     }
 
     private String turnPrefix(Team team) {
-        return switch (team) {
-            case CHO -> "초 차례 — ";
-            case HAN -> "한 차례 — ";
-            case NONE -> "";
-        };
+        if (team == Team.CHO) {
+            return "초 차례 — ";
+        }
+        if (team == Team.HAN) {
+            return "한 차례 — ";
+        }
+        return "";
     }
 
     private Position readCoordinate(String prompt) {
