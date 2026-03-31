@@ -44,8 +44,8 @@ public class ElephantMoveStrategy implements MoveStrategy {
         int y2 = (to.y() - from.y()) / Math.abs(to.y() - from.y());
 
         Position obstaclePosition2 = new Position(fromX+x2, fromY+y2);
-        Piece obastacle2 = stateReader.get(obstaclePosition2);
-        if (!obastacle2.isSamePieceType(PieceType.EMPTY)) {
+        Piece obstacle2 = stateReader.get(obstaclePosition2);
+        if (!obstacle2.isSamePieceType(PieceType.EMPTY)) {
             return false;
         }
         return true;
