@@ -42,11 +42,6 @@ public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
     }
 
     @Override
-    public Piece get(Position position) {
-        return getPiece(position);
-    }
-
-    @Override
     public int size() {
         return map.size();
     }
