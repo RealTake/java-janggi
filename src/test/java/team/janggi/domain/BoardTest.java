@@ -38,35 +38,35 @@ public class BoardTest {
 
     private void 검증_초나라_기본_배치(BoardStateReader pieceMap) {
         Assertions.assertAll(
-                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.CHO), pieceMap.get(new Position(0, 9))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.CHO), pieceMap.get(new Position(8, 9))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.CHO), pieceMap.get(new Position(1, 7))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.CHO), pieceMap.get(new Position(7, 7))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.get(new Position(0, 6))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.get(new Position(2, 6))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.get(new Position(4, 6))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.get(new Position(6, 6))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.get(new Position(8, 6))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.KING, Team.CHO), pieceMap.get(new Position(4, 8))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.CHO), pieceMap.get(new Position(3, 9))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.CHO), pieceMap.get(new Position(5, 9)))
+                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.CHO), pieceMap.getPiece(new Position(0, 9))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.CHO), pieceMap.getPiece(new Position(8, 9))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.CHO), pieceMap.getPiece(new Position(1, 7))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.CHO), pieceMap.getPiece(new Position(7, 7))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.getPiece(new Position(0, 6))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.getPiece(new Position(2, 6))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.getPiece(new Position(4, 6))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.getPiece(new Position(6, 6))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.CHO), pieceMap.getPiece(new Position(8, 6))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.KING, Team.CHO), pieceMap.getPiece(new Position(4, 8))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.CHO), pieceMap.getPiece(new Position(3, 9))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.CHO), pieceMap.getPiece(new Position(5, 9)))
         );
     }
 
     private void 검증_한나라_기본_배치(BoardStateReader pieceMap) {
         Assertions.assertAll(
-                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.HAN), pieceMap.get(new Position(0, 0))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.HAN), pieceMap.get(new Position(8, 0))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.HAN), pieceMap.get(new Position(1, 2))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.HAN), pieceMap.get(new Position(7, 2))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.get(new Position(0, 3))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.get(new Position(2, 3))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.get(new Position(4, 3))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.get(new Position(6, 3))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.get(new Position(8, 3))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.KING, Team.HAN), pieceMap.get(new Position(4, 1))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.HAN), pieceMap.get(new Position(3, 0))),
-                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.HAN), pieceMap.get(new Position(5, 0)))
+                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.HAN), pieceMap.getPiece(new Position(0, 0))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CHARIOT, Team.HAN), pieceMap.getPiece(new Position(8, 0))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.HAN), pieceMap.getPiece(new Position(1, 2))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.CANNON, Team.HAN), pieceMap.getPiece(new Position(7, 2))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.getPiece(new Position(0, 3))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.getPiece(new Position(2, 3))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.getPiece(new Position(4, 3))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.getPiece(new Position(6, 3))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.SOLDIER, Team.HAN), pieceMap.getPiece(new Position(8, 3))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.KING, Team.HAN), pieceMap.getPiece(new Position(4, 1))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.HAN), pieceMap.getPiece(new Position(3, 0))),
+                () -> Assertions.assertEquals(Piece.of(PieceType.GUARD, Team.HAN), pieceMap.getPiece(new Position(5, 0)))
         );
     }
 
@@ -142,7 +142,7 @@ public class BoardTest {
             actualX = 8 - x;
         }
 
-        Assertions.assertEquals(expected, pieceMap.get(new Position(actualX, y)));
+        Assertions.assertEquals(expected, pieceMap.getPiece(new Position(actualX, y)));
     }
 
 
@@ -165,6 +165,6 @@ public class BoardTest {
 
         // 이동 후 해당 위치에 병이 있는지 확인
         BoardStateReader pieceMap = board.getStatus();
-        Assertions.assertEquals(soldier, pieceMap.get(to));
+        Assertions.assertEquals(soldier, pieceMap.getPiece(to));
     }
 }

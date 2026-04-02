@@ -26,7 +26,7 @@ public class ConsoleOutputView {
             int y = index / BoardSize.X;
             int x = index % BoardSize.X;
 
-            Piece piece = status.get(new Position(x, y));
+            Piece piece = status.getPiece(new Position(x, y));
             String cellText = toSymbol(piece);
             printText(applyTeamColor(piece, cellText));
             printText(cellSeparatorAfter(x));

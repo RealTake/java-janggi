@@ -34,13 +34,13 @@ public class HorseMoveStrategy implements MoveStrategy {
         }
 
         Position obstaclePosition = new Position(fromX, fromY);
-        Piece obstacle = stateReader.get(obstaclePosition);
+        Piece obstacle = stateReader.getPiece(obstaclePosition);
         return obstacle.isSamePieceType(PieceType.EMPTY);
     }
 
     private boolean canKill(Position from, Position to, BoardStateReader stateReader) {
-        Piece currentPiece = stateReader.get(from);
-        Piece definationPiece = stateReader.get(to);
+        Piece currentPiece = stateReader.getPiece(from);
+        Piece definationPiece = stateReader.getPiece(to);
         return !currentPiece.isSameTeam(definationPiece);
     }
 }

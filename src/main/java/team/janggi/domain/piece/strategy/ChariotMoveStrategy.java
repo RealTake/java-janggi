@@ -23,8 +23,8 @@ public class ChariotMoveStrategy implements MoveStrategy {
             return false;
         }
 
-        final Piece me = stateReader.get(from);
-        final Piece lastPiece = stateReader.get(to);
+        final Piece me = stateReader.getPiece(from);
+        final Piece lastPiece = stateReader.getPiece(to);
         return canKill(lastPiece, me);
     }
 
@@ -50,7 +50,7 @@ public class ChariotMoveStrategy implements MoveStrategy {
         int currentY = from.y() + dy;
 
         while (currentX != to.x() || currentY != to.y()) {
-            paths.add(stateReader.get(new Position(currentX, currentY)));
+            paths.add(stateReader.getPiece(new Position(currentX, currentY)));
             currentX += dx;
             currentY += dy;
         }

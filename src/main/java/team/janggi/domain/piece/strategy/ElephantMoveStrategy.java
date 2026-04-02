@@ -35,7 +35,7 @@ public class ElephantMoveStrategy implements MoveStrategy {
         }
 
         Position obstaclePosition = new Position(fromX, fromY);
-        Piece obstacle = stateReader.get(obstaclePosition);
+        Piece obstacle = stateReader.getPiece(obstaclePosition);
         if (!obstacle.isSamePieceType(PieceType.EMPTY)){
             return false;
         }
@@ -44,7 +44,7 @@ public class ElephantMoveStrategy implements MoveStrategy {
         int y2 = (to.y() - from.y()) / Math.abs(to.y() - from.y());
 
         Position obstaclePosition2 = new Position(fromX+x2, fromY+y2);
-        Piece obstacle2 = stateReader.get(obstaclePosition2);
+        Piece obstacle2 = stateReader.getPiece(obstaclePosition2);
         if (!obstacle2.isSamePieceType(PieceType.EMPTY)) {
             return false;
         }
@@ -52,8 +52,8 @@ public class ElephantMoveStrategy implements MoveStrategy {
     }
 
     private boolean canKill(Position from, Position to, BoardStateReader stateReader) {
-        Piece currentPiece = stateReader.get(from);
-        Piece definationPiece = stateReader.get(to);
+        Piece currentPiece = stateReader.getPiece(from);
+        Piece definationPiece = stateReader.getPiece(to);
         return !currentPiece.isSameTeam(definationPiece);
     }
 
