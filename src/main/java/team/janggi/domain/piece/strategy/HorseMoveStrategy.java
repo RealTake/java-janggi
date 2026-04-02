@@ -40,7 +40,7 @@ public class HorseMoveStrategy implements MoveStrategy {
 
     private boolean canKill(Position from, Position to, BoardStateReader stateReader) {
         Piece currentPiece = stateReader.getPiece(from);
-        Piece definationPiece = stateReader.getPiece(to);
-        return !currentPiece.isSameTeam(definationPiece);
+        Piece destinationPiece = stateReader.getPiece(to);
+        return !currentPiece.isSameTeam(destinationPiece);
     }
 }

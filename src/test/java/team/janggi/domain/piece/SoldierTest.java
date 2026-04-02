@@ -26,10 +26,10 @@ public class SoldierTest {
 
         boardStatus.setPiece(currentPosition, soldier);
 
-        Position definationPosition = new Position(5, 4);
+        Position destinationPosition = new Position(5, 4);
 
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 
 
@@ -41,10 +41,10 @@ public class SoldierTest {
 
         boardStatus.setPiece(currentPosition, soldier);
 
-        Position definationPosition = new Position(5, 6);
+        Position destinationPosition = new Position(5, 6);
 
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 
 
@@ -56,10 +56,10 @@ public class SoldierTest {
 
         boardStatus.setPiece(currentPosition, soldier);
 
-        Position definationPosition = new Position(5, 6);
+        Position destinationPosition = new Position(5, 6);
 
         // when & then
-        Assertions.assertFalse(soldier.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertFalse(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
 
     }
 
@@ -71,10 +71,10 @@ public class SoldierTest {
 
         boardStatus.setPiece(currentPosition, soldier);
 
-        Position definationPosition = new Position(5, 4);
+        Position destinationPosition = new Position(5, 4);
 
         // when & then
-        Assertions.assertFalse(soldier.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertFalse(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
 
     }
 
@@ -85,9 +85,9 @@ public class SoldierTest {
 
         boardStatus.setPiece(currentPosition, soldier);
 
-        var definationPosition = new Position(4, 5);
+        var destinationPosition = new Position(4, 5);
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 
     @Test
@@ -97,10 +97,10 @@ public class SoldierTest {
 
         boardStatus.setPiece(currentPosition, soldier);
 
-        var definationPosition = new Position(6, 5);
+        var destinationPosition = new Position(6, 5);
 
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 
     @Test
@@ -110,10 +110,10 @@ public class SoldierTest {
 
         boardStatus.setPiece(currentPosition, soldier);
 
-        var definationPosition = new Position(6, 5);
+        var destinationPosition = new Position(6, 5);
 
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 
     @Test
@@ -123,10 +123,10 @@ public class SoldierTest {
 
         boardStatus.setPiece(currentPosition, soldier);
 
-        var definationPosition = new Position(4, 5);
+        var destinationPosition = new Position(4, 5);
 
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
 
     }
 }

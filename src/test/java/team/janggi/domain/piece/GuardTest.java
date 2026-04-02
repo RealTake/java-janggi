@@ -30,17 +30,17 @@ public class GuardTest {
     })
     void 초나라의_사는_초나라_궁_정가운데_위치에서_네각으로_대각선_이동_할_수_있다(
             int startX, int startY,
-            int definationX, int definationY) {
+            int destinationX, int destinationY) {
         // given
         Piece king = Piece.of(PieceType.GUARD, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
         boardStatus.setPiece(currentPosition, king);
 
-        Position definationPosition = new Position(definationX, definationY);
+        Position destinationPosition = new Position(destinationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(king.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 
     @ParameterizedTest
@@ -52,17 +52,17 @@ public class GuardTest {
     })
     void 초나라의_사는_초나라_궁의_네각에서_정가운데_이동_할_수_있다(
             int startX, int startY,
-            int definationX, int definationY) {
+            int destinationX, int destinationY) {
         // given
         Piece king = Piece.of(PieceType.GUARD, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
         boardStatus.setPiece(currentPosition, king);
 
-        Position definationPosition = new Position(definationX, definationY);
+        Position destinationPosition = new Position(destinationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(king.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 
     @ParameterizedTest
@@ -98,17 +98,17 @@ public class GuardTest {
     })
     void 초나라의_사는_초나라_궁_바깥으로_이동할수_없다(
             int startX, int startY,
-            int definationX, int definationY) {
+            int destinationX, int destinationY) {
         // given
         Piece king = Piece.of(PieceType.GUARD, Team.CHO);
         Position currentPosition = new Position(startX, startY);
-        Position definationPosition = new Position(definationX, definationY);
+        Position destinationPosition = new Position(destinationX, destinationY);
 
         // when
         boardStatus.setPiece(currentPosition, king);
 
         //  then
-        Assertions.assertFalse(king.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertFalse(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 
     @Test
@@ -117,13 +117,13 @@ public class GuardTest {
         Team ourTeam = Team.CHO;
         Piece king = Piece.of(PieceType.GUARD, ourTeam);
         Position currentPosition = Palace.CHO_KING_POSITION;
-        Position definationPosition = new Position(4, 7);
+        Position destinationPosition = new Position(4, 7);
 
         boardStatus.setPiece(currentPosition, king);
-        boardStatus.setPiece(definationPosition, Piece.of(PieceType.GUARD, ourTeam));
+        boardStatus.setPiece(destinationPosition, Piece.of(PieceType.GUARD, ourTeam));
 
         // when & then
-        Assertions.assertFalse(king.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertFalse(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 
     @Test
@@ -131,16 +131,16 @@ public class GuardTest {
         // given
         Team opponentTeam = Team.HAN;
         Piece opponentPiece = Piece.of(PieceType.SOLDIER, opponentTeam);
-        Position definationPosition = new Position(4, 7);
+        Position destinationPosition = new Position(4, 7);
 
         Team ourTeam = Team.CHO;
         Piece king = Piece.of(PieceType.GUARD, ourTeam);
         Position currentPosition = Palace.CHO_KING_POSITION;
 
         boardStatus.setPiece(currentPosition, king);
-        boardStatus.setPiece(definationPosition, opponentPiece);
+        boardStatus.setPiece(destinationPosition, opponentPiece);
 
         // when & then
-        Assertions.assertTrue(king.canMove(currentPosition, definationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 }
