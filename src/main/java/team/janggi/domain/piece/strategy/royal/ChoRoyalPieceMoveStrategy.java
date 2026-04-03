@@ -1,14 +1,15 @@
-package team.janggi.domain.piece.strategy;
+package team.janggi.domain.piece.strategy.royal;
 
 import java.util.List;
 import team.janggi.domain.Palace;
 import team.janggi.domain.Position;
 import team.janggi.domain.board.BoardStateReader;
 import team.janggi.domain.piece.Piece;
+import team.janggi.domain.piece.strategy.MoveStrategy;
 
-public class ChoPalacelMoveStrategy implements MoveStrategy {
+public class ChoRoyalPieceMoveStrategy implements MoveStrategy {
     private static final int MAX_MOVE_DISTANCE = 1;
-    public static final ChoPalacelMoveStrategy instance = new ChoPalacelMoveStrategy();
+    public static final ChoRoyalPieceMoveStrategy instance = new ChoRoyalPieceMoveStrategy();
 
     @Override
     public boolean calculateMove(Position from, Position to, BoardStateReader stateReader) {

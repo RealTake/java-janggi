@@ -6,10 +6,10 @@ import team.janggi.domain.Team;
 import team.janggi.domain.board.BoardStateReader;
 import team.janggi.domain.piece.strategy.CannonMoveStrategy;
 import team.janggi.domain.piece.strategy.ChariotPalaceMoveStrategy;
-import team.janggi.domain.piece.strategy.ChoPalacelMoveStrategy;
+import team.janggi.domain.piece.strategy.royal.ChoRoyalPieceMoveStrategy;
 import team.janggi.domain.piece.strategy.ChoSoldierMoveStrategy;
 import team.janggi.domain.piece.strategy.ElephantMoveStrategy;
-import team.janggi.domain.piece.strategy.HanPalaceMoveStrategy;
+import team.janggi.domain.piece.strategy.royal.HanRoyalPieceMoveStrategy;
 import team.janggi.domain.piece.strategy.HanSoldierMoveStrategy;
 import team.janggi.domain.piece.strategy.HorseMoveStrategy;
 import team.janggi.domain.piece.strategy.MoveStrategy;
@@ -69,10 +69,10 @@ public class Piece {
 
     private static MoveStrategy getPalaceMoveStrategy(Team team) {
         if (team == Team.CHO) {
-            return ChoPalacelMoveStrategy.instance;
+            return ChoRoyalPieceMoveStrategy.instance;
         }
         if (team == Team.HAN) {
-            return HanPalaceMoveStrategy.instance;
+            return HanRoyalPieceMoveStrategy.instance;
         }
         throw new IllegalArgumentException("왕은 초 또는 한 팀에 속해야 합니다.");
     }
