@@ -5,7 +5,7 @@ import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.board.BoardStateReader;
 import team.janggi.domain.piece.strategy.CannonMoveStrategy;
-import team.janggi.domain.piece.strategy.ChariotMoveStrategy;
+import team.janggi.domain.piece.strategy.ChariotPalaceMoveStrategy;
 import team.janggi.domain.piece.strategy.ChoPalacelMoveStrategy;
 import team.janggi.domain.piece.strategy.ChoSoldierMoveStrategy;
 import team.janggi.domain.piece.strategy.ElephantMoveStrategy;
@@ -48,7 +48,7 @@ public class Piece {
             return new Piece(team, PieceType.HORSE, HorseMoveStrategy.instance);
         }
         if (pieceType == PieceType.CHARIOT) {
-            return new Piece(team, PieceType.CHARIOT, ChariotMoveStrategy.instance);
+            return new Piece(team, PieceType.CHARIOT, ChariotPalaceMoveStrategy.instance);
         }
         if (pieceType == PieceType.CANNON) {
             return new Piece(team, PieceType.CANNON, CannonMoveStrategy.instance);

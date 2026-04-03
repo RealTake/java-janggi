@@ -2,6 +2,7 @@ package team.janggi.domain.piece;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import team.janggi.domain.EmptyBoardInitializer;
@@ -127,5 +128,71 @@ public class ChariotTest {
 
         // when & then
         Assertions.assertEquals(expected, canMove);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "3,7,   4,8",
+            "5,7,   4,8",
+            "3,9,   4,8",
+            "5,9,   4,8"
+    })
+    void 차는_궁성에서_정가운데_위치에서_네각으로_대각선_이동_할_수_있다(
+            int startX, int startY,
+            int definationX, int destinationY) {
+        // given
+        Piece chariot = Piece.of(PieceType.CHARIOT, Team.CHO);
+        Position currentPosition = new Position(startX, startY);
+
+        boardStatus.setPiece(currentPosition, chariot);
+
+        Position destinationPosition = new Position(definationX, destinationY);
+
+        // when & then
+        Assertions.assertTrue(chariot.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "3,7,   4,8",
+            "5,7,   4,8",
+            "3,9,   4,8",
+            "5,9,   4,8",
+
+            "3,7,   5,9",
+            "5,7,   3,9",
+            "3,9,   5,7",
+            "5,9,   3,7"
+    })
+    void 차는_궁의_네각에서_정가운데_혹은_끝단으로_이동_할_수_있다(
+            int startX, int startY,
+            int destinationX, int destinationY) {
+        // given
+        Piece king = Piece.of(PieceType.CHARIOT, Team.CHO);
+        Position currentPosition = new Position(startX, startY);
+
+        boardStatus.setPiece(currentPosition, king);
+
+        Position destinationPosition = new Position(destinationX, destinationY);
+
+        // when & then
+        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+    }
+
+    @Test
+    void 차는_궁성_밖에서_대각선_이동_할_수_없다() {
+        // given
+        Piece chariot = Piece.of(PieceType.CHARIOT, Team.CHO);
+        Position currentPosition = new Position(5, 5);
+
+        boardStatus.setPiece(currentPosition, chariot);
+
+        Position destinationPosition = new Position(6, 6); // 대각선 이동
+
+        // when
+        boolean canMove = chariot.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus());
+
+        // then
+        Assertions.assertFalse(canMove);
     }
 }

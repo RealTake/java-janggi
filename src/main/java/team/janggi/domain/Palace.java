@@ -29,6 +29,10 @@ public final class Palace {
 
     private Palace() {}
 
+    public static boolean isInPalace(Position position) {
+        return isInHanPalace(position) || isInChoPalace(position);
+    }
+
     public static boolean isInHanPalace(Position position) {
         return HAN_POSITION.contains(position);
     }
