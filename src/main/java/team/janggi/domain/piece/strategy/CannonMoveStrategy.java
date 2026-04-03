@@ -67,7 +67,7 @@ public class CannonMoveStrategy implements MoveStrategy {
         return paths;
     }
 
-    public boolean isAllowDirection(Position from, Position to) {
+    private boolean isAllowDirection(Position from, Position to) {
         int dx = to.x() - from.x();
         int dy = to.y() - from.y();
 

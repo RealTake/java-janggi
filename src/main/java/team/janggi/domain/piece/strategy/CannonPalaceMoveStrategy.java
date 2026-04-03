@@ -1,6 +1,7 @@
 package team.janggi.domain.piece.strategy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import team.janggi.domain.Palace;
 import team.janggi.domain.Position;
@@ -8,8 +9,8 @@ import team.janggi.domain.board.BoardStateReader;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
 
-public class ChariotPalaceMoveStrategy extends ChariotMoveStrategy {
-    public static final ChariotPalaceMoveStrategy instance = new ChariotPalaceMoveStrategy();
+public class CannonPalaceMoveStrategy extends CannonMoveStrategy {
+        public static final CannonPalaceMoveStrategy instance = new CannonPalaceMoveStrategy();
 
     @Override
     public boolean calculateMove(Position from, Position to, BoardStateReader stateReader) {
@@ -31,16 +32,29 @@ public class ChariotPalaceMoveStrategy extends ChariotMoveStrategy {
         return canKill(lastPiece, me);
     }
 
+    private boolean canKill(Piece target, Piece me) {
+        return !target.isSameTeam(me);
+    }
+
     private boolean isValidPath(List<Piece> paths) {
         if (paths.isEmpty()) {
-            return true;
+            return false;
         }
 
-        return paths.stream().allMatch(piece -> piece.isSamePieceType(PieceType.EMPTY));
+        return paths.stream()
+                .filter(this::isJumpAblePiece)
+                .count() == 1;
+    }
+
+    private boolean isJumpAblePiece(Piece piece) {
+        return Arrays.stream(PieceType.values())
+                .filter(pieceType -> pieceType != PieceType.EMPTY)
+                .filter(pieceType -> pieceType != PieceType.CANNON)
+                .anyMatch(piece::isSamePieceType);
     }
 
     private List<Piece> getPath(Position from, Position to, BoardStateReader stateReader) {
-        final List<Piece> paths = new ArrayList<>();
+        List<Piece> paths = new ArrayList<>();
 
         int dx = Integer.signum(to.x() - from.x());
         int dy = Integer.signum(to.y() - from.y());
@@ -57,14 +71,10 @@ public class ChariotPalaceMoveStrategy extends ChariotMoveStrategy {
         return paths;
     }
 
-    private boolean canKill(Piece target, Piece me) {
-        return !target.isSameTeam(me);
-    }
-
     private boolean isAllowDirection(Position from, Position to) {
-         if (!Palace.isInPalace(from) || !Palace.isInPalace(to)) {
-             return false;
-         }
+        if (!Palace.isInPalace(from) || !Palace.isInPalace(to)) {
+            return false;
+        }
 
         final int dx = Math.abs(from.x() - to.x());
         final int dy = Math.abs(from.y() - to.y());

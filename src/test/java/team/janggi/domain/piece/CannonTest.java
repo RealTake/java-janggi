@@ -2,6 +2,7 @@ package team.janggi.domain.piece;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import team.janggi.domain.EmptyBoardInitializer;
@@ -211,5 +212,53 @@ public class CannonTest {
 
         // when & then
         Assertions.assertEquals(expected, canMove);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "3,7,   5,9,    true",
+            "5,7,   3,9,    true",
+            "3,9,   5,7,    true",
+            "5,9,   3,7,    true",
+            "3,7,   5,9,    false",
+            "5,7,   3,9,    false",
+            "3,9,   5,7,    false",
+            "5,9,   3,7,    false"
+    })
+    void 포는_궁의_네각에서_정가운데_자리에_장애물이_있을때만_반대_대각선_코너로_이동_할_수_있다(
+            int startX, int startY,
+            int destinationX, int destinationY,
+            boolean isObstacleExist) {
+        // given
+        Piece cannon = Piece.of(PieceType.CANNON, Team.CHO);
+        Position currentPosition = new Position(startX, startY);
+
+        boardStatus.setPiece(currentPosition, cannon);
+
+        // 장애물 세팅
+        if (isObstacleExist) {
+            Position obstaclePosition = new Position(4, 8); // 궁의 정가운데 위치
+            boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, Team.CHO));
+        }
+
+        // when & then
+        Position destinationPosition = new Position(destinationX, destinationY);
+        Assertions.assertEquals(isObstacleExist, cannon.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+    }
+
+    @Test
+    void 차는_궁성_밖에서_대각선_이동_할_수_없다() {
+        // given
+        Piece cannon = Piece.of(PieceType.CANNON, Team.CHO);
+        Position currentPosition = new Position(5, 5);
+
+        // when
+        boardStatus.setPiece(currentPosition, cannon);
+        // 대각선 이동 경로에 장애물 세팅
+        boardStatus.setPiece(new Position(6, 6), Piece.of(PieceType.SOLDIER, Team.CHO));
+
+        // then
+        boolean canMove = cannon.canMove(currentPosition, new Position(7, 7), boardStatus.getBoardStatus());
+        Assertions.assertFalse(canMove);
     }
 }

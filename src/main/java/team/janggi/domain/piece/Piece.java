@@ -4,7 +4,7 @@ import java.util.Objects;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.board.BoardStateReader;
-import team.janggi.domain.piece.strategy.CannonMoveStrategy;
+import team.janggi.domain.piece.strategy.CannonPalaceMoveStrategy;
 import team.janggi.domain.piece.strategy.ChariotPalaceMoveStrategy;
 import team.janggi.domain.piece.strategy.ElephantMoveStrategy;
 import team.janggi.domain.piece.strategy.HorseMoveStrategy;
@@ -50,7 +50,7 @@ public class Piece {
             return new Piece(team, PieceType.CHARIOT, ChariotPalaceMoveStrategy.instance);
         }
         if (pieceType == PieceType.CANNON) {
-            return new Piece(team, PieceType.CANNON, CannonMoveStrategy.instance);
+            return new Piece(team, PieceType.CANNON, CannonPalaceMoveStrategy.instance);
         }
 
         throw new IllegalArgumentException("지원하지 않는 기물 타입입니다: " + pieceType);
