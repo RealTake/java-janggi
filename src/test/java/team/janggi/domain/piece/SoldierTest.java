@@ -3,6 +3,8 @@ package team.janggi.domain.piece;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import team.janggi.domain.EmptyBoardInitializer;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
@@ -127,6 +129,26 @@ public class SoldierTest {
 
         // when & then
         Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+    }
 
+
+    @ParameterizedTest
+    @CsvSource({
+            "3,7,   5,9",
+            "5,7,   3,9",
+            "3,9,   5,7",
+            "5,9,   3,7",
+    })
+    void 졸은_궁성에서_전진에_기반한_대각선_이동이_가능하다(
+            int startX, int startY,
+            int destinationX, int destinationY,
+            boolean expected
+    ) {
+        // given
+        Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
+        Position currentPosition = new Position(startX, startY);
+        Position destinationPosition = new Position(destinationX, destinationY);
+
+        boardStatus.setPiece(currentPosition, soldier);
     }
 }

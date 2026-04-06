@@ -19,7 +19,7 @@ public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
     }
 
     @Override
-    public void movePiece(Team team, Position from, Position to) {
+    public void movePiece(Position from, Position to) {
         final Piece piece = getPiece(from);
 
         map.put(to, piece);

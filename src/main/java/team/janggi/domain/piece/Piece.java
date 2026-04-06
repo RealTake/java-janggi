@@ -9,7 +9,7 @@ import team.janggi.domain.piece.strategy.ChariotPalaceMoveStrategy;
 import team.janggi.domain.piece.strategy.ElephantMoveStrategy;
 import team.janggi.domain.piece.strategy.HorseMoveStrategy;
 import team.janggi.domain.piece.strategy.MoveStrategy;
-import team.janggi.domain.piece.strategy.SoldierMoveStrategy;
+import team.janggi.domain.piece.strategy.SoldierPalaceMoveStrategy;
 import team.janggi.domain.piece.strategy.royal.ChoRoyalPieceMoveStrategy;
 import team.janggi.domain.piece.strategy.royal.HanRoyalPieceMoveStrategy;
 
@@ -58,10 +58,10 @@ public class Piece {
 
     private static MoveStrategy getSoldierMoveStrategyByTeam(Team team) {
         if (team == Team.CHO) {
-            return SoldierMoveStrategy.towardTopInstance;
+            return SoldierPalaceMoveStrategy.towardTopInstance;
         }
         if (team == Team.HAN) {
-            return SoldierMoveStrategy.towardBottomInstance;
+            return SoldierPalaceMoveStrategy.towardBottomInstance;
         }
         throw new IllegalArgumentException("졸은 초 또는 한 팀에 속해야 합니다.");
     }

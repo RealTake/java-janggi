@@ -34,7 +34,7 @@ public class Board {
             throw new IllegalArgumentException("해당 위치로 이동할 수 없습니다.");
         }
 
-        boardStatus.movePiece(team, from, to);
+        boardStatus.movePiece(from, to);
     }
 
     private void validate(Team team, Position from, Position to) {
