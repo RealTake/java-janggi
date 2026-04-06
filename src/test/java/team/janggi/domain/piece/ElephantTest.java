@@ -38,7 +38,7 @@ public class ElephantTest {
         boardStatus.setPiece(from, elephant);
 
         // then & then
-        Assertions.assertTrue(elephant.canMove(from, to, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(elephant.canMove(from, to, boardStatus.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -61,7 +61,7 @@ public class ElephantTest {
         boardStatus.setPiece(obstaclePosition, obstacle);
 
         // when & then
-        Assertions.assertFalse(elephant.canMove(from, to, boardStatus.getBoardStatus()));
+        Assertions.assertFalse(elephant.canMove(from, to, boardStatus.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -79,7 +79,7 @@ public class ElephantTest {
         boardStatus.setPiece(from, elephant);
 
         // then & then
-        Assertions.assertFalse(elephant.canMove(from, to, boardStatus.getBoardStatus()));
+        Assertions.assertFalse(elephant.canMove(from, to, boardStatus.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -104,7 +104,7 @@ public class ElephantTest {
         // when
         boardStatus.setPiece(from, elephant);
         boardStatus.setPiece(to, soldier);
-        Assertions.assertFalse(elephant.canMove(from, to, boardStatus.getBoardStatus()));
+        Assertions.assertFalse(elephant.canMove(from, to, boardStatus.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -129,7 +129,7 @@ public class ElephantTest {
         // when
         boardStatus.setPiece(from, elephant);
         boardStatus.setPiece(to, soldier);
-        Assertions.assertTrue(elephant.canMove(from, to, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(elephant.canMove(from, to, boardStatus.getBoardStateReader()));
     }
 
 }

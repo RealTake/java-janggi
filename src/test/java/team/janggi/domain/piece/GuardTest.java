@@ -40,7 +40,7 @@ public class GuardTest {
         Position destinationPosition = new Position(definationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -62,7 +62,7 @@ public class GuardTest {
         Position destinationPosition = new Position(destinationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -108,7 +108,7 @@ public class GuardTest {
         boardStatus.setPiece(currentPosition, guard);
 
         //  then
-        Assertions.assertFalse(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertFalse(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
     }
 
     @Test
@@ -123,7 +123,7 @@ public class GuardTest {
         boardStatus.setPiece(destinationPosition, Piece.of(PieceType.GUARD, ourTeam));
 
         // when & then
-        Assertions.assertFalse(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertFalse(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
     }
 
     @Test
@@ -141,6 +141,6 @@ public class GuardTest {
         boardStatus.setPiece(destinationPosition, opponentPiece);
 
         // when & then
-        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
     }
 }

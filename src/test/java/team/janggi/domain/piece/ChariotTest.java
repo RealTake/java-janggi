@@ -79,7 +79,7 @@ public class ChariotTest {
         }
 
         // when
-        boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());
+        boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -124,7 +124,7 @@ public class ChariotTest {
         boardStatus.setPiece(to, Piece.of(PieceType.SOLDIER, myTeam)); // 목표 위치에 아군 기물 세팅
 
         // when
-        boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());
+        boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -149,7 +149,7 @@ public class ChariotTest {
         Position destinationPosition = new Position(definationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(chariot.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(chariot.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -176,7 +176,7 @@ public class ChariotTest {
         Position destinationPosition = new Position(destinationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
     }
 
     @Test
@@ -190,7 +190,7 @@ public class ChariotTest {
         Position destinationPosition = new Position(6, 6); // 대각선 이동
 
         // when
-        boolean canMove = chariot.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus());
+        boolean canMove = chariot.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader());
 
         // then
         Assertions.assertFalse(canMove);

@@ -38,7 +38,7 @@ public class HorseTest {
 
         boardStatus.setPiece(from, horse);
         // when & then
-        Assertions.assertTrue(horse.canMove(from, to, boardStatus.getBoardStatus()));
+        Assertions.assertTrue(horse.canMove(from, to, boardStatus.getBoardStateReader()));
     }
     @ParameterizedTest
     @CsvSource({
@@ -58,7 +58,7 @@ public class HorseTest {
         boardStatus.setPiece(obstaclePosition, obstacle);
 
         // when & then
-        Assertions.assertFalse(horse.canMove(from, to, boardStatus.getBoardStatus()));
+        Assertions.assertFalse(horse.canMove(from, to, boardStatus.getBoardStateReader()));
 
     }
 }

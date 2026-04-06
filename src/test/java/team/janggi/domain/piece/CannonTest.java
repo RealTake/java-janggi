@@ -59,7 +59,7 @@ public class CannonTest {
         }
 
         // then
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());
+        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
         Assertions.assertEquals(expected, canMove);
     }
 
@@ -94,7 +94,7 @@ public class CannonTest {
         boardStatus.setPiece(to, Piece.of(PieceType.SOLDIER, myTeam));
 
         // then
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());
+        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
         Assertions.assertEquals(expected, canMove);
     }
 
@@ -118,7 +118,7 @@ public class CannonTest {
         boardStatus.setPiece(from, me);
 
         // when
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());
+        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -148,7 +148,7 @@ public class CannonTest {
         boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.CANNON, Team.CHO));
 
         // when
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());
+        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -174,7 +174,7 @@ public class CannonTest {
         boardStatus.setPiece(from, me);
 
         // when
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());
+        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -208,7 +208,7 @@ public class CannonTest {
         boardStatus.setPiece(obstaclePosition2, Piece.of(PieceType.SOLDIER, Team.CHO));
 
         // when
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStatus());
+        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -243,7 +243,7 @@ public class CannonTest {
 
         // when & then
         Position destinationPosition = new Position(destinationX, destinationY);
-        Assertions.assertEquals(isObstacleExist, cannon.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
+        Assertions.assertEquals(isObstacleExist, cannon.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
     }
 
     @Test
@@ -258,7 +258,7 @@ public class CannonTest {
         boardStatus.setPiece(new Position(6, 6), Piece.of(PieceType.SOLDIER, Team.CHO));
 
         // then
-        boolean canMove = cannon.canMove(currentPosition, new Position(7, 7), boardStatus.getBoardStatus());
+        boolean canMove = cannon.canMove(currentPosition, new Position(7, 7), boardStatus.getBoardStateReader());
         Assertions.assertFalse(canMove);
     }
 }

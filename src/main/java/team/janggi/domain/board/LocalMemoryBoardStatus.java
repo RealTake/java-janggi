@@ -1,9 +1,9 @@
 package team.janggi.domain.board;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import team.janggi.domain.Position;
-import team.janggi.domain.Team;
 import team.janggi.domain.piece.Piece;
 
 public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
@@ -32,7 +32,7 @@ public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
     }
 
     @Override
-    public BoardStateReader getBoardStatus() {
+    public BoardStateReader getBoardStateReader() {
         return this;
     }
 
@@ -44,5 +44,10 @@ public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
     @Override
     public int size() {
         return map.size();
+    }
+
+    @Override
+    public Collection<Piece> getAllPiece() {
+        return map.values();
     }
 }

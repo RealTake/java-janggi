@@ -23,18 +23,31 @@ public class Board {
     }
 
     public BoardStateReader getStatus() {
-        return boardStatus.getBoardStatus();
+        return boardStatus.getBoardStateReader();
     }
 
     public void move(Team team, Position from, Position to) {
         validate(team, from, to);
 
         final Piece piece = boardStatus.getPiece(from);
-        if (!piece.canMove(from, to, boardStatus.getBoardStatus())) {
+        if (!piece.canMove(from, to, boardStatus.getBoardStateReader())) {
             throw new IllegalArgumentException("해당 위치로 이동할 수 없습니다.");
         }
 
         boardStatus.movePiece(from, to);
+    }
+
+    public double getScore(Team team) {
+        final int score = boardStatus.getAllPiece().stream()
+                .filter(piece -> piece.isSameTeam(team))
+                .mapToInt(Piece::getScore)
+                .sum();
+
+        if (team == Team.HAN) {
+            return score + 1.5;
+        }
+
+        return score;
     }
 
     private void validate(Team team, Position from, Position to) {
@@ -64,7 +77,7 @@ public class Board {
         return boardStatus.getPiece(from).isSamePieceType(PieceType.EMPTY);
     }
 
-    public boolean isOutOfBounds(Position position) {
+    private boolean isOutOfBounds(Position position) {
         return boardStatus.isOutOfBounds(position);
     }
 }

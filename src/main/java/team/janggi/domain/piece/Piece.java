@@ -95,6 +95,10 @@ public class Piece {
         return this.pieceType == otherPieceType;
     }
 
+    public int getScore() {
+        return pieceType.getScore();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

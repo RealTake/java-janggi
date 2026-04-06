@@ -21,6 +21,7 @@ public class ConsoleOutputView {
         final BoardStateReader status = board.getStatus();
         final int totalCellCount = BoardSize.X * BoardSize.Y;
 
+        printScore(board.getScore(Team.CHO), board.getScore(Team.HAN));
         printColumnHeader();
         for (int index = 0; index < totalCellCount; index++) {
             int y = index / BoardSize.X;
@@ -39,6 +40,13 @@ public class ConsoleOutputView {
             printText(toFullWidthDigit(x) + SPACE);
         }
         printText(headerRowIndexColumnPadding());
+        printLine();
+    }
+
+    private void printScore(double choScore, double hanScore) {
+        printText("초: " + choScore + SPACE);
+        printLine();
+        printText("한: " + hanScore);
         printLine();
     }
 

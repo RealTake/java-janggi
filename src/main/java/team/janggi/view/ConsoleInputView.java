@@ -68,6 +68,8 @@ public class ConsoleInputView {
             readNormalSetup = readNormalSetup(setups);
         } while (readNormalSetup == null);
 
+        printLine("");
+
         return readNormalSetup;
     }
 
