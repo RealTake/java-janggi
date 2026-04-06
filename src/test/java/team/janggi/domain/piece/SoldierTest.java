@@ -134,10 +134,10 @@ public class SoldierTest {
 
     @ParameterizedTest
     @CsvSource({
-            "3,7,   5,9",
-            "5,7,   3,9",
-            "3,9,   5,7",
-            "5,9,   3,7",
+            "3,7,   4,8,    false",
+            "5,7,   4,8,    false",
+            "3,9,   4,8,    true",
+            "5,9,   4,8,    true",
     })
     void 졸은_궁성에서_전진에_기반한_대각선_이동이_가능하다(
             int startX, int startY,
@@ -149,6 +149,10 @@ public class SoldierTest {
         Position currentPosition = new Position(startX, startY);
         Position destinationPosition = new Position(destinationX, destinationY);
 
+        // when
         boardStatus.setPiece(currentPosition, soldier);
+
+        // then
+        Assertions.assertEquals(expected, soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStatus()));
     }
 }
