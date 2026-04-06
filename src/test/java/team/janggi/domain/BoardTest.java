@@ -167,4 +167,35 @@ public class BoardTest {
         BoardStateReader pieceMap = board.getStatus();
         Assertions.assertEquals(soldier, pieceMap.getPiece(to));
     }
+
+    @Test
+    public void 궁을_잡으면_게임이_종료된다() {
+        // Given
+        var boardStatus = new LocalMemoryBoardStatus();
+        var board = new Board(boardStatus, new EmptyBoardInitializer());
+        board.init();
+
+        // When
+        // 초나라 졸 기물 세팅
+        Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
+        Position soldierPosition = new Position(4, 2);
+        boardStatus.setPiece(soldierPosition, soldier);
+
+        // 초나라 왕 세팅
+        Piece choKing = Piece.of(PieceType.KING, Team.CHO);
+        Position choKingPosition = new Position(4, 8);
+        boardStatus.setPiece(choKingPosition, choKing);
+
+        // 한나라 왕 세팅
+        Piece king = Piece.of(PieceType.KING, Team.HAN);
+        Position kingPosition = new Position(4, 1);
+        boardStatus.setPiece(kingPosition, king);
+
+        // 초나라의 졸을 왼쪽으로 한칸 이동
+        board.move(Team.CHO, soldierPosition, kingPosition);
+
+        // 이동 후 해당 위치에 병이 있는지 확인
+        Assertions.assertTrue(board.isGameOver());
+        Assertions.assertEquals(Team.CHO, board.getWinner());
+    }
 }

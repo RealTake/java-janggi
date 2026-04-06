@@ -35,6 +35,25 @@ public class ConsoleOutputView {
         }
     }
 
+    public void printWinner(Team winner) {
+        if (winner == Team.CHO) {
+            printWinner("초나라");
+            return;
+        }
+
+        if (winner == Team.HAN) {
+            printWinner("한나라");
+            return;
+        }
+
+        throw new IllegalArgumentException("알 수 없는 팀입니다: " + winner);
+    }
+
+    public void printWinner(String teamName) {
+        printText(teamName + " 승리!");
+        printLine();
+    }
+
     private void printColumnHeader() {
         for (int x = 0; x < BoardSize.X; x++) {
             printText(toFullWidthDigit(x) + SPACE);

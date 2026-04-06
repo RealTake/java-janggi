@@ -1,5 +1,6 @@
 package team.janggi.domain.board;
 
+import java.util.List;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.piece.Piece;
@@ -9,6 +10,8 @@ public class Board {
     private final BoardStatus boardStatus;
     private final BoardInitializer initializer;
 
+    private Team winner;
+
     public Board(BoardInitializer initializer) {
         this(new LocalMemoryBoardStatus(), initializer);
     }
@@ -16,6 +19,7 @@ public class Board {
     public Board(BoardStatus boardStatus, BoardInitializer initializer) {
         this.boardStatus = boardStatus;
         this.initializer = initializer;
+        this.winner = null;
     }
 
     public void init() {
@@ -27,6 +31,10 @@ public class Board {
     }
 
     public void move(Team team, Position from, Position to) {
+        if (isGameOver()) {
+            throw new IllegalStateException("게임이 종료되었습니다.");
+        }
+
         validate(team, from, to);
 
         final Piece piece = boardStatus.getPiece(from);
@@ -35,6 +43,8 @@ public class Board {
         }
 
         boardStatus.movePiece(from, to);
+
+        updateWinner();
     }
 
     public double getScore(Team team) {
@@ -48,6 +58,37 @@ public class Board {
         }
 
         return score;
+    }
+
+    private void updateWinner() {
+        final List<Piece> kings = boardStatus.getAllPiece().stream()
+                .filter(piece -> piece.isSamePieceType(PieceType.KING))
+                .toList();
+        if (kings.size() > 1) {
+            return;
+        }
+
+        final Piece lastKing = kings.getLast();
+        if (lastKing.isSameTeam(Team.CHO)) {
+            winner = Team.CHO;
+            return;
+        }
+
+        if (lastKing.isSameTeam(Team.HAN)) {
+            winner = Team.HAN;
+            return;
+        }
+    }
+
+    public boolean isGameOver() {
+        return winner != null;
+    }
+
+    public Team getWinner() {
+        if (!isGameOver()) {
+            throw new IllegalStateException("게임이 종료되지 않았습니다.");
+        }
+        return winner;
     }
 
     private void validate(Team team, Position from, Position to) {

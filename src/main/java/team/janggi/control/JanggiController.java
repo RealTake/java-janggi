@@ -13,6 +13,7 @@ public class JanggiController {
     private final ConsoleOutputView consoleOutputView;
     private final ConsoleInputView consoleInputView;
 
+
     public JanggiController() {
         this.consoleOutputView = new ConsoleOutputView();
         this.consoleInputView = new ConsoleInputView();
@@ -23,9 +24,11 @@ public class JanggiController {
         board.init();
 
         Team currentTurn = Team.CHO;
-        while (true) {
+        while (!board.isGameOver()) {
             currentTurn = doTurn(board, currentTurn);
         }
+
+        consoleOutputView.printWinner(board.getWinner());
     }
 
     private Board createBoard() {
