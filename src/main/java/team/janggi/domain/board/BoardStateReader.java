@@ -8,5 +8,4 @@ public interface BoardStateReader {
     Piece getPiece(Position position);
 
     int size();
-
 }

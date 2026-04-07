@@ -19,7 +19,7 @@ public class BoardTest {
         Board board = new Board(boardStruct);
         board.init();
 
-        Assertions.assertEquals(90, board.getStatus().size());
+        Assertions.assertEquals(90, board.getSateReader().size());
     }
 
     @Test
@@ -29,7 +29,7 @@ public class BoardTest {
         Board board = new Board(boardStruct);
         board.init();
 
-        BoardStateReader pieceMap = board.getStatus();
+        BoardStateReader pieceMap = board.getSateReader();
         // 초나라(CHO)가 아래쪽에 잘 배치되었는지 확인
         검증_초나라_기본_배치(pieceMap);
         // 한나라(HAN)가 위쪽에 잘 배치되었는지 확인
@@ -92,7 +92,7 @@ public class BoardTest {
         Board board = new Board(boardStruct);
         board.init();
 
-        BoardStateReader pieceMap = board.getStatus();
+        BoardStateReader pieceMap = board.getSateReader();
 
         // 고정 기물 검증
         검증_초나라_기본_배치(pieceMap);
@@ -164,7 +164,7 @@ public class BoardTest {
         board.move(Team.CHO, from, to);
 
         // 이동 후 해당 위치에 병이 있는지 확인
-        BoardStateReader pieceMap = board.getStatus();
+        BoardStateReader pieceMap = board.getSateReader();
         Assertions.assertEquals(soldier, pieceMap.getPiece(to));
     }
 
@@ -195,7 +195,7 @@ public class BoardTest {
         board.move(Team.CHO, soldierPosition, kingPosition);
 
         // 이동 후 해당 위치에 병이 있는지 확인
-        Assertions.assertTrue(board.isGameOver());
+        Assertions.assertTrue(board.isGameFinished());
         Assertions.assertEquals(Team.CHO, board.getWinner());
     }
 }

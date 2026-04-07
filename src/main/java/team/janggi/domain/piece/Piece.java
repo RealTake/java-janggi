@@ -99,6 +99,14 @@ public class Piece {
         return pieceType.getScore();
     }
 
+    public Team getTeam() {
+        return team;
+    }
+
+    public PieceType getPieceType() {
+        return pieceType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
