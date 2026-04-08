@@ -16,15 +16,18 @@ public class TransactionManager {
 
     public <T> T execute(Supplier<T> transactionalCode) {
         final Connection connection = getTransaction();
-        try(connection) {
+        try {
             T result = transactionalCode.get();
             connection.commit();
             return result;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             rollback(connection);
             throw new RuntimeException("트랜잭션 실행에 실패하였습니다.", e);
+        } catch (Exception e) {
+            rollback(connection);
+            throw e;
         } finally {
-            transactionConnections.remove(Thread.currentThread().threadId());
+            close(connection);
         }
     }
 
@@ -33,6 +36,16 @@ public class TransactionManager {
             connection.rollback();
         } catch (SQLException e) {
             throw new RuntimeException("롤백에 실패하였습니다.", e);
+        }
+    }
+
+    public void close(Connection connection) {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException("DB 연결을 닫는 과정에서 오류가 발생하였습니다.", e);
+        } finally {
+            transactionConnections.remove(Thread.currentThread().threadId());
         }
     }
 
