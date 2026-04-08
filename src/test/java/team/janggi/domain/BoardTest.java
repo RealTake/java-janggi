@@ -3,9 +3,10 @@ package team.janggi.domain;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import team.janggi.domain.board.Board;
-import team.janggi.domain.board.BoardInitializer;
+import team.janggi.domain.board.BoardPiecesInitializer;
 import team.janggi.domain.board.BoardStateReader;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
+import team.janggi.domain.board.BoardPieces;
+import team.janggi.domain.board.NormalBoardPiecesInitializer;
 import team.janggi.domain.board.NormalSetup;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
@@ -14,20 +15,18 @@ public class BoardTest {
 
     @Test
     void 기본_장기_보드_생성_테스트() {
-        var boardStruct = new BoardInitializer(NormalSetup.바깥상차림, NormalSetup.바깥상차림);
+        var boardStruct = new NormalBoardPiecesInitializer((NormalSetup.바깥상차림, NormalSetup.바깥상차림);
 
         Board board = new Board(boardStruct);
-        board.init();
 
         Assertions.assertEquals(90, board.getSateReader().size());
     }
 
     @Test
     void 기본_장기_배치_테스트() {
-        var boardStruct = new BoardInitializer(NormalSetup.바깥상차림, NormalSetup.바깥상차림);
+        var boardStruct = new NormalBoardPiecesInitializer(NormalSetup.바깥상차림, NormalSetup.바깥상차림);
 
         Board board = new Board(boardStruct);
-        board.init();
 
         BoardStateReader pieceMap = board.getSateReader();
         // 초나라(CHO)가 아래쪽에 잘 배치되었는지 확인
@@ -87,10 +86,9 @@ public class BoardTest {
     }
 
     private void runTest(NormalSetup choSetup, NormalSetup hanSetup) {
-        var boardStruct = new BoardInitializer(choSetup, hanSetup);
+        var boardStruct = new NormalBoardPiecesInitializer(choSetup, hanSetup);
 
         Board board = new Board(boardStruct);
-        board.init();
 
         BoardStateReader pieceMap = board.getSateReader();
 
@@ -148,11 +146,9 @@ public class BoardTest {
 
     @Test
     public void 기물_이동_테스트() {
-        var boardStruct = new EmptyBoardInitializer();
-        var boardStatus = new LocalMemoryBoardStatus();
+        var boardStruct = new EmptyBoardPiecesInitializer();
+        var boardStatus = new BoardPieces();
         var board = new Board(boardStatus, boardStruct);
-
-        board.init();
 
         // 졸 기물 세팅
         Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
@@ -171,9 +167,8 @@ public class BoardTest {
     @Test
     public void 궁을_잡으면_게임이_종료된다() {
         // Given
-        var boardStatus = new LocalMemoryBoardStatus();
-        var board = new Board(boardStatus, new EmptyBoardInitializer());
-        board.init();
+        var boardStatus = new BoardPieces();
+        var board = new Board(boardStatus, new EmptyBoardPiecesInitializer());
 
         // When
         // 초나라 졸 기물 세팅

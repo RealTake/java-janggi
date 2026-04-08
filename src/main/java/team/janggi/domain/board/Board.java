@@ -10,23 +10,23 @@ import team.janggi.exception.GameOverException;
 import team.janggi.exception.PieceCanNotMoveException;
 
 public class Board {
-    private final BoardStatus boardStatus;
+    private final BoardPieces boardPieces;
 
     private Team winner;
 
-    public Board(BoardInitializer initializer) {
-        this(new LocalMemoryBoardStatus(), initializer);
+    public Board(BoardPiecesInitializer initializer) {
+        this(new BoardPieces(), initializer);
     }
 
-    public Board(BoardStatus boardStatus, BoardInitializer initializer) {
-        this.boardStatus = boardStatus;
+    public Board(BoardPieces boardPieces, BoardPiecesInitializer initializer) {
+        this.boardPieces = boardPieces;
         this.winner = null;
 
-        initializer.initBoardStatus(boardStatus);
+        initializer.initBoardStatus(boardPieces);
     }
 
     public BoardStateReader getSateReader() {
-        return boardStatus.getBoardStateReader();
+        return boardPieces.getBoardStateReader();
     }
 
     public void move(Team team, Position from, Position to) {
@@ -36,13 +36,13 @@ public class Board {
 
         validateMove(team, from, to);
 
-        boardStatus.movePiece(from, to);
+        boardPieces.movePiece(from, to);
 
         updateWinner();
     }
 
     public double getScore(Team team) {
-        final int score = boardStatus.getAllPiece().stream()
+        final int score = boardPieces.getAllPiece().stream()
                 .filter(piece -> piece.isSameTeam(team))
                 .mapToInt(Piece::getScore)
                 .sum();
@@ -55,7 +55,7 @@ public class Board {
     }
 
     private void updateWinner() {
-        final List<Piece> kings = boardStatus.getAllPiece().stream()
+        final List<Piece> kings = boardPieces.getAllPiece().stream()
                 .filter(piece -> piece.isSamePieceType(PieceType.KING))
                 .toList();
         if (kings.size() > 1) {
@@ -92,7 +92,7 @@ public class Board {
     }
 
     private void validateTeam(Team team, Position from) {
-        final Piece piece = boardStatus.getPiece(from);
+        final Piece piece = boardPieces.getPiece(from);
 
         if (!piece.isSameTeam(team)) {
             throw new PieceCanNotMoveException("자신의 기물만 이동할 수 있습니다.");
@@ -110,17 +110,17 @@ public class Board {
     }
 
     private void validatePieceCanMove(Position from, Position to) {
-        final Piece piece = boardStatus.getPiece(from);
-        if (!piece.canMove(from, to, boardStatus.getBoardStateReader())) {
+        final Piece piece = boardPieces.getPiece(from);
+        if (!piece.canMove(from, to, boardPieces.getBoardStateReader())) {
             throw new PieceCanNotMoveException("해당 위치로 이동할 수 없습니다.");
         }
     }
 
     private boolean isEmptySpace(Position from) {
-        return boardStatus.getPiece(from).isSamePieceType(PieceType.EMPTY);
+        return boardPieces.getPiece(from).isSamePieceType(PieceType.EMPTY);
     }
 
     private boolean isOutOfBounds(Position position) {
-        return boardStatus.isOutOfBounds(position);
+        return boardPieces.isOutOfBounds(position);
     }
 }

@@ -4,15 +4,15 @@ import java.time.LocalDateTime;
 import team.janggi.domain.Team;
 
 public class GameRoom {
-    private final long id;
+    private final Long id;
     private Team currentTurn;
     private final LocalDateTime createdDt;
 
     public GameRoom(Team currentTurn) {
-        this(-1, currentTurn, LocalDateTime.now());
+        this(null, currentTurn, LocalDateTime.now());
     }
 
-    public GameRoom(long id, Team currentTurn, LocalDateTime createdDt) {
+    public GameRoom(Long id, Team currentTurn, LocalDateTime createdDt) {
         this.id = id;
         this.currentTurn = currentTurn;
         this.createdDt = createdDt;
@@ -22,7 +22,7 @@ public class GameRoom {
         this.currentTurn = nextTurn;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

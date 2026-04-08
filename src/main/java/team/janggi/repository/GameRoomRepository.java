@@ -52,19 +52,23 @@ public class GameRoomRepository {
 
 
     public long save(GameRoom gameRoom) {
-        System.out.println("쓰레드 ID: " + Thread.currentThread().getId() + ", 게임 룸 저장 시작");
         final String sql = """
-                   MERGE INTO GAME_ROOM (
-                        game_room_id,
-                        current_turn,
-                        created_dt
-                    )
-                    KEY (game_room_id)
-                    VALUES (?, ?, ?)
+                MERGE INTO game_room g
+                USING (VALUES (?, ?, ?)) t(egame_room_id, current_turn, created_dt)
+                    ON g.game_room_id = t.egame_room_id
+                WHEN MATCHED THEN
+                    UPDATE SET current_turn = t.current_turn
+                WHEN NOT MATCHED THEN
+                    INSERT (current_turn, created_dt)
+                    VALUES (t.current_turn, t.created_dt);
                 """;
         return jdbcExecutor.execute(sql, Statement.RETURN_GENERATED_KEYS, statement -> {
                     try {
-                        statement.setLong(1, gameRoom.getId());
+                        if (gameRoom.getId() != null) {
+                            statement.setLong(1, gameRoom.getId());
+                        } else {
+                            statement.setNull(1, java.sql.Types.BIGINT);
+                        }
                         statement.setString(2, gameRoom.getCurrentTurn().name());
                         statement.setTimestamp(3, java.sql.Timestamp.valueOf(gameRoom.getCreatedDt()));
 

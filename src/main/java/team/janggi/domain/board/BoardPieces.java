@@ -6,10 +6,10 @@ import java.util.Map;
 import team.janggi.domain.Position;
 import team.janggi.domain.piece.Piece;
 
-public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
+public class BoardPieces implements BoardStateReader {
     private final Map<Position, Piece> map;
 
-    public LocalMemoryBoardStatus() {
+    public BoardPieces() {
         this.map = new HashMap<>();
     }
 
@@ -18,7 +18,6 @@ public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
         return map.get(position);
     }
 
-    @Override
     public void movePiece(Position from, Position to) {
         final Piece piece = getPiece(from);
 
@@ -26,27 +25,22 @@ public class LocalMemoryBoardStatus implements BoardStatus, BoardStateReader {
         map.put(from, Piece.EMPTY_PIECE);
     }
 
-    @Override
     public void setPiece(Position position, Piece piece) {
         map.put(position, piece);
     }
 
-    @Override
     public BoardStateReader getBoardStateReader() {
         return this;
     }
 
-    @Override
     public boolean isOutOfBounds(Position position) {
         return !map.containsKey(position);
     }
 
-    @Override
     public int size() {
         return map.size();
     }
 
-    @Override
     public Collection<Piece> getAllPiece() {
         return map.values();
     }

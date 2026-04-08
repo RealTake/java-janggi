@@ -41,11 +41,10 @@ public class JdbcExecutor {
     }
 
     private void close(Connection connection) {
+        if (connection == null) {
+            return;
+        }
         try {
-            if (connection == null) {
-                return;
-            }
-
             // 트랜잭션이 관리하는 커넥션은 트랜잭션이 끝날 때 닫히므로, auto-commit이 켜져있는 커넥션만 닫는다.
             if (!connection.getAutoCommit()) {
                 return;

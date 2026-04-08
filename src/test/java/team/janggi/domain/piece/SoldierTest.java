@@ -5,19 +5,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import team.janggi.domain.EmptyBoardInitializer;
+import team.janggi.domain.EmptyBoardPiecesInitializer;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.board.BoardStatus;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
+import team.janggi.domain.board.BoardPieces;
 
 public class SoldierTest {
 
-    private BoardStatus boardStatus = new LocalMemoryBoardStatus();
+    private BoardPieces boardPieces = new BoardPieces();
 
     @BeforeEach
     void setUp() {
-        new EmptyBoardInitializer().initBoardStatus(boardStatus);
+        new EmptyBoardPiecesInitializer().initBoardStatus(boardPieces);
     }
 
     @Test
@@ -26,12 +25,12 @@ public class SoldierTest {
         Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         Position currentPosition = new Position(5, 5);
 
-        boardStatus.setPiece(currentPosition, soldier);
+        boardPieces.setPiece(currentPosition, soldier);
 
         Position destinationPosition = new Position(5, 4);
 
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
 
@@ -41,12 +40,12 @@ public class SoldierTest {
         Piece soldier = Piece.of(PieceType.SOLDIER, Team.HAN);
         Position currentPosition = new Position(5, 5);
 
-        boardStatus.setPiece(currentPosition, soldier);
+        boardPieces.setPiece(currentPosition, soldier);
 
         Position destinationPosition = new Position(5, 6);
 
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
 
@@ -56,12 +55,12 @@ public class SoldierTest {
         Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         Position currentPosition = new Position(5, 5);
 
-        boardStatus.setPiece(currentPosition, soldier);
+        boardPieces.setPiece(currentPosition, soldier);
 
         Position destinationPosition = new Position(5, 6);
 
         // when & then
-        Assertions.assertFalse(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertFalse(soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
 
     }
 
@@ -71,12 +70,12 @@ public class SoldierTest {
         Piece soldier = Piece.of(PieceType.SOLDIER, Team.HAN);
         Position currentPosition = new Position(5, 5);
 
-        boardStatus.setPiece(currentPosition, soldier);
+        boardPieces.setPiece(currentPosition, soldier);
 
         Position destinationPosition = new Position(5, 4);
 
         // when & then
-        Assertions.assertFalse(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertFalse(soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
 
     }
 
@@ -85,11 +84,11 @@ public class SoldierTest {
         var soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         var currentPosition = new Position(5, 5);
 
-        boardStatus.setPiece(currentPosition, soldier);
+        boardPieces.setPiece(currentPosition, soldier);
 
         var destinationPosition = new Position(4, 5);
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @Test
@@ -97,12 +96,12 @@ public class SoldierTest {
         var soldier = Piece.of(PieceType.SOLDIER, Team.HAN);
         var currentPosition = new Position(5, 5);
 
-        boardStatus.setPiece(currentPosition, soldier);
+        boardPieces.setPiece(currentPosition, soldier);
 
         var destinationPosition = new Position(6, 5);
 
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @Test
@@ -110,12 +109,12 @@ public class SoldierTest {
         var soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         var currentPosition = new Position(5, 5);
 
-        boardStatus.setPiece(currentPosition, soldier);
+        boardPieces.setPiece(currentPosition, soldier);
 
         var destinationPosition = new Position(6, 5);
 
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @Test
@@ -123,12 +122,12 @@ public class SoldierTest {
         var soldier = Piece.of(PieceType.SOLDIER, Team.HAN);
         var currentPosition = new Position(5, 5);
 
-        boardStatus.setPiece(currentPosition, soldier);
+        boardPieces.setPiece(currentPosition, soldier);
 
         var destinationPosition = new Position(4, 5);
 
         // when & then
-        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
 
@@ -150,9 +149,9 @@ public class SoldierTest {
         Position destinationPosition = new Position(destinationX, destinationY);
 
         // when
-        boardStatus.setPiece(currentPosition, soldier);
+        boardPieces.setPiece(currentPosition, soldier);
 
         // then
-        Assertions.assertEquals(expected, soldier.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertEquals(expected, soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 }

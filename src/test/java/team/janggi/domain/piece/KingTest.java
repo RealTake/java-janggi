@@ -5,20 +5,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import team.janggi.domain.EmptyBoardInitializer;
+import team.janggi.domain.EmptyBoardPiecesInitializer;
 import team.janggi.domain.Palace;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.board.BoardStatus;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
+import team.janggi.domain.board.BoardPieces;
 
 public class KingTest {
 
-    private BoardStatus boardStatus = new LocalMemoryBoardStatus();
+    private BoardPieces boardPieces = new BoardPieces();
 
     @BeforeEach
     void setUp() {
-        new EmptyBoardInitializer().initBoardStatus(boardStatus);
+        new EmptyBoardPiecesInitializer().initBoardStatus(boardPieces);
     }
     
     @ParameterizedTest
@@ -35,12 +34,12 @@ public class KingTest {
         Piece king = Piece.of(PieceType.KING, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
-        boardStatus.setPiece(currentPosition, king);
+        boardPieces.setPiece(currentPosition, king);
 
         Position destinationPosition = new Position(destinationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -57,12 +56,12 @@ public class KingTest {
         Piece king = Piece.of(PieceType.KING, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
-        boardStatus.setPiece(currentPosition, king);
+        boardPieces.setPiece(currentPosition, king);
 
         Position destinationPosition = new Position(destinationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -105,10 +104,10 @@ public class KingTest {
         Position destinationPosition = new Position(destinationX, destinationY);
 
         // when
-        boardStatus.setPiece(currentPosition, king);
+        boardPieces.setPiece(currentPosition, king);
 
         //  then
-        Assertions.assertFalse(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertFalse(king.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @Test
@@ -119,11 +118,11 @@ public class KingTest {
         Position currentPosition = Palace.CHO_KING_POSITION;
         Position destinationPosition = new Position(4, 7);
 
-        boardStatus.setPiece(currentPosition, king);
-        boardStatus.setPiece(destinationPosition, Piece.of(PieceType.GUARD, ourTeam));
+        boardPieces.setPiece(currentPosition, king);
+        boardPieces.setPiece(destinationPosition, Piece.of(PieceType.GUARD, ourTeam));
 
         // when & then
-        Assertions.assertFalse(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertFalse(king.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @Test
@@ -137,10 +136,10 @@ public class KingTest {
         Piece king = Piece.of(PieceType.KING, ourTeam);
         Position currentPosition = Palace.CHO_KING_POSITION;
 
-        boardStatus.setPiece(currentPosition, king);
-        boardStatus.setPiece(destinationPosition, opponentPiece);
+        boardPieces.setPiece(currentPosition, king);
+        boardPieces.setPiece(destinationPosition, opponentPiece);
 
         // when & then
-        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 }

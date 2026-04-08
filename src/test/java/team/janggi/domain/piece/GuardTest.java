@@ -5,20 +5,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import team.janggi.domain.EmptyBoardInitializer;
+import team.janggi.domain.EmptyBoardPiecesInitializer;
 import team.janggi.domain.Palace;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.board.BoardStatus;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
+import team.janggi.domain.board.BoardPieces;
 
 public class GuardTest {
 
-    private BoardStatus boardStatus = new LocalMemoryBoardStatus();
+    private BoardPieces boardPieces = new BoardPieces();
 
     @BeforeEach
     void setUp() {
-        new EmptyBoardInitializer().initBoardStatus(boardStatus);
+        new EmptyBoardPiecesInitializer().initBoardStatus(boardPieces);
     }
 
     @ParameterizedTest
@@ -35,12 +34,12 @@ public class GuardTest {
         Piece guard = Piece.of(PieceType.GUARD, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
-        boardStatus.setPiece(currentPosition, guard);
+        boardPieces.setPiece(currentPosition, guard);
 
         Position destinationPosition = new Position(definationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -57,12 +56,12 @@ public class GuardTest {
         Piece guard = Piece.of(PieceType.GUARD, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
-        boardStatus.setPiece(currentPosition, guard);
+        boardPieces.setPiece(currentPosition, guard);
 
         Position destinationPosition = new Position(destinationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -105,10 +104,10 @@ public class GuardTest {
         Position destinationPosition = new Position(destinationX, destinationY);
 
         // when
-        boardStatus.setPiece(currentPosition, guard);
+        boardPieces.setPiece(currentPosition, guard);
 
         //  then
-        Assertions.assertFalse(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertFalse(guard.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @Test
@@ -119,11 +118,11 @@ public class GuardTest {
         Position currentPosition = Palace.CHO_KING_POSITION;
         Position destinationPosition = new Position(4, 7);
 
-        boardStatus.setPiece(currentPosition, guard);
-        boardStatus.setPiece(destinationPosition, Piece.of(PieceType.GUARD, ourTeam));
+        boardPieces.setPiece(currentPosition, guard);
+        boardPieces.setPiece(destinationPosition, Piece.of(PieceType.GUARD, ourTeam));
 
         // when & then
-        Assertions.assertFalse(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertFalse(guard.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @Test
@@ -137,10 +136,10 @@ public class GuardTest {
         Piece guard = Piece.of(PieceType.GUARD, ourTeam);
         Position currentPosition = Palace.CHO_KING_POSITION;
 
-        boardStatus.setPiece(currentPosition, guard);
-        boardStatus.setPiece(destinationPosition, opponentPiece);
+        boardPieces.setPiece(currentPosition, guard);
+        boardPieces.setPiece(destinationPosition, opponentPiece);
 
         // when & then
-        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(guard.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 }

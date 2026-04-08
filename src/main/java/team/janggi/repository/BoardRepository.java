@@ -6,9 +6,8 @@ import team.janggi.application.JdbcExecutor;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.board.Board;
-import team.janggi.domain.board.BoardStatus;
-import team.janggi.domain.board.EmptyBoardInitializer;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
+import team.janggi.domain.board.BoardPieces;
+import team.janggi.domain.board.EmptyBoardPiecesInitializer;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
 
@@ -36,8 +35,8 @@ public class BoardRepository {
             try {
                 statement.setLong(1, gameRoomId);
 
-                final BoardStatus boardStatus = new LocalMemoryBoardStatus();
-                final Board board = new Board(boardStatus, EmptyBoardInitializer.instance);
+                final BoardPieces boardPieces = new BoardPieces();
+                final Board board = new Board(boardPieces, EmptyBoardPiecesInitializer.instance);
                 final ResultSet resultSet = statement.executeQuery();
                 while (resultSet.next()) {
                     final int positionX = resultSet.getInt("position_x");
@@ -47,7 +46,7 @@ public class BoardRepository {
 
                     final Position position = new Position(positionX, positionY);
                     final Piece piece = Piece.of(pieceType, team);
-                    boardStatus.setPiece(position, piece);
+                    boardPieces.setPiece(position, piece);
                 }
 
                 return board;

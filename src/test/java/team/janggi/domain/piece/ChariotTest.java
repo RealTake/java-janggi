@@ -5,19 +5,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import team.janggi.domain.EmptyBoardInitializer;
+import team.janggi.domain.EmptyBoardPiecesInitializer;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.board.BoardStatus;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
+import team.janggi.domain.board.BoardPieces;
 
 public class ChariotTest {
 
-    private final BoardStatus boardStatus = new LocalMemoryBoardStatus();
+    private final BoardPieces boardPieces = new BoardPieces();
 
     @BeforeEach
     void setUp() {
-        new EmptyBoardInitializer().initBoardStatus(boardStatus);
+        new EmptyBoardPiecesInitializer().initBoardStatus(boardPieces);
     }
 
     @ParameterizedTest
@@ -73,13 +72,13 @@ public class ChariotTest {
         Position to = new Position(endX, endY);
 
         // 피스 세팅
-        boardStatus.setPiece(from, me);
+        boardPieces.setPiece(from, me);
         if (isEnemyExist) {
-            boardStatus.setPiece(to, Piece.of(PieceType.SOLDIER, opponentTeam));
+            boardPieces.setPiece(to, Piece.of(PieceType.SOLDIER, opponentTeam));
         }
 
         // when
-        boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
+        boolean canMove = me.canMove(from, to, boardPieces.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -120,11 +119,11 @@ public class ChariotTest {
         Position to = new Position(endX, endY);
 
         // 피스 세팅
-        boardStatus.setPiece(from, me);
-        boardStatus.setPiece(to, Piece.of(PieceType.SOLDIER, myTeam)); // 목표 위치에 아군 기물 세팅
+        boardPieces.setPiece(from, me);
+        boardPieces.setPiece(to, Piece.of(PieceType.SOLDIER, myTeam)); // 목표 위치에 아군 기물 세팅
 
         // when
-        boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
+        boolean canMove = me.canMove(from, to, boardPieces.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -144,12 +143,12 @@ public class ChariotTest {
         Piece chariot = Piece.of(PieceType.CHARIOT, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
-        boardStatus.setPiece(currentPosition, chariot);
+        boardPieces.setPiece(currentPosition, chariot);
 
         Position destinationPosition = new Position(definationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(chariot.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(chariot.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @ParameterizedTest
@@ -171,12 +170,12 @@ public class ChariotTest {
         Piece king = Piece.of(PieceType.CHARIOT, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
-        boardStatus.setPiece(currentPosition, king);
+        boardPieces.setPiece(currentPosition, king);
 
         Position destinationPosition = new Position(destinationX, destinationY);
 
         // when & then
-        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertTrue(king.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @Test
@@ -185,12 +184,12 @@ public class ChariotTest {
         Piece chariot = Piece.of(PieceType.CHARIOT, Team.CHO);
         Position currentPosition = new Position(5, 5);
 
-        boardStatus.setPiece(currentPosition, chariot);
+        boardPieces.setPiece(currentPosition, chariot);
 
         Position destinationPosition = new Position(6, 6); // 대각선 이동
 
         // when
-        boolean canMove = chariot.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader());
+        boolean canMove = chariot.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader());
 
         // then
         Assertions.assertFalse(canMove);

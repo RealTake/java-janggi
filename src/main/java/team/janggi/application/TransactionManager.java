@@ -6,8 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class TransactionManager {
-    private ConnectionManager connectionManager;
-    private ConcurrentHashMap<Long, Connection> transactionConnections;
+    private final ConnectionManager connectionManager;
+    private final ConcurrentHashMap<Long, Connection> transactionConnections;
 
     public TransactionManager(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;

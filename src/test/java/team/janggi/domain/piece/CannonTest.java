@@ -5,19 +5,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import team.janggi.domain.EmptyBoardInitializer;
+import team.janggi.domain.EmptyBoardPiecesInitializer;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
-import team.janggi.domain.board.BoardStatus;
-import team.janggi.domain.board.LocalMemoryBoardStatus;
+import team.janggi.domain.board.BoardPieces;
 
 public class CannonTest {
 
-    private final BoardStatus boardStatus = new LocalMemoryBoardStatus();
+    private final BoardPieces boardPieces = new BoardPieces();
 
     @BeforeEach
     void setUp() {
-        new EmptyBoardInitializer().initBoardStatus(boardStatus);
+        new EmptyBoardPiecesInitializer().initBoardStatus(boardPieces);
     }
 
     @ParameterizedTest
@@ -50,16 +49,16 @@ public class CannonTest {
 
         // when
         // 포 피스 세팅
-        boardStatus.setPiece(from, me);
+        boardPieces.setPiece(from, me);
         // 장애물 피스 세팅
-        boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, myTeam));
+        boardPieces.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, myTeam));
         // 목표 위치에 적기물 세팅
         if (isEnemyExist) {
-            boardStatus.setPiece(to, Piece.of(PieceType.SOLDIER, opponentTeam));
+            boardPieces.setPiece(to, Piece.of(PieceType.SOLDIER, opponentTeam));
         }
 
         // then
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
+        final boolean canMove = me.canMove(from, to, boardPieces.getBoardStateReader());
         Assertions.assertEquals(expected, canMove);
     }
 
@@ -87,14 +86,14 @@ public class CannonTest {
 
         // when
         // 포 피스 세팅
-        boardStatus.setPiece(from, me);
+        boardPieces.setPiece(from, me);
         // 장애물 피스 세팅
-        boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, myTeam));
+        boardPieces.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, myTeam));
         // 목표 위치에 적기물 세팅
-        boardStatus.setPiece(to, Piece.of(PieceType.SOLDIER, myTeam));
+        boardPieces.setPiece(to, Piece.of(PieceType.SOLDIER, myTeam));
 
         // then
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
+        final boolean canMove = me.canMove(from, to, boardPieces.getBoardStateReader());
         Assertions.assertEquals(expected, canMove);
     }
 
@@ -115,10 +114,10 @@ public class CannonTest {
         final Position to = new Position(endX, endY);
 
         // 포 피스 세팅
-        boardStatus.setPiece(from, me);
+        boardPieces.setPiece(from, me);
 
         // when
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
+        final boolean canMove = me.canMove(from, to, boardPieces.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -143,12 +142,12 @@ public class CannonTest {
         final Position obstaclePosition = new Position(obstacleX, obstacleY);
 
         // 포 피스 세팅
-        boardStatus.setPiece(from, me);
+        boardPieces.setPiece(from, me);
         // 장애물 피스 세팅
-        boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.CANNON, Team.CHO));
+        boardPieces.setPiece(obstaclePosition, Piece.of(PieceType.CANNON, Team.CHO));
 
         // when
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
+        final boolean canMove = me.canMove(from, to, boardPieces.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -171,10 +170,10 @@ public class CannonTest {
         final Position to = new Position(endX, endY);
 
         // 포 피스 세팅
-        boardStatus.setPiece(from, me);
+        boardPieces.setPiece(from, me);
 
         // when
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
+        final boolean canMove = me.canMove(from, to, boardPieces.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -201,14 +200,14 @@ public class CannonTest {
         final Position obstaclePosition2 = new Position(obstacle2X, obstacle2Y);
 
         // 포 피스 세팅
-        boardStatus.setPiece(from, me);
+        boardPieces.setPiece(from, me);
         // 장애물 피스 세팅
-        boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, Team.CHO));
+        boardPieces.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, Team.CHO));
         // 장애물 피스 세팅
-        boardStatus.setPiece(obstaclePosition2, Piece.of(PieceType.SOLDIER, Team.CHO));
+        boardPieces.setPiece(obstaclePosition2, Piece.of(PieceType.SOLDIER, Team.CHO));
 
         // when
-        final boolean canMove = me.canMove(from, to, boardStatus.getBoardStateReader());
+        final boolean canMove = me.canMove(from, to, boardPieces.getBoardStateReader());
 
         // when & then
         Assertions.assertEquals(expected, canMove);
@@ -233,17 +232,17 @@ public class CannonTest {
         Piece cannon = Piece.of(PieceType.CANNON, Team.CHO);
         Position currentPosition = new Position(startX, startY);
 
-        boardStatus.setPiece(currentPosition, cannon);
+        boardPieces.setPiece(currentPosition, cannon);
 
         // 장애물 세팅
         if (isObstacleExist) {
             Position obstaclePosition = new Position(4, 8); // 궁의 정가운데 위치
-            boardStatus.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, Team.CHO));
+            boardPieces.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, Team.CHO));
         }
 
         // when & then
         Position destinationPosition = new Position(destinationX, destinationY);
-        Assertions.assertEquals(isObstacleExist, cannon.canMove(currentPosition, destinationPosition, boardStatus.getBoardStateReader()));
+        Assertions.assertEquals(isObstacleExist, cannon.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
 
     @Test
@@ -253,12 +252,12 @@ public class CannonTest {
         Position currentPosition = new Position(5, 5);
 
         // when
-        boardStatus.setPiece(currentPosition, cannon);
+        boardPieces.setPiece(currentPosition, cannon);
         // 대각선 이동 경로에 장애물 세팅
-        boardStatus.setPiece(new Position(6, 6), Piece.of(PieceType.SOLDIER, Team.CHO));
+        boardPieces.setPiece(new Position(6, 6), Piece.of(PieceType.SOLDIER, Team.CHO));
 
         // then
-        boolean canMove = cannon.canMove(currentPosition, new Position(7, 7), boardStatus.getBoardStateReader());
+        boolean canMove = cannon.canMove(currentPosition, new Position(7, 7), boardPieces.getBoardStateReader());
         Assertions.assertFalse(canMove);
     }
 }
