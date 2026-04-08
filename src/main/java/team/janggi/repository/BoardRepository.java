@@ -57,7 +57,6 @@ public class BoardRepository {
     }
 
     public void save(long gameRoomId, Board board) {
-        System.out.println("쓰레드 ID: " + Thread.currentThread().getId() + ", 보드 저장 시작");
         final String sql = """
                               MERGE INTO BOARD (
                                    game_room_id,
