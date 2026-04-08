@@ -1,7 +1,6 @@
-package team.janggi.entity;
+package team.janggi.domain;
 
 import java.time.LocalDateTime;
-import team.janggi.domain.Team;
 
 public class GameRoom {
     private final Long id;

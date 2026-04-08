@@ -7,8 +7,11 @@ public class SoldierPalaceMoveStrategy extends SoldierMoveStrategy {
     public final static SoldierPalaceMoveStrategy towardTopInstance = new SoldierPalaceMoveStrategy(ForwardDirection.TOWARD_TOP);
     public final static SoldierPalaceMoveStrategy towardBottomInstance = new SoldierPalaceMoveStrategy(ForwardDirection.TOWARD_BOTTOM);
 
+    private final ForwardDirection forwardDirection;
+
     public SoldierPalaceMoveStrategy(ForwardDirection direction) {
         super(direction);
+        forwardDirection = direction;
     }
 
     @Override

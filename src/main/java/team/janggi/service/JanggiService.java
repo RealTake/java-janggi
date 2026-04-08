@@ -6,7 +6,7 @@ import team.janggi.domain.Team;
 import team.janggi.domain.board.Board;
 import team.janggi.domain.board.NormalBoardPiecesInitializer;
 import team.janggi.domain.board.NormalSetup;
-import team.janggi.entity.GameRoom;
+import team.janggi.domain.GameRoom;
 import team.janggi.exception.GameNotFinishedException;
 import team.janggi.exception.GameNotFoundException;
 import team.janggi.exception.GameOverException;

@@ -6,7 +6,7 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import team.janggi.application.JdbcExecutor;
 import team.janggi.domain.Team;
-import team.janggi.entity.GameRoom;
+import team.janggi.domain.GameRoom;
 
 public class GameRoomRepository {
     private final JdbcExecutor jdbcExecutor;

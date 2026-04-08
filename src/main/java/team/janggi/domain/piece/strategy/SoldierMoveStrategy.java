@@ -4,10 +4,7 @@ import team.janggi.domain.Position;
 import team.janggi.domain.board.BoardStateReader;
 
 public class SoldierMoveStrategy implements MoveStrategy {
-    public static final SoldierMoveStrategy towardTopInstance = new SoldierMoveStrategy(ForwardDirection.TOWARD_TOP);
-    public static final SoldierMoveStrategy towardBottomInstance = new SoldierMoveStrategy(ForwardDirection.TOWARD_BOTTOM);
-
-    public final ForwardDirection forwardDirection;
+    private final ForwardDirection forwardDirection;
 
     public SoldierMoveStrategy(ForwardDirection direction) {
         this.forwardDirection = direction;
