@@ -9,7 +9,7 @@ import team.janggi.repository.GameRoomRepository;
 import team.janggi.service.JanggiService;
 
 public class AppConfig {
-    private static final String URL = "jdbc:h2:tcp://localhost/~/janggi";
+    private static final String URL = "jdbc:h2:./janggi;INIT=RUNSCRIPT FROM './schema.sql'";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "root";
 
