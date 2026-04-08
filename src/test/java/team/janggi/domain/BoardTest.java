@@ -3,9 +3,8 @@ package team.janggi.domain;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import team.janggi.domain.board.Board;
-import team.janggi.domain.board.BoardPiecesInitializer;
-import team.janggi.domain.board.BoardStateReader;
 import team.janggi.domain.board.BoardPieces;
+import team.janggi.domain.board.BoardStateReader;
 import team.janggi.domain.board.NormalBoardPiecesInitializer;
 import team.janggi.domain.board.NormalSetup;
 import team.janggi.domain.piece.Piece;
@@ -15,7 +14,7 @@ public class BoardTest {
 
     @Test
     void 기본_장기_보드_생성_테스트() {
-        var boardStruct = new NormalBoardPiecesInitializer((NormalSetup.바깥상차림, NormalSetup.바깥상차림);
+        var boardStruct = new NormalBoardPiecesInitializer(NormalSetup.바깥상차림, NormalSetup.바깥상차림);
 
         Board board = new Board(boardStruct);
 
