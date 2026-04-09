@@ -137,8 +137,13 @@ public class SoldierTest {
             "5,7,   4,8,    false",
             "3,9,   4,8,    true",
             "5,9,   4,8,    true",
+
+            "3,5,   4,6,    false",
+            "3,5,   2,4,    false",
+            "3,5,   4,4,    false",
+            "3,5,   2,6,    false",
     })
-    void 졸은_궁성에서_전진에_기반한_대각선_이동이_가능하다(
+    void 졸은_궁성에서만_전진에_기반한_대각선_이동이_가능하다(
             int startX, int startY,
             int destinationX, int destinationY,
             boolean expected
