@@ -1,12 +1,15 @@
 package team.janggi.repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import team.janggi.application.JdbcExecutor;
+import team.janggi.domain.BoardSize;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.board.Board;
 import team.janggi.domain.board.BoardPieces;
+import team.janggi.domain.board.BoardStateReader;
 import team.janggi.domain.board.EmptyBoardPiecesInitializer;
 import team.janggi.domain.piece.Piece;
 import team.janggi.domain.piece.PieceType;
@@ -72,20 +75,10 @@ public class BoardRepository {
                            """;
         jdbcExecutor.execute(sql, statement -> {
             try {
-                for (int y = 0; y < 10; y++) {
-                    for (int x = 0; x < 9; x++) {
-                        final Position position = new Position(x, y);
-                        final Piece piece = board.getStateReader().getPiece(position);
-
-                        statement.setLong(1, gameRoomId);
-                        statement.setInt(2, x);
-                        statement.setInt(3, y);
-                        statement.setString(4, piece.getPieceType().name());
-                        statement.setString(5, piece.getTeam().name());
-                        statement.addBatch();
-                    }
+                // 기물 정보 저장
+                for (int y = 0; y < BoardSize.Y; y++) {
+                    setBoardParameter(statement, y, gameRoomId, board.getStateReader());
                 }
-
                 statement.executeBatch();
             } catch (SQLException e) {
                 throw new RuntimeException("보드 저장에 실패하였습니다.", e);
@@ -93,6 +86,24 @@ public class BoardRepository {
 
             return null;
         });
+    }
+
+    // statement에 기물 정보를 세팅하는 메서드
+    private void setBoardParameter(PreparedStatement statement,
+                                   int y,
+                                   long gameRoomId,
+                                   BoardStateReader reader) throws SQLException {
+        for (int x = 0; x < BoardSize.X; x++) {
+            final Position position = new Position(x, y);
+            final Piece piece = reader.getPiece(position);
+
+            statement.setLong(1, gameRoomId);
+            statement.setInt(2, x);
+            statement.setInt(3, y);
+            statement.setString(4, piece.getPieceType().name());
+            statement.setString(5, piece.getTeam().name());
+            statement.addBatch();
+        }
     }
 
 }
