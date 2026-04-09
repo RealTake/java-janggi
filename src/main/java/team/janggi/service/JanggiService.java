@@ -62,8 +62,9 @@ public class JanggiService {
 
         AppConfig.transactionManager().execute(() -> {
             gameRoom.changeTurn(getNextTurn(team));
-            gameRoomRepository.save(gameRoom);
             board.move(team, from, to);
+
+            gameRoomRepository.save(gameRoom);
             boardRepository.save(gameRoomId, board);
             return null;
         });
