@@ -1,5 +1,6 @@
 package team.janggi.domain.piece.strategy;
 
+import team.janggi.domain.Palace;
 import team.janggi.domain.Position;
 import team.janggi.domain.board.BoardStateReader;
 
@@ -24,6 +25,9 @@ public class SoldierPalaceMoveStrategy extends SoldierMoveStrategy {
     }
 
     private boolean isDiagonalMove(Position from, Position to) {
+        if (!Palace.isInPalace(from) || !Palace.isInPalace(to)) {
+            return false;
+        }
         if (forwardDirection == ForwardDirection.TOWARD_TOP) {
             return from.y() - to.y() == 1 && Math.abs(from.x() - to.x()) == 1;
         }
