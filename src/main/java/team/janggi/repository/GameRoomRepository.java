@@ -1,12 +1,14 @@
 package team.janggi.repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import team.janggi.application.JdbcExecutor;
-import team.janggi.domain.Team;
 import team.janggi.domain.GameRoom;
+import team.janggi.domain.Team;
 
 public class GameRoomRepository {
     private final JdbcExecutor jdbcExecutor;
@@ -64,11 +66,7 @@ public class GameRoomRepository {
                 """;
         return jdbcExecutor.execute(sql, Statement.RETURN_GENERATED_KEYS, statement -> {
                     try {
-                        if (gameRoom.getId() != null) {
-                            statement.setLong(1, gameRoom.getId());
-                        } else {
-                            statement.setNull(1, java.sql.Types.BIGINT);
-                        }
+                        setLongParameter(statement, 1, gameRoom.getId());
                         statement.setString(2, gameRoom.getCurrentTurn().name());
                         statement.setTimestamp(3, java.sql.Timestamp.valueOf(gameRoom.getCreatedDt()));
 
@@ -82,5 +80,14 @@ public class GameRoomRepository {
                         throw new RuntimeException("게임룸 저장에 실패하였습니다.", e);
                     }
                 });
+    }
+
+    private void setLongParameter(PreparedStatement statement, int parameterIndex, Long value) throws SQLException {
+        if (value != null) {
+            statement.setLong(parameterIndex, value);
+            return;
+        }
+
+        statement.setNull(parameterIndex, Types.BIGINT);
     }
 }
