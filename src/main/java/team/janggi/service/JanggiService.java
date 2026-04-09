@@ -1,5 +1,6 @@
 package team.janggi.service;
 
+import team.janggi.application.TransactionManager;
 import team.janggi.config.AppConfig;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
@@ -18,15 +19,18 @@ import team.janggi.repository.dto.GameRoomInfoDTO;
 public class JanggiService {
     private final GameRoomRepository gameRoomRepository;
     private final BoardRepository boardRepository;
+    private final TransactionManager transactionManager;
 
     public JanggiService(GameRoomRepository gameRoomRepository,
-                        BoardRepository boardRepository) {
+                         BoardRepository boardRepository,
+                         TransactionManager transactionManager) {
         this.gameRoomRepository = gameRoomRepository;
         this.boardRepository = boardRepository;
+        this.transactionManager = transactionManager;
     }
 
     public long createGameRoom(NormalSetup choSetup, NormalSetup hanSetup) {
-        return AppConfig.transactionManager().execute(() -> {
+        return transactionManager.execute(() -> {
             final GameRoom gameRoom = new GameRoom(Team.CHO);
             final long gameRoomId = gameRoomRepository.save(gameRoom);
 
@@ -60,7 +64,7 @@ public class JanggiService {
             throw new GameOverException();
         }
 
-        AppConfig.transactionManager().execute(() -> {
+        transactionManager.execute(() -> {
             gameRoom.changeTurn();
             board.move(team, from, to);
 

@@ -16,7 +16,7 @@ public class AppConfig {
     private static final ConnectionManager connectionManager = new ConnectionManager(URL, USERNAME, PASSWORD);
     private static final TransactionManager transactionManager = new TransactionManager(connectionManager);
     private static final JdbcExecutor jdbcExecutor = new JdbcExecutor(transactionManager);
-    private static final JanggiService janggiService = new JanggiService(new GameRoomRepository(jdbcExecutor), new BoardRepository(jdbcExecutor));
+    private static final JanggiService janggiService = new JanggiService(new GameRoomRepository(jdbcExecutor), new BoardRepository(jdbcExecutor), transactionManager);
     private static final JanggiController janggiController = new JanggiController(janggiService);
 
     public static JanggiController janggiController() {
