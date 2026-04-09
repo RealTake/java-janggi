@@ -153,6 +153,9 @@ public class BoardTest {
         Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
         boardStatus.setPiece(new Position(6, 5), soldier);
 
+        Piece king = Piece.of(PieceType.KING, Team.CHO);
+        boardStatus.setPiece(new Position(4, 8), king);
+
         // 초나라의 졸을 왼쪽으로 한칸 이동
         Position from = new Position(6, 5);
         Position to = new Position(5, 5);
