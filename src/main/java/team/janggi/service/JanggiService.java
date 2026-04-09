@@ -61,7 +61,7 @@ public class JanggiService {
         }
 
         AppConfig.transactionManager().execute(() -> {
-            gameRoom.changeTurn(getNextTurn(team));
+            gameRoom.changeTurn();
             board.move(team, from, to);
 
             gameRoomRepository.save(gameRoom);
@@ -111,15 +111,5 @@ public class JanggiService {
         return new BoardViewDTO(getTurn(gameRoomId),
                 board.getScore(Team.CHO), board.getScore(Team.HAN),
                 board.getStateReader());
-    }
-
-    private Team getNextTurn(Team currentTurn) {
-        if (currentTurn == Team.CHO) {
-            return Team.HAN;
-        }
-        if (currentTurn == Team.HAN) {
-            return Team.CHO;
-        }
-        throw new IllegalStateException("지원하지 않는 팀입니다: " + currentTurn);
     }
 }

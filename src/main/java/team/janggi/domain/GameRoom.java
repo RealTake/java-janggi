@@ -17,8 +17,13 @@ public class GameRoom {
         this.createdDt = createdDt;
     }
 
-    public void changeTurn(Team nextTurn) {
-        this.currentTurn = nextTurn;
+    public void changeTurn() {
+        if (this.currentTurn == Team.CHO) {
+            this.currentTurn = Team.HAN;
+            return;
+        }
+
+        this.currentTurn = Team.CHO;
     }
 
     public Long getId() {
