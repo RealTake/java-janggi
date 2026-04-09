@@ -1,25 +1,28 @@
-package team.janggi.domain.piece.strategy.royal;
+package team.janggi.domain.piece.strategy;
 
 import java.util.List;
-import team.janggi.domain.Palace;
 import team.janggi.domain.Position;
 import team.janggi.domain.board.BoardStateReader;
 import team.janggi.domain.piece.Piece;
-import team.janggi.domain.piece.strategy.MoveStrategy;
 
-public class ChoRoyalPieceMoveStrategy implements MoveStrategy {
+public class RoyalPieceMoveStrategy implements MoveStrategy {
     private static final int MAX_MOVE_DISTANCE = 1;
-    public static final ChoRoyalPieceMoveStrategy instance = new ChoRoyalPieceMoveStrategy();
+
+    private final PalaceInfo palaceInfo;
+
+    public RoyalPieceMoveStrategy(PalaceInfo palaceInfo) {
+        this.palaceInfo = palaceInfo;
+    }
 
     @Override
     public boolean calculateMove(Position from, Position to, BoardStateReader stateReader) {
        return (isValidDirection(from, to)
-               || Palace.isChoDiagonalPath(List.of(from, to)))
+               || palaceInfo.isDiagonalPath(List.of(from, to)))
                && isValidObstacle(from, to, stateReader);
     }
 
     private boolean isValidDirection(Position from, Position to) {
-        if (!Palace.isInChoPalace(from) || !Palace.isInChoPalace(to)) {
+        if (!palaceInfo.isInPalace(from) || !palaceInfo.isInPalace(to)) {
             return false;
         }
 

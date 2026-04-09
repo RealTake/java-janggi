@@ -1,6 +1,7 @@
 package team.janggi.domain.piece;
 
 import java.util.Objects;
+import team.janggi.domain.Palace;
 import team.janggi.domain.Position;
 import team.janggi.domain.Team;
 import team.janggi.domain.board.BoardStateReader;
@@ -10,9 +11,8 @@ import team.janggi.domain.piece.strategy.ElephantMoveStrategy;
 import team.janggi.domain.piece.strategy.EmptyMoveStrategy;
 import team.janggi.domain.piece.strategy.HorseMoveStrategy;
 import team.janggi.domain.piece.strategy.MoveStrategy;
+import team.janggi.domain.piece.strategy.RoyalPieceMoveStrategy;
 import team.janggi.domain.piece.strategy.SoldierPalaceMoveStrategy;
-import team.janggi.domain.piece.strategy.royal.ChoRoyalPieceMoveStrategy;
-import team.janggi.domain.piece.strategy.royal.HanRoyalPieceMoveStrategy;
 
 public class Piece {
     private final Team team;
@@ -36,10 +36,10 @@ public class Piece {
             return new Piece(team, PieceType.SOLDIER, getSoldierMoveStrategyByTeam(team));
         }
         if (pieceType == PieceType.KING) {
-            return new Piece(team, PieceType.KING, getPalaceMoveStrategy(team));
+            return new Piece(team, PieceType.KING, getRoyalMoveStrategy(team));
         }
         if (pieceType == PieceType.GUARD) {
-            return new Piece(team, PieceType.GUARD, getPalaceMoveStrategy(team));
+            return new Piece(team, PieceType.GUARD, getRoyalMoveStrategy(team));
         }
         if (pieceType == PieceType.ELEPHANT) {
             return new Piece(team, PieceType.ELEPHANT, ElephantMoveStrategy.instance);
@@ -67,12 +67,12 @@ public class Piece {
         throw new IllegalArgumentException("졸은 초 또는 한 팀에 속해야 합니다.");
     }
 
-    private static MoveStrategy getPalaceMoveStrategy(Team team) {
+    private static MoveStrategy getRoyalMoveStrategy(Team team) {
         if (team == Team.CHO) {
-            return ChoRoyalPieceMoveStrategy.instance;
+            return new RoyalPieceMoveStrategy(Palace.getChoPalaceInfo());
         }
         if (team == Team.HAN) {
-            return HanRoyalPieceMoveStrategy.instance;
+            return new RoyalPieceMoveStrategy(Palace.getHanPalaceInfo());
         }
         throw new IllegalArgumentException("왕은 초 또는 한 팀에 속해야 합니다.");
     }
