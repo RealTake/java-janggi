@@ -7,6 +7,7 @@ import team.janggi.domain.board.BoardStateReader;
 import team.janggi.domain.piece.strategy.CannonPalaceMoveStrategy;
 import team.janggi.domain.piece.strategy.ChariotPalaceMoveStrategy;
 import team.janggi.domain.piece.strategy.ElephantMoveStrategy;
+import team.janggi.domain.piece.strategy.EmptyMoveStrategy;
 import team.janggi.domain.piece.strategy.HorseMoveStrategy;
 import team.janggi.domain.piece.strategy.MoveStrategy;
 import team.janggi.domain.piece.strategy.SoldierPalaceMoveStrategy;
@@ -25,7 +26,7 @@ public class Piece {
     }
 
 
-    public final static Piece EMPTY_PIECE = new Piece(Team.NONE, PieceType.EMPTY, ElephantMoveStrategy.instance);
+    public final static Piece EMPTY_PIECE = new Piece(Team.NONE, PieceType.EMPTY, EmptyMoveStrategy.instance);
 
     public static Piece of(PieceType pieceType, Team team) {
         if (pieceType == PieceType.EMPTY) {
