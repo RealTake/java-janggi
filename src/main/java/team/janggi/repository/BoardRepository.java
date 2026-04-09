@@ -75,7 +75,7 @@ public class BoardRepository {
                 for (int y = 0; y < 10; y++) {
                     for (int x = 0; x < 9; x++) {
                         final Position position = new Position(x, y);
-                        final Piece piece = board.getSateReader().getPiece(position);
+                        final Piece piece = board.getStateReader().getPiece(position);
 
                         statement.setLong(1, gameRoomId);
                         statement.setInt(2, x);

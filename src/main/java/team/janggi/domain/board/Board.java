@@ -25,7 +25,7 @@ public class Board {
         initializer.initBoardStatus(boardPieces);
     }
 
-    public BoardStateReader getSateReader() {
+    public BoardStateReader getStateReader() {
         return boardPieces.getBoardStateReader();
     }
 

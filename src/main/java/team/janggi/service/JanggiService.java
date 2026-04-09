@@ -109,7 +109,7 @@ public class JanggiService {
 
         return new BoardViewDTO(getTurn(gameRoomId),
                 board.getScore(Team.CHO), board.getScore(Team.HAN),
-                board.getSateReader());
+                board.getStateReader());
     }
 
     private Team getNextTurn(Team currentTurn) {

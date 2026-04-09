@@ -18,7 +18,7 @@ public class BoardTest {
 
         Board board = new Board(boardStruct);
 
-        Assertions.assertEquals(90, board.getSateReader().size());
+        Assertions.assertEquals(90, board.getStateReader().size());
     }
 
     @Test
@@ -27,7 +27,7 @@ public class BoardTest {
 
         Board board = new Board(boardStruct);
 
-        BoardStateReader pieceMap = board.getSateReader();
+        BoardStateReader pieceMap = board.getStateReader();
         // 초나라(CHO)가 아래쪽에 잘 배치되었는지 확인
         검증_초나라_기본_배치(pieceMap);
         // 한나라(HAN)가 위쪽에 잘 배치되었는지 확인
@@ -89,7 +89,7 @@ public class BoardTest {
 
         Board board = new Board(boardStruct);
 
-        BoardStateReader pieceMap = board.getSateReader();
+        BoardStateReader pieceMap = board.getStateReader();
 
         // 고정 기물 검증
         검증_초나라_기본_배치(pieceMap);
@@ -162,7 +162,7 @@ public class BoardTest {
         board.move(Team.CHO, from, to);
 
         // 이동 후 해당 위치에 병이 있는지 확인
-        BoardStateReader pieceMap = board.getSateReader();
+        BoardStateReader pieceMap = board.getStateReader();
         Assertions.assertEquals(soldier, pieceMap.getPiece(to));
     }
 
