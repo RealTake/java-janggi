@@ -159,4 +159,31 @@ public class SoldierTest {
         // then
         Assertions.assertEquals(expected, soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "3,7,   4,7, true",
+            "3,7,   4,7, false",
+    })
+    void 졸은_아군을_죽일수_없으며_적군은_죽일수_있다(
+            int startX, int startY,
+            int destinationX, int destinationY,
+            boolean isEnemy
+    ) {
+        // given
+        Piece soldier = Piece.of(PieceType.SOLDIER, Team.CHO);
+        Position currentPosition = new Position(startX, startY);
+        Position destinationPosition = new Position(destinationX, destinationY);
+
+        // when
+        boardPieces.setPiece(currentPosition, soldier);
+        if (isEnemy) {
+            boardPieces.setPiece(destinationPosition, Piece.of(PieceType.SOLDIER, Team.HAN));
+        } else {
+            boardPieces.setPiece(destinationPosition, Piece.of(PieceType.SOLDIER, Team.CHO));
+        }
+
+        // then
+        Assertions.assertEquals(isEnemy, soldier.canMove(currentPosition, destinationPosition, boardPieces.getBoardStateReader()));
+    }
 }
