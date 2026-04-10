@@ -1,20 +1,16 @@
 package team.janggi.domain;
 
-import java.time.LocalDateTime;
-
-public class GameRoom {
+public class Game {
     private final Long id;
     private Team currentTurn;
-    private final LocalDateTime createdDt;
 
-    public GameRoom(Team currentTurn) {
-        this(null, currentTurn, LocalDateTime.now());
+    public Game(Team currentTurn) {
+        this(null, currentTurn);
     }
 
-    public GameRoom(Long id, Team currentTurn, LocalDateTime createdDt) {
+    public Game(Long id, Team currentTurn) {
         this.id = id;
         this.currentTurn = currentTurn;
-        this.createdDt = createdDt;
     }
 
     public void changeTurn() {
@@ -32,10 +28,6 @@ public class GameRoom {
 
     public Team getCurrentTurn() {
         return currentTurn;
-    }
-
-    public LocalDateTime getCreatedDt() {
-        return createdDt;
     }
 
 }

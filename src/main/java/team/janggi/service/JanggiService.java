@@ -6,7 +6,7 @@ import team.janggi.domain.Team;
 import team.janggi.domain.board.Board;
 import team.janggi.domain.board.NormalBoardPiecesInitializer;
 import team.janggi.domain.board.NormalSetup;
-import team.janggi.domain.GameRoom;
+import team.janggi.domain.Game;
 import team.janggi.exception.GameNotFinishedException;
 import team.janggi.exception.GameNotFoundException;
 import team.janggi.exception.GameOverException;
@@ -27,8 +27,8 @@ public class JanggiService {
 
     public long createGameRoom(NormalSetup choSetup, NormalSetup hanSetup) {
         return AppConfig.transactionManager().execute(() -> {
-            final GameRoom gameRoom = new GameRoom(Team.CHO);
-            final long gameRoomId = gameRoomRepository.save(gameRoom);
+            final Game game = new Game(Team.CHO);
+            final long gameRoomId = gameRoomRepository.save(game);
 
             final Board board = new Board(new NormalBoardPiecesInitializer(choSetup, hanSetup));
             boardRepository.save(gameRoomId, board);
@@ -37,17 +37,17 @@ public class JanggiService {
     }
 
     public GameRoomInfoDTO findGameRoom(long gameRoomId) {
-        final GameRoom gameRoom = gameRoomRepository.findById(gameRoomId);
-        if (gameRoom == null) {
+        final Game game = gameRoomRepository.findById(gameRoomId);
+        if (game == null) {
             throw new GameNotFoundException();
         }
 
-        return new GameRoomInfoDTO(gameRoom.getId(), gameRoom.getCurrentTurn(), gameRoom.getCreatedDt());
+        return new GameRoomInfoDTO(game.getId(), game.getCurrentTurn());
     }
 
     public void move(long gameRoomId, Team team, Position from, Position to) {
-        final GameRoom gameRoom = gameRoomRepository.findById(gameRoomId);
-        if (gameRoom == null) {
+        final Game game = gameRoomRepository.findById(gameRoomId);
+        if (game == null) {
             throw new GameNotFoundException();
         }
 
@@ -61,10 +61,10 @@ public class JanggiService {
         }
 
         AppConfig.transactionManager().execute(() -> {
-            gameRoom.changeTurn();
+            game.changeTurn();
             board.move(team, from, to);
 
-            gameRoomRepository.save(gameRoom);
+            gameRoomRepository.save(game);
             boardRepository.save(gameRoomId, board);
             return null;
         });
@@ -94,12 +94,12 @@ public class JanggiService {
     }
 
     public Team getTurn(long gameRoomId) {
-        final GameRoom gameRoom = gameRoomRepository.findById(gameRoomId);
+        final Game game = gameRoomRepository.findById(gameRoomId);
 
-        if (gameRoom == null) {
+        if (game == null) {
             throw new GameNotFoundException();
         }
-        return gameRoom.getCurrentTurn();
+        return game.getCurrentTurn();
     }
 
     public BoardViewDTO getBoardView(long gameRoomId) {

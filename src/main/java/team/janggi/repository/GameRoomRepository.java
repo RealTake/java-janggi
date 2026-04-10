@@ -4,10 +4,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import team.janggi.application.JdbcExecutor;
-import team.janggi.domain.GameRoom;
+import team.janggi.domain.Game;
 import team.janggi.domain.Team;
 
 public class GameRoomRepository {
@@ -17,7 +18,7 @@ public class GameRoomRepository {
         this.jdbcExecutor = jdbcExecutor;
     }
 
-    public GameRoom findById(long gameRoomId) {
+    public Game findById(long gameRoomId) {
         final String sql = """
                    SELECT 
                        game_room_id,
@@ -27,7 +28,7 @@ public class GameRoomRepository {
                    WHERE game_room_id = ?
                 """;
         return jdbcExecutor.execute(sql, statement -> {
-                GameRoom gameRoom = null;
+                Game game = null;
                 try {
                     statement.setLong(1, gameRoomId);
                     final ResultSet resultSet = statement.executeQuery();
@@ -39,21 +40,20 @@ public class GameRoomRepository {
                         }
                         final long id = resultSet.getLong("game_room_id");
                         final String currentTurn = resultSet.getString("current_turn");
-                        final LocalDateTime createdDt = resultSet.getTimestamp("created_dt").toLocalDateTime();
 
-                        gameRoom = new GameRoom(id, Team.valueOf(currentTurn), createdDt);
+                        game = new Game(id, Team.valueOf(currentTurn));
                     }
                 } catch (SQLException e) {
                     throw new RuntimeException("게임룸 조회에 실패하였습니다.", e);
                 }
 
-                return gameRoom;
+                return game;
             });
     }
 
 
 
-    public long save(GameRoom gameRoom) {
+    public long save(Game game) {
         final String sql = """
                 MERGE INTO game_room g
                 USING (VALUES (?, ?, ?)) t(egame_room_id, current_turn, created_dt)
@@ -66,9 +66,9 @@ public class GameRoomRepository {
                 """;
         return jdbcExecutor.execute(sql, Statement.RETURN_GENERATED_KEYS, statement -> {
                     try {
-                        setLongParameter(statement, 1, gameRoom.getId());
-                        statement.setString(2, gameRoom.getCurrentTurn().name());
-                        statement.setTimestamp(3, java.sql.Timestamp.valueOf(gameRoom.getCreatedDt()));
+                        setLongParameter(statement, 1, game.getId());
+                        statement.setString(2, game.getCurrentTurn().name());
+                        statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
 
                         statement.executeUpdate();
 
