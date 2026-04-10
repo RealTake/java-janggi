@@ -15,7 +15,7 @@ public class JdbcExecutor {
 
     public <T> T execute(String sql,
                          Function<PreparedStatement, T> action) {
-        final Connection connection = AppConfig.transactionManager().getConnection();
+        final Connection connection = transactionManager.getConnection();
 
         try {
             return action.apply(connection.prepareStatement(sql));
