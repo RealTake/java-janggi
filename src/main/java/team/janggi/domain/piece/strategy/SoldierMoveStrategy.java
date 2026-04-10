@@ -2,6 +2,7 @@ package team.janggi.domain.piece.strategy;
 
 import team.janggi.domain.Position;
 import team.janggi.domain.board.BoardStateReader;
+import team.janggi.domain.piece.Piece;
 
 public class SoldierMoveStrategy implements MoveStrategy {
     private final ForwardDirection forwardDirection;
@@ -12,7 +13,7 @@ public class SoldierMoveStrategy implements MoveStrategy {
 
     @Override
     public boolean calculateMove(Position from, Position to, BoardStateReader stateReader) {
-        return isForward(from, to) || isSideMove(from, to);
+        return (isForward(from, to) || isSideMove(from, to)) && canKill(from, to, stateReader);
     }
 
     private boolean isForward(Position from, Position to) {
@@ -29,5 +30,11 @@ public class SoldierMoveStrategy implements MoveStrategy {
 
     private boolean isSideMove(Position from, Position to) {
         return from.y() == to.y() && Math.abs(from.x() - to.x()) == 1;
+    }
+
+    private boolean canKill(Position from, Position to, BoardStateReader stateReader) {
+        Piece currentPiece = stateReader.getPiece(from);
+        Piece destinationPiece = stateReader.getPiece(to);
+        return !currentPiece.isSameTeam(destinationPiece);
     }
 }
