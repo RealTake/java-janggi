@@ -76,7 +76,7 @@ public class ConsoleOutputView {
     }
 
     private String toSymbol(Piece piece) {
-        if (piece == null || piece.isSamePieceType(PieceType.EMPTY)) {
+        if (piece == null || piece.isPieceType(PieceType.EMPTY)) {
             return EMPTY_SYMBOL;
         }
 
@@ -86,34 +86,34 @@ public class ConsoleOutputView {
     private String pieceCode(Piece piece) {
         final boolean isCho = piece.isSameTeam(Team.CHO);
 
-        if (piece.isSamePieceType(PieceType.KING) && isCho) {
+        if (piece.isPieceType(PieceType.KING) && isCho) {
             return "宮";
         }
-        if (piece.isSamePieceType(PieceType.KING)) {
+        if (piece.isPieceType(PieceType.KING)) {
             return "將";
         }
-        if (piece.isSamePieceType(PieceType.GUARD)) {
+        if (piece.isPieceType(PieceType.GUARD)) {
             return "士";
         }
-        if (piece.isSamePieceType(PieceType.HORSE)) {
+        if (piece.isPieceType(PieceType.HORSE)) {
             return "馬";
         }
-        if (piece.isSamePieceType(PieceType.ELEPHANT)) {
+        if (piece.isPieceType(PieceType.ELEPHANT)) {
             return "象";
         }
-        if (piece.isSamePieceType(PieceType.CHARIOT)) {
+        if (piece.isPieceType(PieceType.CHARIOT)) {
             return "車";
         }
-        if (piece.isSamePieceType(PieceType.CANNON) && isCho) {
+        if (piece.isPieceType(PieceType.CANNON) && isCho) {
             return "包";
         }
-        if (piece.isSamePieceType(PieceType.CANNON)) {
+        if (piece.isPieceType(PieceType.CANNON)) {
             return "砲";
         }
-        if (piece.isSamePieceType(PieceType.SOLDIER) && isCho) {
+        if (piece.isPieceType(PieceType.SOLDIER) && isCho) {
             return "卒";
         }
-        if (piece.isSamePieceType(PieceType.SOLDIER)) {
+        if (piece.isPieceType(PieceType.SOLDIER)) {
             return "兵";
         }
 
@@ -121,7 +121,7 @@ public class ConsoleOutputView {
     }
 
     private String applyTeamColor(Piece piece, String value) {
-        if (piece == null || piece.isSamePieceType(PieceType.EMPTY)) {
+        if (piece == null || piece.isPieceType(PieceType.EMPTY)) {
             return value;
         }
 

@@ -35,7 +35,7 @@ public class HorseMoveStrategy implements MoveStrategy {
 
         Position obstaclePosition = new Position(fromX, fromY);
         Piece obstacle = stateReader.getPiece(obstaclePosition);
-        return obstacle.isSamePieceType(PieceType.EMPTY);
+        return obstacle.isPieceType(PieceType.EMPTY);
     }
 
     private boolean canKill(Position from, Position to, BoardStateReader stateReader) {

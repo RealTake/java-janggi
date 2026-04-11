@@ -36,7 +36,7 @@ public class ChariotPalaceMoveStrategy extends ChariotMoveStrategy {
             return true;
         }
 
-        return paths.stream().allMatch(piece -> piece.isSamePieceType(PieceType.EMPTY));
+        return paths.stream().allMatch(piece -> piece.isPieceType(PieceType.EMPTY));
     }
 
     private List<Piece> getPath(Position from, Position to, BoardStateReader stateReader) {

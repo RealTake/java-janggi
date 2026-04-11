@@ -99,6 +99,40 @@ public class CannonTest {
 
     @ParameterizedTest
     @CsvSource({
+            "5, 5,  5, 2,   5, 3", // 상 3칸 이동, 경로 사이에 기물이 존재하고, 목표 위치에 포  기물 있음
+            "5, 5,  5, 8,   5, 7", // 하 3칸 이동, 경로 사이에 기물이 존재하고, 목표 위치에 포  기물 있음
+            "5, 5,  2, 5,   3, 5", // 좌 3칸 이동, 경로 사이에 기물이 존재하고, 목표 위치에 포  기물 있음
+            "5, 5,  8, 5,   7, 5", // 우 3칸 이동, 경로 사이에 기물이 존재하고, 목표 위치에 포  기물 있음
+    })
+    void 포는_상하좌우로_기물을_건너뛰어_이동할수있지만_같은_포는_잡을순_없다(
+            int startX, int startY,
+            int endX, int endY,
+            int obstacleX, int obstacleY
+    ) {
+        // given
+        final Team myTeam = Team.CHO;
+        final Team enemyTeam = Team.HAN;
+
+        final Piece me = Piece.of(PieceType.CANNON, myTeam);
+        final Position from = new Position(startX, startY);
+        final Position to = new Position(endX, endY);
+        final Position obstaclePosition = new Position(obstacleX, obstacleY);
+
+        // when
+        // 포 피스 세팅
+        boardPieces.setPiece(from, me);
+        // 장애물 피스 세팅
+        boardPieces.setPiece(obstaclePosition, Piece.of(PieceType.SOLDIER, myTeam));
+        // 목표 위치에 적기물 세팅
+        boardPieces.setPiece(to, Piece.of(PieceType.CANNON, enemyTeam));
+
+        // then
+        final boolean canMove = me.canMove(from, to, boardPieces.getBoardStateReader());
+        Assertions.assertFalse(canMove);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
             "5, 5,  6, 6,   false", // 우하 대각선
             "5, 5,  6, 4,   false", // 우상 대각선
             "5, 5,  4, 4,   false", // 좌상 대각선

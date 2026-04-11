@@ -29,7 +29,7 @@ public class CannonMoveStrategy implements MoveStrategy {
     }
 
     private boolean canKill(Piece target, Piece me) {
-        return !target.isSameTeam(me);
+        return !target.isSameTeam(me) && !target.isPieceType(PieceType.CANNON);
     }
 
     private boolean isPathsValid(List<Piece> paths) {
@@ -46,7 +46,7 @@ public class CannonMoveStrategy implements MoveStrategy {
         return Arrays.stream(PieceType.values())
                 .filter(pieceType -> pieceType != PieceType.EMPTY)
                 .filter(pieceType -> pieceType != PieceType.CANNON)
-                .anyMatch(piece::isSamePieceType);
+                .anyMatch(piece::isPieceType);
     }
 
     private List<Piece> getPaths(Position from, Position to, BoardStateReader stateReader) {

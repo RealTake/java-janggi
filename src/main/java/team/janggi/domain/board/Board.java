@@ -56,7 +56,7 @@ public class Board {
 
     private void updateWinner() {
         final List<Piece> kings = boardPieces.getAllPiece().stream()
-                .filter(piece -> piece.isSamePieceType(PieceType.KING))
+                .filter(piece -> piece.isPieceType(PieceType.KING))
                 .toList();
         if (kings.size() > 1) {
             return;
@@ -117,7 +117,7 @@ public class Board {
     }
 
     private boolean isEmptySpace(Position from) {
-        return boardPieces.getPiece(from).isSamePieceType(PieceType.EMPTY);
+        return boardPieces.getPiece(from).isPieceType(PieceType.EMPTY);
     }
 
     private boolean isOutOfBounds(Position position) {

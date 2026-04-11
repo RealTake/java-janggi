@@ -50,7 +50,7 @@ public class CannonPalaceMoveStrategy extends CannonMoveStrategy {
         return Arrays.stream(PieceType.values())
                 .filter(pieceType -> pieceType != PieceType.EMPTY)
                 .filter(pieceType -> pieceType != PieceType.CANNON)
-                .anyMatch(piece::isSamePieceType);
+                .anyMatch(piece::isPieceType);
     }
 
     private List<Piece> getPath(Position from, Position to, BoardStateReader stateReader) {

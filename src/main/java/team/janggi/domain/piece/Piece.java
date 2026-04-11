@@ -92,7 +92,7 @@ public class Piece {
         return this.team == otherTeam;
     }
 
-    public boolean isSamePieceType(PieceType otherPieceType) {
+    public boolean isPieceType(PieceType otherPieceType) {
         return this.pieceType == otherPieceType;
     }
 
