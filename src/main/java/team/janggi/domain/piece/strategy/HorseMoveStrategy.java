@@ -17,7 +17,7 @@ public class HorseMoveStrategy implements MoveStrategy {
         int dx = Math.abs(from.x() - to.x());
         int dy = Math.abs(from.y() - to.y());
 
-        return (dx + dy) == 3;
+        return (dx == 1 && dy == 2) || (dx == 2 && dy == 1);
     }
 
     private boolean isPathBlock(Position from, Position to, BoardStateReader stateReader) {
