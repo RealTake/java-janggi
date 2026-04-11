@@ -18,7 +18,7 @@ public class ElephantMoveStrategy implements MoveStrategy {
         int dx = Math.abs(from.x() - to.x());
         int dy = Math.abs(from.y() - to.y());
 
-        return (dx + dy) == 5;
+        return dx == 2 && dy == 3 || dx == 3 && dy == 2;
     }
 
     private boolean isPathBlock(Position from, Position to, BoardStateReader stateReader) {
